@@ -10,6 +10,7 @@ import de.fhg.iais.roberta.syntax.actors.arduino.RelayAction;
 import de.fhg.iais.roberta.syntax.actors.arduino.sensebox.PlotClearAction;
 import de.fhg.iais.roberta.syntax.actors.arduino.sensebox.PlotPointAction;
 import de.fhg.iais.roberta.syntax.actors.arduino.sensebox.SendDataAction;
+import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lsm9ds1AccSensor;
 import de.fhg.iais.roberta.syntax.sensors.arduino.sensebox.EnvironmentalSensor;
 import de.fhg.iais.roberta.syntax.sensors.arduino.sensebox.GpsSensor;
 import de.fhg.iais.roberta.util.dbc.DbcException;
@@ -75,6 +76,10 @@ public interface IArduinoVisitor<V>
 
     @Override
     default V visitMotorStopAction(MotorStopAction<V> motorStopAction) {
+        throw new DbcException("Not supported!");
+    }
+
+    default V visitLsm9ds1AccSensor(Lsm9ds1AccSensor<V> lsm9ds1AccSensor) {
         throw new DbcException("Not supported!");
     }
 }

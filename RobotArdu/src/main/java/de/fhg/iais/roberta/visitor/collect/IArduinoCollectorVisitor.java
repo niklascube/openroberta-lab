@@ -11,14 +11,14 @@ import de.fhg.iais.roberta.syntax.actors.arduino.RelayAction;
 import de.fhg.iais.roberta.syntax.actors.arduino.sensebox.PlotClearAction;
 import de.fhg.iais.roberta.syntax.actors.arduino.sensebox.PlotPointAction;
 import de.fhg.iais.roberta.syntax.actors.arduino.sensebox.SendDataAction;
+import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lsm9ds1AccSensor;
 import de.fhg.iais.roberta.syntax.sensors.arduino.sensebox.EnvironmentalSensor;
 import de.fhg.iais.roberta.syntax.sensors.arduino.sensebox.GpsSensor;
 import de.fhg.iais.roberta.visitor.hardware.IArduinoVisitor;
 
 /**
- * Collector for the Arduino.
- * Adds the blocks missing from the defaults of {@link ICollectorVisitor}.
- * Defines the specific parent implementation to use (the one of the collector) due to unrelated defaults.
+ * Collector for the Arduino. Adds the blocks missing from the defaults of {@link ICollectorVisitor}. Defines the specific parent implementation to use (the one
+ * of the collector) due to unrelated defaults.
  */
 public interface IArduinoCollectorVisitor extends ICollectorVisitor, IArduinoVisitor<Void> {
 
@@ -93,5 +93,13 @@ public interface IArduinoCollectorVisitor extends ICollectorVisitor, IArduinoVis
     @Override
     default Void visitPlayFileAction(PlayFileAction<Void> playFileAction) {
         return ICollectorVisitor.super.visitPlayFileAction(playFileAction);
+    }
+
+    @Override
+    default Void visitLsm9ds1AccSensor(Lsm9ds1AccSensor<Void> lsm9ds1AccSensor) {
+        lsm9ds1AccSensor.getX().accept(this);
+        lsm9ds1AccSensor.getY().accept(this);
+        lsm9ds1AccSensor.getZ().accept(this);
+        return null;
     }
 }

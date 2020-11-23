@@ -35,6 +35,7 @@ import de.fhg.iais.roberta.syntax.sensor.generic.PulseSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.RfidSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.TemperatureSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.VoltageSensor;
+import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lsm9ds1AccSensor;
 import de.fhg.iais.roberta.typecheck.NepoInfo;
 import de.fhg.iais.roberta.visitor.hardware.IArduinoVisitor;
 import de.fhg.iais.roberta.visitor.hardware.sensor.ISensorVisitor;
@@ -81,7 +82,7 @@ public final class ArduinoBrickValidatorVisitor extends AbstractBrickValidatorVi
 
     @Override
     public Void visitRfidSensor(RfidSensor<Void> rfidSensor) {
-        if (!robotConfiguration.getRobotName().equals("unowifirev2")) { // TODO remove once rfid library is supported for unowifirev2
+        if ( !robotConfiguration.getRobotName().equals("unowifirev2") ) { // TODO remove once rfid library is supported for unowifirev2
             checkSensorPort(rfidSensor);
         } else {
             rfidSensor.addInfo(NepoInfo.warning("BLOCK_NOT_SUPPORTED"));
@@ -294,5 +295,13 @@ public final class ArduinoBrickValidatorVisitor extends AbstractBrickValidatorVi
             this.errorCount++;
         }
         return super.visitGetSubFunct(getSubFunct);
+    }
+
+    @Override
+    public Void visitLsm9ds1AccSensor(Lsm9ds1AccSensor<Void> lsm9ds1AccSensor) {
+        lsm9ds1AccSensor.getX().accept(this);
+        lsm9ds1AccSensor.getY().accept(this);
+        lsm9ds1AccSensor.getZ().accept(this);
+        return null;
     }
 }

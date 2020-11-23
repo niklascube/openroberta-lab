@@ -1,0 +1,20 @@
+<block_set xmlns="http://de.fhg.iais.roberta.blockly" robottype="arduino" xmlversion="3.1" description="" tags="">
+    <instance x="100" y="80">
+        <block type="robConf_led" id="1" intask="true" deletable="false">
+            <field name="NAME">L</field>
+            <field name="INPUT">LED_BUILTIN</field>
+        </block>
+    </instance>
+    <instance x="100" y="220">
+        <block type="robConf_lsm9ds1" intask="true" deletable="false"></block>
+    </instance>
+    <instance x="100" y="300">
+        <block type="robConf_apds9960" intask="true" deletable="false"></block>
+    </instance>
+    <instance x="100" y="380">
+        <block type="robConf_lps22hb" intask="true" deletable="false"></block>
+    </instance>
+    <instance x="100" y="460">
+        <block type="robConf_hts221" intask="true" deletable="false"></block>
+    </instance>
+</block_set>

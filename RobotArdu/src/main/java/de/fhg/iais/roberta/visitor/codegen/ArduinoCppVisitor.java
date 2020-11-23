@@ -52,7 +52,7 @@ import de.fhg.iais.roberta.visitor.hardware.IArduinoVisitor;
  * This class is implementing {@link IVisitor}. All methods are implemented and they append a human-readable C representation of a phrase to a StringBuilder.
  * <b>This representation is correct C code for Arduino.</b> <br>
  */
-public final class ArduinoCppVisitor extends AbstractCommonArduinoCppVisitor implements IArduinoVisitor<Void> {
+public class ArduinoCppVisitor extends AbstractCommonArduinoCppVisitor implements IArduinoVisitor<Void> {
 
     /**
      * Initialize the C++ code generator visitor.
@@ -551,6 +551,18 @@ public final class ArduinoCppVisitor extends AbstractCommonArduinoCppVisitor imp
                 case SC.DIGITAL_PIN:
                 case SC.ANALOG_PIN:
                     break;
+                case SC.LSM9DS1:
+                    headerFiles.add("#include <Arduino_LSM9DS1.h>");
+                    break;
+                case SC.APDS9960:
+                    headerFiles.add("#include <Arduino_APDS9960.h>");
+                    break;
+                case SC.LPS22HB:
+                    headerFiles.add("#include <Arduino_LPS22HB.h>");
+                    break;
+                case SC.HTS221:
+                    headerFiles.add("#include <Arduino_HTS221.h>");
+                    break;
                 default:
                     throw new DbcException("Sensor is not supported: " + usedConfigurationBlock.getComponentType());
             }
@@ -668,6 +680,15 @@ public final class ArduinoCppVisitor extends AbstractCommonArduinoCppVisitor imp
                     this.sb.append("_imu_").append(usedConfigurationBlock.getUserDefinedPortName()).append(".begin();");
                     nlIndent();
                     break;
+                case SC.LSM9DS1:
+                    this.sb.append("IMU").append(usedConfigurationBlock.getUserDefinedPortName()).append(".begin();");
+                    nlIndent();
+                    break;
+                case SC.APDS9960:
+                case SC.LPS22HB:
+                case SC.HTS221:
+                    break;
+
                 default:
                     throw new DbcException("Sensor is not supported: " + usedConfigurationBlock.getComponentType());
             }
@@ -817,6 +838,11 @@ public final class ArduinoCppVisitor extends AbstractCommonArduinoCppVisitor imp
                 case SC.ACCELEROMETER:
                     this.sb.append("LSM6DS3 _imu_").append(blockName).append("(SPI_MODE, SPIIMU_SS);");
                     nlIndent();
+                    break;
+                case SC.LSM9DS1:
+                case SC.APDS9960:
+                case SC.LPS22HB:
+                case SC.HTS221:
                     break;
                 default:
                     throw new DbcException("Configuration block is not supported: " + cc.getComponentType());
