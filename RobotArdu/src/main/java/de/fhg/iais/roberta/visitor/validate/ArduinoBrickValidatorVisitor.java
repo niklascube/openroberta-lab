@@ -343,9 +343,9 @@ public final class ArduinoBrickValidatorVisitor extends AbstractBrickValidatorVi
 
     @Override
     public Void visitApds9960ColorSensor(Apds9960ColorSensor<Void> sensor) {
-        sensor.getX().accept(this);
-        sensor.getY().accept(this);
-        sensor.getZ().accept(this);
+        sensor.getR().accept(this);
+        sensor.getG().accept(this);
+        sensor.getB().accept(this);
         return null;
     }
 

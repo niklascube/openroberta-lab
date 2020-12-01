@@ -141,9 +141,9 @@ public interface IArduinoCollectorVisitor extends ICollectorVisitor, IArduinoVis
 
     @Override
     default Void visitApds9960ColorSensor(Apds9960ColorSensor<Void> apds9960ColorSensor) {
-        apds9960ColorSensor.getX().accept(this);
-        apds9960ColorSensor.getY().accept(this);
-        apds9960ColorSensor.getZ().accept(this);
+        apds9960ColorSensor.getR().accept(this);
+        apds9960ColorSensor.getG().accept(this);
+        apds9960ColorSensor.getB().accept(this);
         return null;
     }
 

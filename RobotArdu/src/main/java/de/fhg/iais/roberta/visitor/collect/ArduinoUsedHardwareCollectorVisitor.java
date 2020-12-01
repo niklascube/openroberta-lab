@@ -25,6 +25,7 @@ import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Hts221Temperatu
 import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lps22hbPressureSensor;
 import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lsm9ds1AccSensor;
 import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lsm9ds1GyroSensor;
+import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lsm9ds1MagneticFieldSensor;
 import de.fhg.iais.roberta.visitor.hardware.IArduinoVisitor;
 
 /**
@@ -96,6 +97,12 @@ public final class ArduinoUsedHardwareCollectorVisitor extends AbstractUsedHardw
 
     @Override
     public Void visitLsm9ds1GyroSensor(Lsm9ds1GyroSensor<Void> sensor) {
+        this.getBuilder(UsedHardwareBean.Builder.class).addUsedActor(new UsedActor(SC.LSM9DS1, SC.LSM9DS1));
+        return null;
+    }
+
+    @Override
+    public Void visitLsm9ds1MagneticFieldSensor(Lsm9ds1MagneticFieldSensor<Void> sensor) {
         this.getBuilder(UsedHardwareBean.Builder.class).addUsedActor(new UsedActor(SC.LSM9DS1, SC.LSM9DS1));
         return null;
     }
