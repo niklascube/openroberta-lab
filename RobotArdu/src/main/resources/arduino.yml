@@ -107,6 +107,38 @@ block:
       category: SENSOR
       implementor: de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lsm9ds1AccSensor
       type: [robsensors_lsm9ds1_acceleration_getDataAvailableSample]
+  LSM9DS1_GYRO:
+      category: SENSOR
+      implementor: de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lsm9ds1GyroSensor
+      type: [robsensors_lsm9ds1_gyro_getDataAvailableSample]
+  LSM9DS1_MAGNETICFIELD:
+      category: SENSOR
+      implementor: de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lsm9ds1MagneticFieldSensor
+      type: [robsensors_lsm9ds1_magneticfield_getDataAvailableSample]
+  APDS9960_DISTANCE:
+      category: SENSOR
+      implementor: de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Apds9960DistanceSensor
+      type: [robsensors_apds9960_distance_getDataAvailableSample]
+  APDS9960_GESTURE:
+      category: SENSOR
+      implementor: de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Apds9960GestureSensor
+      type: [robsensors_apds9960_gesture_getDataAvailableSample]
+  APDS9960_COLOR:
+      category: SENSOR
+      implementor: de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Apds9960ColorSensor
+      type: [robsensors_apds9960_color_getDataAvailableSample]
+  LPS22HB_PRESSURE:
+      category: SENSOR
+      implementor: de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lps22hbPressureSensor
+      type: [robsensors_lps22hb_pressure_getDataAvailableSample]
+  HTS221_TEMPERATURE:
+      category: SENSOR
+      implementor: de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Hts221TemperatureSensor
+      type: [robsensors_hts221_temperature_getDataAvailableSample]
+  HTS221_HUMIDITY:
+      category: SENSOR
+      implementor: de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Hts221HumiditySensor
+      type: [robsensors_hts221_humidity_getDataAvailableSample]
 
 configuration:
   SENSEBOX: [robBrick_senseBox-Brick]

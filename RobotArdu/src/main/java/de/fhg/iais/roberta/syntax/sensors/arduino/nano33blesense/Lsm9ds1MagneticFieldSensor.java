@@ -16,7 +16,7 @@ import de.fhg.iais.roberta.transformer.Ast2JaxbHelper;
 import de.fhg.iais.roberta.visitor.IVisitor;
 import de.fhg.iais.roberta.visitor.hardware.IArduinoVisitor;
 
-public class Lsm9ds1AccSensor<V> extends BuiltinSensor<V> {
+public class Lsm9ds1MagneticFieldSensor<V> extends BuiltinSensor<V> {
 
     private final Var<V> x, y, z;
 
@@ -32,8 +32,8 @@ public class Lsm9ds1AccSensor<V> extends BuiltinSensor<V> {
         return z;
     }
 
-    private Lsm9ds1AccSensor(BlocklyBlockProperties properties, BlocklyComment comment, Var<V> x, Var<V> y, Var<V> z) {
-        super(null, BlockTypeContainer.getByName("LSM9DS1_ACCELERATION"), properties, comment);
+    private Lsm9ds1MagneticFieldSensor(BlocklyBlockProperties properties, BlocklyComment comment, Var<V> x, Var<V> y, Var<V> z) {
+        super(null, BlockTypeContainer.getByName("LSM9DS1_MAGNETICFIELD"), properties, comment);
         this.x = x;
         this.y = y;
         this.z = z;
@@ -42,11 +42,11 @@ public class Lsm9ds1AccSensor<V> extends BuiltinSensor<V> {
 
     @Override
     protected V acceptImpl(IVisitor<V> visitor) {
-        return ((IArduinoVisitor<V>) visitor).visitLsm9ds1AccSensor(this);
+        return ((IArduinoVisitor<V>) visitor).visitLsm9ds1MagneticFieldSensor(this);
     }
 
-    public static <V> Lsm9ds1AccSensor<V> make(BlocklyBlockProperties properties, BlocklyComment comment, Var<V> x, Var<V> y, Var<V> z) {
-        return new Lsm9ds1AccSensor<>(properties, comment, x, y, z);
+    public static <V> Lsm9ds1MagneticFieldSensor<V> make(BlocklyBlockProperties properties, BlocklyComment comment, Var<V> x, Var<V> y, Var<V> z) {
+        return new Lsm9ds1MagneticFieldSensor<>(properties, comment, x, y, z);
     }
 
     /**
@@ -61,7 +61,7 @@ public class Lsm9ds1AccSensor<V> extends BuiltinSensor<V> {
         Var<V> x = helper.getVar(values, BlocklyConstants.X);
         Var<V> y = helper.getVar(values, BlocklyConstants.Y);
         Var<V> z = helper.getVar(values, BlocklyConstants.Z);
-        return Lsm9ds1AccSensor.make(AbstractJaxb2Ast.extractBlockProperties(block), AbstractJaxb2Ast.extractComment(block), x, y, z);
+        return Lsm9ds1MagneticFieldSensor.make(AbstractJaxb2Ast.extractBlockProperties(block), AbstractJaxb2Ast.extractComment(block), x, y, z);
     }
 
     @Override

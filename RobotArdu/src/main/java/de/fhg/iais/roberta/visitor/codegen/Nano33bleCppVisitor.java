@@ -7,7 +7,15 @@ import com.google.common.collect.ClassToInstanceMap;
 import de.fhg.iais.roberta.bean.IProjectBean;
 import de.fhg.iais.roberta.components.ConfigurationAst;
 import de.fhg.iais.roberta.syntax.Phrase;
+import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Apds9960ColorSensor;
+import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Apds9960DistanceSensor;
+import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Apds9960GestureSensor;
+import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Hts221HumiditySensor;
+import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Hts221TemperatureSensor;
+import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lps22hbPressureSensor;
 import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lsm9ds1AccSensor;
+import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lsm9ds1GyroSensor;
+import de.fhg.iais.roberta.syntax.sensors.arduino.nano33blesense.Lsm9ds1MagneticFieldSensor;
 import de.fhg.iais.roberta.visitor.IVisitor;
 
 /**
@@ -25,16 +33,64 @@ public class Nano33bleCppVisitor extends ArduinoCppVisitor {
     }
 
     @Override
-    public Void visitLsm9ds1AccSensor(Lsm9ds1AccSensor<Void> lsm9ds1AccSensor) {
+    public Void visitLsm9ds1AccSensor(Lsm9ds1AccSensor<Void> sensor) {
         this.sb
             .append(
                 "IMU.accelerationAvailable()?(IMU.readAcceleration(__"
-                    + lsm9ds1AccSensor.getX().getValue()
+                    + sensor.getX().getValue()
                     + ",__"
-                    + lsm9ds1AccSensor.getY().getValue()
+                    + sensor.getY().getValue()
                     + ",__"
-                    + lsm9ds1AccSensor.getZ().getValue()
-                    + "),TRUE) : FALSE");
+                    + sensor.getZ().getValue()
+                    + "),1) : 0");
+        return null;
+    }
+
+    @Override
+    public Void visitLsm9ds1GyroSensor(Lsm9ds1GyroSensor<Void> sensor) {
+        this.sb.append("// Lsm9ds1GyroSensor\n");
+        return null;
+    }
+
+    @Override
+    public Void visitLsm9ds1MagneticFieldSensor(Lsm9ds1MagneticFieldSensor<Void> sensor) {
+        this.sb.append("// Lsm9ds1MagneticFieldSensor\n");
+        return null;
+    }
+
+    @Override
+    public Void visitApds9960DistanceSensor(Apds9960DistanceSensor<Void> sensor) {
+        this.sb.append("// Apds9960DistanceSensor\n");
+        return null;
+    }
+
+    @Override
+    public Void visitApds9960GestureSensor(Apds9960GestureSensor<Void> sensor) {
+        this.sb.append("// Apds9960GestureSensor\n");
+        return null;
+    }
+
+    @Override
+    public Void visitApds9960ColorSensor(Apds9960ColorSensor<Void> sensor) {
+        this.sb.append("// Apds9960ColorSensor\n");
+        return null;
+    }
+
+    @Override
+    public Void visitLps22hbPressureSensor(Lps22hbPressureSensor<Void> sensor) {
+        this.sb.append("// Lps22hbPressureSensor\n");
+        return null;
+    }
+
+    @Override
+    public Void visitHts221TemperatureSensor(Hts221TemperatureSensor<Void> sensor) {
+        this.sb.append("// Hts221TemperatureSensor\n");
+        return null;
+    }
+
+    @Override
+    public Void visitHts221HumiditySensor(Hts221HumiditySensor<Void> sensor) {
+        this.sb.append("// Hts221HumiditySensor\n");
         return null;
     }
 }
