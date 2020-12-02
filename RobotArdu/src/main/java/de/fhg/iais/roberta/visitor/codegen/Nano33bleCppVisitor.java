@@ -35,62 +35,97 @@ public class Nano33bleCppVisitor extends ArduinoCppVisitor {
     @Override
     public Void visitLsm9ds1AccSensor(Lsm9ds1AccSensor<Void> sensor) {
         this.sb
-            .append(
-                "IMU.accelerationAvailable()?(IMU.readAcceleration(__"
-                    + sensor.getX().getValue()
-                    + ",__"
-                    + sensor.getY().getValue()
-                    + ",__"
-                    + sensor.getZ().getValue()
-                    + "),1) : 0");
+            .append("(IMU.accelerationAvailable()?(IMU.readAcceleration(xAsFloat,yAsFloat,zAsFloat),")
+            .append("___" + sensor.getX().getValue())
+            .append(" = (double) xAsFloat,")
+            .append("___" + sensor.getY().getValue())
+            .append(" = (double) yAsFloat,")
+            .append("___" + sensor.getZ().getValue())
+            .append(" = (double) zAsFloat,1) : 0)");
         return null;
     }
 
     @Override
     public Void visitLsm9ds1GyroSensor(Lsm9ds1GyroSensor<Void> sensor) {
-        this.sb.append("// Lsm9ds1GyroSensor\n");
+        this.sb
+            .append("(IMU.gyroscopeAvailable()?(IMU.readGyroscope(xAsFloat,yAsFloat,zAsFloat),")
+            .append("___" + sensor.getX().getValue())
+            .append(" = (double) xAsFloat,")
+            .append("___" + sensor.getY().getValue())
+            .append(" = (double) yAsFloat,")
+            .append("___" + sensor.getZ().getValue())
+            .append(" = (double) zAsFloat,1) : 0)");
         return null;
     }
 
     @Override
     public Void visitLsm9ds1MagneticFieldSensor(Lsm9ds1MagneticFieldSensor<Void> sensor) {
-        this.sb.append("// Lsm9ds1MagneticFieldSensor\n");
+        this.sb
+            .append("(IMU.magneticFieldAvailable()?(IMU.readMagneticField(xAsFloat,yAsFloat,zAsFloat),")
+            .append("___" + sensor.getX().getValue())
+            .append(" = (double) xAsFloat,")
+            .append("___" + sensor.getY().getValue())
+            .append(" = (double) yAsFloat,")
+            .append("___" + sensor.getZ().getValue())
+            .append(" = (double) zAsFloat,1) : 0)");
         return null;
     }
 
     @Override
     public Void visitApds9960DistanceSensor(Apds9960DistanceSensor<Void> sensor) {
-        this.sb.append("// Apds9960DistanceSensor\n");
+        this.sb
+            .append("(APDS.proximityAvailable()?(___") //
+            .append(sensor.getDistance().getValue())
+            .append(" = (double) APDS.readProximity(),1) : 0)");
         return null;
     }
 
     @Override
     public Void visitApds9960GestureSensor(Apds9960GestureSensor<Void> sensor) {
-        this.sb.append("// Apds9960GestureSensor\n");
+        this.sb
+            .append("(APDS.gestureAvailable()?(___") //
+            .append(sensor.getGesture().getValue())
+            .append(" = (double) APDS.readGesture(),1) : 0)");
         return null;
     }
 
     @Override
     public Void visitApds9960ColorSensor(Apds9960ColorSensor<Void> sensor) {
-        this.sb.append("// Apds9960ColorSensor\n");
+        this.sb
+            .append("(APDS.colorAvailable()?(APDS.readColor(rAsInt,gAsInt,bAsInt),")
+            .append("___" + sensor.getR().getValue())
+            .append(" = (double) rAsInt,")
+            .append("___" + sensor.getG().getValue())
+            .append(" = (double) gAsInt,")
+            .append("___" + sensor.getB().getValue())
+            .append(" = (double) bAsInt,1) : 0)");
         return null;
     }
 
     @Override
     public Void visitLps22hbPressureSensor(Lps22hbPressureSensor<Void> sensor) {
-        this.sb.append("// Lps22hbPressureSensor\n");
+        this.sb
+            .append("(___") //
+            .append(sensor.getPressure().getValue())
+            .append(" = (double) BARO.readPressure(),1)");
         return null;
     }
 
     @Override
     public Void visitHts221TemperatureSensor(Hts221TemperatureSensor<Void> sensor) {
-        this.sb.append("// Hts221TemperatureSensor\n");
+        this.sb
+            .append("(___") //
+            .append(sensor.getTemperature().getValue())
+            .append(" = (double) HTS.readTemperature(),1)");
         return null;
     }
 
     @Override
     public Void visitHts221HumiditySensor(Hts221HumiditySensor<Void> sensor) {
-        this.sb.append("// Hts221HumiditySensor\n");
+        this.sb
+            .append("(___") //
+            .append(sensor.getHumidity().getValue())
+            .append(" = (double) HTS.readHumidity(),1)");
         return null;
     }
 }
