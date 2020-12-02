@@ -1,3 +1,5 @@
+import * as comm from "comm";
+
 /**
  * Rest calls to the server related to notification operations (save, delete, get)
  *
@@ -5,7 +7,7 @@
  */
 
 export function getNotifications (successFn) {
-    COMM.json("/notifications/getNotifications", {}, function (result) {
+    comm.json("/notifications/getNotifications", {}, function (result) {
         if (result.rc === "ok" && result.message === "ORA_SERVER_SUCCESS") {
             successFn(result)
         }
@@ -13,7 +15,7 @@ export function getNotifications (successFn) {
 }
 
 export function postNotifications (notifications, successFn) {
-    COMM.json("/notifications/postNotifications", {
+    comm.json("/notifications/postNotifications", {
         notifications : notifications
     }, successFn);
 }
