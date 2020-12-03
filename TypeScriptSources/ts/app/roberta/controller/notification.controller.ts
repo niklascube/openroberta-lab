@@ -2,6 +2,7 @@ import * as guiStateModel from "guiState.model";
 import * as guiStateController from "guiState.controller";
 import * as notificationModel from "../models/notification.model";
 import * as comm from "comm";
+import * as $ from "jquery";
 
 let activeNotifications = []
 
@@ -119,22 +120,22 @@ function initNotifications(notificationSpecifications) {
 
     for (var notificationSpecificationI in notificationSpecifications) {
         const notificationSpecification = notificationSpecifications[notificationSpecificationI];
-        const notificationHandlers = [];
+        const notificationHandlers: NotificationState[] = [];
         let activeEventHandlers = [];
 
         function initNotificationHandlers() {
             for (var handlerI in notificationSpecification.handlers) {
                 const handler = notificationSpecification.handlers[handlerI];
                 if (handler.popupNotification) {
-                    const popup = makePopupNotification(handler.popupNotification);
+                    const popup = new PopupNotificationState(handler.popupNotification);
                     notificationHandlers.push(popup);
                 }
                 if (handler.elementMarker) {
-                    const elementMarker = makeElementMarker(handler.elementMarker);
+                    const elementMarker = new ElementMarkerState(handler.elementMarker);
                     notificationHandlers.push(elementMarker);
                 }
                 if (handler.startScreen) {
-                    const startScreen = makeStartScreen(handler.startScreen);
+                    const startScreen = new StartScreenNotificationState(handler.startScreen);
                     notificationHandlers.push(startScreen);
                 }
             }
@@ -327,143 +328,130 @@ function initNotifications(notificationSpecifications) {
 }
 
 
-/**
- * State management for running notifications
- * @param showFn function gets executed if show() is called and the notification is not yet active
- * @param hideFn function gets executed if hide() is called and the notification is currently active
- * @param time (in ms) used to set timers to automatically call the hide function after that time
- * @returns {{hide: hide, show: show}}
- */
-function makeNotification(showFn, hideFn, time) {
-    let active = false;
-    let timer;
+abstract class NotificationState {
+    private active = false;
+    private timer;
+    private readonly time: number;
 
-    function clearTimerIfExisting() {
-        if (timer) {
-            clearTimeout(timer);
+    private clearTimerIfExists() {
+        if (this.timer) {
+            clearTimeout(this.timer);
         }
     }
 
-    function setOrResetTimer() {
-        if (time) {
-            clearTimerIfExisting(timer);
-            timer = setTimeout(hide, time);
+    private setOrResetTimer() {
+        if (this.time) {
+            this.clearTimerIfExists();
+            this.timer = setTimeout(this.hide, this.time)
         }
     }
 
-    function show() {
-        setOrResetTimer();
-
-        if (!active) {
-            showFn();
-            active = true;
+    public show() {
+        this.setOrResetTimer();
+        if (!this.active) {
+            this.showAction();
+            this.active = true;
         }
     }
 
-    function hide() {
-        if (active) {
-            clearTimerIfExisting();
-            hideFn();
-            active = false;
+    public hide() {
+        if (this.active) {
+            this.clearTimerIfExists();
+            this.hideAction();
+            this.active = false;
         }
     }
 
-    return {
-        show: show,
-        hide: hide
-    };
+    protected abstract showAction();
+
+    protected abstract hideAction();
+
+    protected constructor(time: number) {
+        this.time = time;
+    }
 }
 
+class PopupNotificationState extends NotificationState{
+    private readonly title: any;
+    private readonly content: any;
 
-/**
- * Generates a popup notification object
- * Has functions hide and show
- * @param popupNotification object, containing properties title, content and optionally time
- * @returns {{hide: hide, show: show}}
- */
-function makePopupNotification(popupNotification) {
-    const title = parseLocalized(popupNotification.title);
-    const content = parseLocalized(popupNotification.content);
-
-    function show() {
-        notificationElementTitle.html(title)
-        notificationElementDescription.html(content)
-        notificationElement.fadeIn(fadingDuration)
-    }
-
-    function hide() {
-        if (notificationElementTitle.html() === title && notificationElementDescription.html() === content) {
+    protected hideAction() {
+        if (notificationElementTitle.html() === this.title && notificationElementDescription.html() === this.content) {
             notificationElement.fadeOut(fadingDuration);
         }
     }
 
-    return makeNotification(show, hide, popupNotification.time || defaultPopupTime)
-}
-
-/**
- * Generates a element marker object
- * Has functions hide and show
- * @param elementMarker object, must contain property content and can contain property time
- * @returns {{hide: hide, show: show}}
- */
-function makeElementMarker(elementMarker) {
-
-    const content = parseLocalized(elementMarker.content);
-
-    const $element = $(parseSelector(elementMarker));
-    const $badge = $("<span class='badge badge-primary' style='display:none;'>" + content + "</span>");
-
-    function show() {
-        if ($element.length) {
-            $badge
-                .appendTo($element)
-                .fadeIn(fadingDuration);
-        }
+    protected showAction() {
+        notificationElementTitle.html(this.title)
+        notificationElementDescription.html(this.content)
+        notificationElement.fadeIn(fadingDuration)
     }
 
-    function hide() {
-        if ($element.length) {
-            $badge
+    public constructor(popupNotification: any) {
+        super(popupNotification.time || defaultPopupTime);
+        this.title = parseLocalized(popupNotification.title);
+        this.content = parseLocalized(popupNotification.content);
+    }
+}
+
+class ElementMarkerState extends NotificationState {
+    private readonly content: any;
+    private $badge: any;
+    private $element: any;
+
+    constructor(elementMarker: any)  {
+        super(elementMarker.time || defaultElementMarkerTime);
+        this.content = parseLocalized(elementMarker.content);
+        this.$element = $(parseSelector(elementMarker));
+        this.$badge = $("<span class='badge badge-primary' style='display:none;'>" + this.content + "</span>");
+    }
+
+    protected hideAction() {
+        if (this.$element.length) {
+            this.$badge
                 .fadeOut(fadingDuration)
                 .queue(function () {
                     $(this).remove();
                 })
         }
-
     }
 
-    return makeNotification(show, hide, elementMarker.time || defaultElementMarkerTime)
+    protected showAction() {
+        if (this.$element.length) {
+            this.$badge
+                .appendTo(this.$element)
+                .fadeIn(fadingDuration);
+        }
+    }
 }
 
-/**
- * Generates a start screen object
- * Has functions: show() and hide()
- * @param startScreen must contain property content and can contain property time
- * @returns {{hide: hide, show: show}}
- */
-function makeStartScreen(startScreen) {
-    const content = parseLocalized(startScreen.content);
-    const $startupMessage = $("#startup-message-statustext");
-    const $element = $('<h4 style="display: none">' + content + '</h4>')
+class StartScreenNotificationState extends NotificationState{
+    private readonly content: string;
+    private $element;
+    private $startupMessage = $("#startup-message-statustext");
 
-    function show() {
-        $element
-            .appendTo($startupMessage)
+    constructor(startScreen: any) {
+        super(startScreen.time || defaultStartScreenTime);
+        this.content = parseLocalized(startScreen.content);
+        this.$element = $('<h4 style="display: none">' + this.content + '</h4>');
+    }
+
+    protected showAction() {
+        this.$element
+            .appendTo(this.$startupMessage)
             .slideDown(fadingDuration);
     }
 
-    function hide() {
-        $element
+    protected hideAction() {
+        this.$element
             .slideUp(fadingDuration)
             .queue(function () {
                 $(this).remove();
             })
     }
-
-    return makeNotification(show, hide, startScreen.time || defaultStartScreenTime)
 }
 
-function parseSelector(element) {
+function parseSelector(element: any): string {
     if (element.htmlId) {
         return "#" + element.htmlId;
     }
@@ -475,7 +463,7 @@ function parseSelector(element) {
     return undefined;
 }
 
-function parseLocalized(object) {
+function parseLocalized(object: any): string {
     let localizedDescription = object[guiStateController.getLanguage()];
     return localizedDescription || object["en"];
 }

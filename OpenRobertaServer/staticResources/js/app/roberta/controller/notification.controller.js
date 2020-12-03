@@ -1,4 +1,17 @@
-define(["require", "exports", "guiState.model", "guiState.controller", "../models/notification.model", "comm"], function (require, exports, guiStateModel, guiStateController, notificationModel, comm) {
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+define(["require", "exports", "guiState.model", "guiState.controller", "../models/notification.model", "comm", "jquery"], function (require, exports, guiStateModel, guiStateController, notificationModel, comm, $) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.showNotificationModal = exports.reloadNotifications = exports.init = void 0;
@@ -105,15 +118,15 @@ define(["require", "exports", "guiState.model", "guiState.controller", "../model
                 for (var handlerI in notificationSpecification.handlers) {
                     var handler = notificationSpecification.handlers[handlerI];
                     if (handler.popupNotification) {
-                        var popup = makePopupNotification(handler.popupNotification);
+                        var popup = new PopupNotificationState(handler.popupNotification);
                         notificationHandlers.push(popup);
                     }
                     if (handler.elementMarker) {
-                        var elementMarker = makeElementMarker(handler.elementMarker);
+                        var elementMarker = new ElementMarkerState(handler.elementMarker);
                         notificationHandlers.push(elementMarker);
                     }
                     if (handler.startScreen) {
-                        var startScreen = makeStartScreen(handler.startScreen);
+                        var startScreen = new StartScreenNotificationState(handler.startScreen);
                         notificationHandlers.push(startScreen);
                     }
                 }
@@ -281,119 +294,108 @@ define(["require", "exports", "guiState.model", "guiState.controller", "../model
         }
         return notificationStates;
     }
-    /**
-     * State management for running notifications
-     * @param showFn function gets executed if show() is called and the notification is not yet active
-     * @param hideFn function gets executed if hide() is called and the notification is currently active
-     * @param time (in ms) used to set timers to automatically call the hide function after that time
-     * @returns {{hide: hide, show: show}}
-     */
-    function makeNotification(showFn, hideFn, time) {
-        var active = false;
-        var timer;
-        function clearTimerIfExisting() {
-            if (timer) {
-                clearTimeout(timer);
-            }
+    var NotificationState = /** @class */ (function () {
+        function NotificationState(time) {
+            this.active = false;
+            this.time = time;
         }
-        function setOrResetTimer() {
-            if (time) {
-                clearTimerIfExisting(timer);
-                timer = setTimeout(hide, time);
+        NotificationState.prototype.clearTimerIfExists = function () {
+            if (this.timer) {
+                clearTimeout(this.timer);
             }
-        }
-        function show() {
-            setOrResetTimer();
-            if (!active) {
-                showFn();
-                active = true;
-            }
-        }
-        function hide() {
-            if (active) {
-                clearTimerIfExisting();
-                hideFn();
-                active = false;
-            }
-        }
-        return {
-            show: show,
-            hide: hide
         };
-    }
-    /**
-     * Generates a popup notification object
-     * Has functions hide and show
-     * @param popupNotification object, containing properties title, content and optionally time
-     * @returns {{hide: hide, show: show}}
-     */
-    function makePopupNotification(popupNotification) {
-        var title = parseLocalized(popupNotification.title);
-        var content = parseLocalized(popupNotification.content);
-        function show() {
-            notificationElementTitle.html(title);
-            notificationElementDescription.html(content);
-            notificationElement.fadeIn(fadingDuration);
+        NotificationState.prototype.setOrResetTimer = function () {
+            if (this.time) {
+                this.clearTimerIfExists();
+                this.timer = setTimeout(this.hide, this.time);
+            }
+        };
+        NotificationState.prototype.show = function () {
+            this.setOrResetTimer();
+            if (!this.active) {
+                this.showAction();
+                this.active = true;
+            }
+        };
+        NotificationState.prototype.hide = function () {
+            if (this.active) {
+                this.clearTimerIfExists();
+                this.hideAction();
+                this.active = false;
+            }
+        };
+        return NotificationState;
+    }());
+    var PopupNotificationState = /** @class */ (function (_super) {
+        __extends(PopupNotificationState, _super);
+        function PopupNotificationState(popupNotification) {
+            var _this = _super.call(this, popupNotification.time || defaultPopupTime) || this;
+            _this.title = parseLocalized(popupNotification.title);
+            _this.content = parseLocalized(popupNotification.content);
+            return _this;
         }
-        function hide() {
-            if (notificationElementTitle.html() === title && notificationElementDescription.html() === content) {
+        PopupNotificationState.prototype.hideAction = function () {
+            if (notificationElementTitle.html() === this.title && notificationElementDescription.html() === this.content) {
                 notificationElement.fadeOut(fadingDuration);
             }
+        };
+        PopupNotificationState.prototype.showAction = function () {
+            notificationElementTitle.html(this.title);
+            notificationElementDescription.html(this.content);
+            notificationElement.fadeIn(fadingDuration);
+        };
+        return PopupNotificationState;
+    }(NotificationState));
+    var ElementMarkerState = /** @class */ (function (_super) {
+        __extends(ElementMarkerState, _super);
+        function ElementMarkerState(elementMarker) {
+            var _this = _super.call(this, elementMarker.time || defaultElementMarkerTime) || this;
+            _this.content = parseLocalized(elementMarker.content);
+            _this.$element = $(parseSelector(elementMarker));
+            _this.$badge = $("<span class='badge badge-primary' style='display:none;'>" + _this.content + "</span>");
+            return _this;
         }
-        return makeNotification(show, hide, popupNotification.time || defaultPopupTime);
-    }
-    /**
-     * Generates a element marker object
-     * Has functions hide and show
-     * @param elementMarker object, must contain property content and can contain property time
-     * @returns {{hide: hide, show: show}}
-     */
-    function makeElementMarker(elementMarker) {
-        var content = parseLocalized(elementMarker.content);
-        var $element = $(parseSelector(elementMarker));
-        var $badge = $("<span class='badge badge-primary' style='display:none;'>" + content + "</span>");
-        function show() {
-            if ($element.length) {
-                $badge
-                    .appendTo($element)
-                    .fadeIn(fadingDuration);
-            }
-        }
-        function hide() {
-            if ($element.length) {
-                $badge
+        ElementMarkerState.prototype.hideAction = function () {
+            if (this.$element.length) {
+                this.$badge
                     .fadeOut(fadingDuration)
                     .queue(function () {
                     $(this).remove();
                 });
             }
+        };
+        ElementMarkerState.prototype.showAction = function () {
+            if (this.$element.length) {
+                this.$badge
+                    .appendTo(this.$element)
+                    .fadeIn(fadingDuration);
+            }
+        };
+        return ElementMarkerState;
+    }(NotificationState));
+    var StartScreenNotificationState = /** @class */ (function (_super) {
+        __extends(StartScreenNotificationState, _super);
+        function StartScreenNotificationState(startScreen) {
+            var _this = _super.call(this, startScreen.time || defaultStartScreenTime) || this;
+            _this.$startupMessage = $("#startup-message-statustext");
+            _this.content = parseLocalized(startScreen.content);
+            _this.$element = $('<h4 style="display: none">' + _this.content + '</h4>');
+            return _this;
         }
-        return makeNotification(show, hide, elementMarker.time || defaultElementMarkerTime);
-    }
-    /**
-     * Generates a start screen object
-     * Has functions: show() and hide()
-     * @param startScreen must contain property content and can contain property time
-     * @returns {{hide: hide, show: show}}
-     */
-    function makeStartScreen(startScreen) {
-        var content = parseLocalized(startScreen.content);
-        var $startupMessage = $("#startup-message-statustext");
-        var $element = $('<h4 style="display: none">' + content + '</h4>');
-        function show() {
-            $element
-                .appendTo($startupMessage)
+        StartScreenNotificationState.prototype.showAction = function () {
+            this.$element
+                .appendTo(this.$startupMessage)
                 .slideDown(fadingDuration);
-        }
-        function hide() {
-            $element
+        };
+        StartScreenNotificationState.prototype.hideAction = function () {
+            this.$element
                 .slideUp(fadingDuration)
                 .queue(function () {
                 $(this).remove();
             });
-        }
-        return makeNotification(show, hide, startScreen.time || defaultStartScreenTime);
-    }
+        };
+        return StartScreenNotificationState;
+    }(NotificationState));
     function parseSelector(element) {
         if (element.htmlId) {
             return "#" + element.htmlId;
