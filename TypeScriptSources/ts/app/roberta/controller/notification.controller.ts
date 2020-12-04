@@ -1,40 +1,42 @@
 import * as guiStateModel from "guiState.model";
 import * as guiStateController from "guiState.controller";
-import * as notificationModel from "../models/notification.model";
+import * as notificationModel from "notification.model";
 import * as comm from "comm";
 import * as $ from "jquery";
-
-let activeNotifications = []
 
 const fadingDuration = 400;
 
 const notificationElement = $("#releaseInfo");
+
 const notificationElementTitle = notificationElement.children('#releaseInfoTitle');
 const notificationElementDescription = notificationElement.children('#releaseInfoContent');
-
 const $notificationForm = $("#notificationForm");
+
 const $notificationFileUpload = $('#notificationFileUpload');
 const $notificationFileDownload = $('#notificationFileDownload');
-
 const defaultElementMarkerTime = 5 * 60 * 1000;
+
 const defaultPopupTime = 20 * 1000;
 const defaultStartScreenTime = undefined;
 
-export function init () {
-    initNotificationModal();
+let activeNotifications : NotificationProcessor[] = []
 
-    notificationModel.getNotifications(function (result) {
+function loadAndInitNotifications() {
+    notificationModel.getNotifications(result => {
         activeNotifications = initNotifications(result.notifications);
     });
+}
+
+export function init () {
+    initNotificationModal();
+    loadAndInitNotifications();
 
     comm.onNotificationsAvailableCallback(reloadNotifications);
 }
 
 export function reloadNotifications() {
-    removeActiveEventListeners();
-    notificationModel.getNotifications(function (result) {
-        activeNotifications = initNotifications(result.notifications);
-    });
+    removeNotifications();
+    loadAndInitNotifications()
 }
 
 
@@ -47,7 +49,7 @@ export function showNotificationModal() {
     });
 }
 
-function showAlertInNotificationModal(context, content, time) {
+function showAlertInNotificationModal(context, content, time?) {
     time = time || 6 * 1000;
     const $alert = $('#notification-modal-alert');
     $alert
@@ -61,9 +63,9 @@ function showAlertInNotificationModal(context, content, time) {
 }
 
 function initNotificationModal() {
-    $notificationForm.on('submit', function (e) {
+    $notificationForm.on('submit', e => {
         e.preventDefault();
-        readFileInputField(function (fileContent) {
+        readFileInputField(fileContent => {
             notificationModel.postNotifications(fileContent, function (restResponse) {
                 if (restResponse.rc === "ok" && restResponse.message === "ORA_NOTIFICATION_SUCCESS") {
                     $notificationForm[0].reset();
@@ -91,9 +93,7 @@ function readFileInputField(readyFn) {
 
 function readFile(file, readyFn) {
     const fileReader = new FileReader();
-    fileReader.onload = function () {
-        readyFn(fileReader.result);
-    }
+    fileReader.onload = () => readyFn(fileReader.result)
     fileReader.readAsText(file);
 }
 
@@ -106,227 +106,218 @@ function setFileDownloadContent(jsonContent) {
 
 /*----------- NOTIFICATION HANDLING -----------*/
 
-function removeActiveEventListeners() {
-    for (var notificationI in activeNotifications) {
-        const notification = activeNotifications[notificationI];
-        notification.removeEventHandlers();
+function removeNotifications() {
+    activeNotifications.forEach(notification => {
+        notification.removeTriggers();
         notification.hideNotification();
-    }
+    })
     activeNotifications = [];
 }
 
-function initNotifications(notificationSpecifications) {
-    const notificationStates = [];
+function initNotifications(notificationSpecifications) : NotificationProcessor[] {
+    return notificationSpecifications.map(specification => new NotificationProcessor(specification));
+}
 
-    for (var notificationSpecificationI in notificationSpecifications) {
-        const notificationSpecification = notificationSpecifications[notificationSpecificationI];
-        const notificationHandlers: NotificationState[] = [];
-        let activeEventHandlers = [];
+class EventHandler {
+    private $element;
+    private readonly selector;
+    private readonly elementIsPresent: boolean;
+    private readonly fn;
+    private readonly event: string;
 
-        function initNotificationHandlers() {
-            for (var handlerI in notificationSpecification.handlers) {
-                const handler = notificationSpecification.handlers[handlerI];
-                if (handler.popupNotification) {
-                    const popup = new PopupNotificationState(handler.popupNotification);
-                    notificationHandlers.push(popup);
-                }
-                if (handler.elementMarker) {
-                    const elementMarker = new ElementMarkerState(handler.elementMarker);
-                    notificationHandlers.push(elementMarker);
-                }
-                if (handler.startScreen) {
-                    const startScreen = new StartScreenNotificationState(handler.startScreen);
-                    notificationHandlers.push(startScreen);
-                }
+    public addTriggers() {
+        if (this.elementIsPresent) {
+            // Use direct event handler if element is present
+            this.$element.on(this.event, this.fn);
+        } else {
+            // Use delegate event handler if element is not yet present
+            $(document).on(this.event, this.selector, this.fn);
+        }
+    }
+
+    public removeTriggers() {
+        if (this.elementIsPresent) {
+            this.$element.off(this.event, this.fn);
+        } else {
+            $(document).off(this.event, this.selector, this.fn);
+        }
+    }
+
+    constructor(selector, event, fn) {
+        this.selector = selector;
+        this.event = event;
+        this.fn = fn;
+        this.$element = $(selector);
+        this.elementIsPresent = this.$element.length;
+    }
+}
+
+
+class NotificationProcessor {
+    private specification: any;
+    private activeEventHandler: EventHandler[] = [];
+    private notificationHandlers: NotificationState[] = [];
+
+    private setupNotificationHandlers() {
+        this.specification.handlers.forEach(handlerSpecification => {
+            if (handlerSpecification.popupNotification) {
+                const popup = new PopupNotificationState(handlerSpecification.popupNotification);
+                this.notificationHandlers.push(popup);
             }
+            if (handlerSpecification.elementMarker) {
+                const elementMarker = new ElementMarkerState(handlerSpecification.elementMarker);
+                this.notificationHandlers.push(elementMarker);
+            }
+            if (handlerSpecification.startScreen) {
+                const startScreen = new StartScreenNotificationState(handlerSpecification.startScreen);
+                this.notificationHandlers.push(startScreen);
+            }
+        })
+
+    }
+
+    public showNotification() {
+        if (this.specification.once) {
+            this.removeTriggers();
         }
 
-        function showNotification() {
-            // if once property set remove all event handlers
-            if (notificationSpecification.once) {
-                removeEventHandlers()
-            }
+        this.notificationHandlers.forEach(notification => notification.show());
+    }
 
-            for (var notificationI in notificationHandlers) {
-                const notification = notificationHandlers[notificationI];
-                notification.show();
-            }
+    public hideNotification() {
+        this.notificationHandlers.forEach(notification => notification.hide());
+    }
+
+    private evaluateConditionsAndShowNotification(specificCondition?: any) {
+        const {condition: generalConditions, ignoreDate} = this.specification;
+
+        if (NotificationProcessor.evaluateCondition(specificCondition, ignoreDate) && NotificationProcessor.evaluateCondition(generalConditions, ignoreDate)) {
+            this.showNotification();
+        }
+    }
+
+    private static evaluateCondition(conditions: any, ignoreDate?: boolean): boolean {
+        if (conditions === undefined) {
+            return true;
         }
 
-        function hideNotification() {
-            for (var notificationI in notificationHandlers) {
-                const notification = notificationHandlers[notificationI];
-                notification.hide();
-            }
-        }
+        return conditions.every(condition => {
+            if (condition.guiModel) {
+                const {anyOf, equals, notEquals} = condition;
+                const element = guiStateModel.gui[condition.guiModel];
 
-        function showNotificationsIfConditionsMet(specificConditions) {
-            const generalConditions = notificationSpecification.conditions;
-
-            if (evaluateConditions(specificConditions) && evaluateConditions(generalConditions)) {
-                showNotification()
-            }
-        }
-
-        /**
-         * Registers event handler and also adds a object with a remove function to the activeEventHandler array
-         * @param selector
-         * @param event
-         * @param fn
-         */
-        function addEventHandler(selector, event, fn) {
-            const $element = $(selector);
-            const elementIsPresent = $element.length;
-
-            /**
-             * Rewriting the .live() method in terms of its successors is straightforward; these are templates for equivalent calls for all three event attachment methods:
-             * $( selector ).live( events, data, handler );                // jQuery 1.3+
-             * $( document ).on( events, selector, data, handler );        // jQuery 1.7+
-             * https://api.jquery.com/live/
-             */
-
-            let remove;
-
-            if (elementIsPresent) {
-                // Use direct event handler if element is present
-                $element.on(event, fn);
-
-                remove = function () {
-                    $element.off(event, fn);
+                if (anyOf && Array.isArray(anyOf)) {
+                    return anyOf.some(each => element === each)
                 }
-            } else {
-                // Use delegate event handler if element is not yet present
-                $(document).on(event, selector, fn);
+                if (equals) {
+                    return element === equals;
+                }
+                if (notEquals) {
+                    if (!Array.isArray(notEquals)) {
+                        return element !== notEquals;
+                    }
 
-                remove = function () {
-                    $element.off(event, selector, fn)
+                    return notEquals.every(each => element !== each)
                 }
             }
 
-            activeEventHandlers.push({remove: remove});
-        }
-
-        function addEventHandlers() {
-            if (!notificationSpecification.triggers || notificationSpecification.triggers > 0) {
-                // Directly run notification if conditions are met
-                showNotificationsIfConditionsMet();
-                return;
+            const selector = parseSelector(condition);
+            if (condition.hasClass && selector) {
+                return $(selector).hasClass(condition.hasClass);
             }
 
-            for (var triggerI in notificationSpecification.triggers) {
-                const trigger = notificationSpecification.triggers[triggerI];
-                const event = trigger.event;
-                const addClass = trigger.addClass;
-                const removeClass = trigger.removeClass;
-
-                let selector = parseSelector(trigger);
-
-                if (!selector) {
-                    continue;
+            if (!ignoreDate) {
+                if (condition.endTime) {
+                    let endTimeDate = parseDateStringWithTimezone(condition.endTime);
+                    let now = new Date();
+                    return endTimeDate >= now;
                 }
+                if (condition.startTime) {
+                    let startTimeDate = parseDateStringWithTimezone(condition.startTime);
+                    let now = new Date();
+                    return startTimeDate <= now;
+                }
+            }
+
+            return true
+        });
+
+    }
+
+    private addEventHandler(selector: string, event, fn: () => void) {
+        const eventHandler = new EventHandler(selector, event, fn);
+        eventHandler.addTriggers();
+        this.activeEventHandler.push(eventHandler);
+    }
+
+    public addTriggers() {
+        if (!this.specification.triggers || this.specification.triggers > 0) {
+            // Directly run notification if conditions are met
+            this.evaluateConditionsAndShowNotification();
+            return;
+        }
+
+        this.specification
+            .triggers
+            .forEach(trigger => {
+                const {event, addClass, removeClass, conditions} = trigger;
+                const selector = parseSelector(trigger);
+
+                if (!selector) return;
 
                 // "Normal" event listeners
                 if (event) {
-                    addEventHandler(selector, event, function (e) {
-                        showNotificationsIfConditionsMet(trigger.conditions);
+                    this.addEventHandler(selector, event, () => {
+                        this.evaluateConditionsAndShowNotification(conditions);
                     });
                 }
 
                 // Class changed event listeners
                 if (addClass || removeClass) {
-                    addEventHandler(selector, "classChange", function (e) {
+                    this.addEventHandler(selector, "classChange", () => {
                         if (addClass && $(selector).hasClass(addClass)) {
-                            showNotificationsIfConditionsMet(trigger.conditions);
+                            this.evaluateConditionsAndShowNotification(conditions);
                         }
                         if (removeClass && !$(selector).hasClass(removeClass)) {
-                            showNotificationsIfConditionsMet(trigger.conditions);
+                            this.evaluateConditionsAndShowNotification(conditions);
                         }
                     })
                 }
-            }
-        }
-
-        function removeEventHandlers() {
-            for (var activeEventHandlerI in activeEventHandlers) {
-                const activeEventHandler = activeEventHandlers[activeEventHandlerI];
-                activeEventHandler.remove();
-            }
-
-            activeEventHandlers = [];
-        }
-
-
-        /**
-         * Evaluates if the conditions defined in the parameter are met
-         *
-         * If conditions is undefined, this returns also true
-         * If a condition no valid specifications this conditions is seen as met
-         *
-         * @param conditions {Array} array of condition object
-         * @returns {boolean}
-         */
-        function evaluateConditions(conditions) {
-            if (conditions === undefined) {
-                return true;
-            }
-
-            return conditions.every(function (condition) {
-                if (condition.guiModel) {
-                    const element = guiStateModel.gui[condition.guiModel];
-                    if (condition.anyOf && Array.isArray(condition.anyOf)) {
-                        return condition.anyOf.some(function (s) {
-                            return element === s;
-                        })
-                    }
-                    if (condition.equals) {
-                        return element === condition.equals;
-                    }
-                    if (condition.notEquals) {
-                        if (!Array.isArray(condition)) {
-                            return element !== condition.notEquals;
-                        }
-
-                        return condition.notEquals.every(function (s) {
-                            return element !== s;
-                        })
-                    }
-                }
-
-                const selector = parseSelector(condition);
-                if (condition.hasClass && selector) {
-                    return $(selector).hasClass(condition.hasClass);
-                }
-
-                if (!notificationSpecification.ignoreDate) {
-                    if (condition.endTime) {
-                        let endTime = parseDateStringWithTimezone(condition.endTime);
-                        let now = new Date();
-                        return endTime >= now;
-                    }
-                    if (condition.startTime) {
-                        let startTime = parseDateStringWithTimezone(condition.startTime);
-                        let now = new Date();
-                        return startTime <= now;
-                    }
-                }
-
-                return true
             })
-        }
-
-        // Active notification
-        initNotificationHandlers();
-        addEventHandlers();
-
-        notificationStates.push({
-            hideNotification: hideNotification,
-            removeEventHandlers: removeEventHandlers
-        })
     }
 
-    return notificationStates;
+    public removeTriggers() {
+        this.activeEventHandler.forEach(eventHandler => eventHandler.removeTriggers());
+        this.activeEventHandler = [];
+    }
+
+    constructor(specification: any) {
+        this.specification = specification;
+        this.setupNotificationHandlers();
+        this.addTriggers();
+    }
 }
 
+interface Selector {
+    htmlId?: string;
+    htmlSelector?: string
+}
+
+interface ElementMarkerSpec extends Selector {
+    time?: number;
+    content: string;
+}
+
+interface StartScreenSpec {
+    time?: number;
+    content: string;
+}
+
+interface PopupNotificationSpec {
+    time? : number;
+    title : string;
+    content : string;
+}
 
 abstract class NotificationState {
     private active = false;
@@ -342,7 +333,7 @@ abstract class NotificationState {
     private setOrResetTimer() {
         if (this.time) {
             this.clearTimerIfExists();
-            this.timer = setTimeout(this.hide, this.time)
+            this.timer = setTimeout(() => this.hide(), this.time)
         }
     }
 
@@ -372,38 +363,39 @@ abstract class NotificationState {
 }
 
 class PopupNotificationState extends NotificationState{
-    private readonly title: any;
-    private readonly content: any;
+    private readonly _title: any;
+    private readonly _content: any;
 
     protected hideAction() {
-        if (notificationElementTitle.html() === this.title && notificationElementDescription.html() === this.content) {
+        if (notificationElementTitle.html() === this._title && notificationElementDescription.html() === this._content) {
             notificationElement.fadeOut(fadingDuration);
         }
     }
 
     protected showAction() {
-        notificationElementTitle.html(this.title)
-        notificationElementDescription.html(this.content)
+        notificationElementTitle.html(this._title)
+        notificationElementDescription.html(this._content)
         notificationElement.fadeIn(fadingDuration)
     }
 
-    public constructor(popupNotification: any) {
+    public constructor(popupNotification: PopupNotificationSpec) {
         super(popupNotification.time || defaultPopupTime);
-        this.title = parseLocalized(popupNotification.title);
-        this.content = parseLocalized(popupNotification.content);
+        this._title = parseLocalized(popupNotification.title);
+        this._content = parseLocalized(popupNotification.content);
     }
 }
 
+
 class ElementMarkerState extends NotificationState {
-    private readonly content: any;
+    private readonly _content: any;
     private $badge: any;
     private $element: any;
 
-    constructor(elementMarker: any)  {
+    constructor(elementMarker: ElementMarkerSpec)  {
         super(elementMarker.time || defaultElementMarkerTime);
-        this.content = parseLocalized(elementMarker.content);
+        this._content = parseLocalized(elementMarker.content);
         this.$element = $(parseSelector(elementMarker));
-        this.$badge = $("<span class='badge badge-primary' style='display:none;'>" + this.content + "</span>");
+        this.$badge = $("<span class='badge badge-primary' style='display:none;'>" + this._content + "</span>");
     }
 
     protected hideAction() {
@@ -430,7 +422,7 @@ class StartScreenNotificationState extends NotificationState{
     private $element;
     private $startupMessage = $("#startup-message-statustext");
 
-    constructor(startScreen: any) {
+    constructor(startScreen: StartScreenSpec) {
         super(startScreen.time || defaultStartScreenTime);
         this.content = parseLocalized(startScreen.content);
         this.$element = $('<h4 style="display: none">' + this.content + '</h4>');
@@ -451,7 +443,7 @@ class StartScreenNotificationState extends NotificationState{
     }
 }
 
-function parseSelector(element: any): string {
+function parseSelector(element: Selector): string {
     if (element.htmlId) {
         return "#" + element.htmlId;
     }
