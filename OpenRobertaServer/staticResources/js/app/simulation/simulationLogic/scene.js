@@ -10,10 +10,10 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
      *
      * @constructor
      */
-    function Scene(backgroundImg, robots, obstacle, pattern, ruler) {
+    function Scene(backgroundImg, robots, customObstacleList, pattern, ruler) {
         this.backgroundImg = backgroundImg;
         this.robots = robots;
-        this.obstacle = obstacle;
+        this.customObstacleList = customObstacleList;
         this.numprogs = robots.length;
         this.ruler = ruler;
         this.pattern = pattern;
@@ -103,22 +103,26 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
     };
 
     Scene.prototype.drawObjects = function() {
-        this.oCtx.clearRect(this.obstacle.xOld - 20, this.obstacle.yOld - 20, this.obstacle.wOld + 40, this.obstacle.hOld + 40);
-        this.obstacle.xOld = this.obstacle.x;
-        this.obstacle.yOld = this.obstacle.y;
-        this.obstacle.wOld = this.obstacle.w;
-        this.obstacle.hOld = this.obstacle.h;
-        this.oCtx.restore();
-        this.oCtx.save();
-        this.oCtx.scale(SIM.getScale(), SIM.getScale());
-        if (this.obstacle.img) {
-            this.oCtx.drawImage(this.obstacle.img, this.obstacle.x, this.obstacle.y, this.obstacle.w, this.obstacle.h);
-        } else if (this.obstacle.color) {
-            this.oCtx.fillStyle = this.obstacle.color;
-            this.oCtx.shadowBlur = 5;
-            this.oCtx.shadowColor = "black";
-            this.oCtx.fillRect(this.obstacle.x, this.obstacle.y, this.obstacle.w, this.obstacle.h);
-        }
+      for(let key in this.customObstacleList) {
+            let obstacle = this.customObstacleList[key];
+
+            this.oCtx.clearRect(obstacle.xOld - 20, obstacle.yOld - 20, obstacle.wOld + 40, obstacle.hOld + 40);
+            obstacle.xOld = obstacle.x;
+            obstacle.yOld = obstacle.y;
+            obstacle.wOld = obstacle.w;
+            obstacle.hOld = obstacle.h;
+            this.oCtx.restore();
+            this.oCtx.save();
+            this.oCtx.scale(SIM.getScale(), SIM.getScale());
+            if (obstacle.img) {
+                this.oCtx.drawImage(obstacle.img, obstacle.x, obstacle.y, obstacle.w, obstacle.h);
+            } else if (obstacle.color) {
+                this.oCtx.fillStyle = obstacle.color;
+                this.oCtx.shadowBlur = 5;
+                this.oCtx.shadowColor = "black";
+                this.oCtx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
+            }
+       }
     };
 
     Scene.prototype.drawVariables = function() {
@@ -454,7 +458,9 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
 
     Scene.prototype.updateSensorValues = function(running) {
         for (var r = 0; r < this.numprogs; r++) {
-            var personalObstacleList = SIM.obstacleList.slice();
+            var personalObstacleList = [];
+            personalObstacleList.push(SIM.obstacleList[0]);
+            personalObstacleList = personalObstacleList.concat(SIM.obstacleList[1].slice());
             var values = this.robots[r].robotBehaviour.hardwareState.sensors;
             for (var i = 0; i < this.numprogs; i++) {
                 if (i === r) {
