@@ -704,6 +704,13 @@ div.rightMenuButton:hover,
     z-index: 99;
 }
 
+#simEditButtons {
+    left: 12px;
+    top: 10px;
+    position: absolute;
+    z-index: 99;
+}
+
 #codeButtons {
     left: 12px;
     bottom: 0px;

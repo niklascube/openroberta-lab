@@ -163,6 +163,10 @@ define(['exports', 'log', 'jquery', 'guiState.controller', 'program.controller',
                 $('#simControl').attr('data-original-title', value);
             } else if (lkey === "Blockly.Msg.MENU_SIM_SCENE_TOOLTIP") {
                 $('#simScene').attr('data-original-title', value);
+            } else if (lkey === "Blockly.Msg.MENU_SIM_ADD_COLOR_OBJECT_TOOLTIP") {
+                $('#simCustomColorObject').attr('data-original-title', value);
+            } else if (lkey === "Blockly.Msg.MENU_SIM_ADD_OBSTACLE_TOOLTIP") {
+                $('#simCustomObstacle').attr('data-original-title', value);
             } else if (lkey === "Blockly.Msg.MENU_SIM_ROBOT_TOOLTIP") {
                 $('#simRobot').attr('data-original-title', value);
             } else if (lkey == 'Blockly.Msg.MENU_SIM_VALUES_TOOLTIP') {
