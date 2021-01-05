@@ -327,16 +327,39 @@ limitations under the License.
                     <canvas id="unitBackgroundLayer" width=1 height=1></canvas>
                 </div>
                 <div id="simEditButtons">
-                    <button id="simControl" type="button" class="blbtn typcn typcn-media-play-outline" lkey="Blockly.Msg.MENU_SIM_START_TOOLTIP" rel="tooltip"
-                            data-original-title="" title=""></button>
-                    <button id="simScene" type="button" class="simScene blbtn typcn typcn-image" lkey="Blockly.Msg.MENU_SIM_SCENE_TOOLTIP" rel="tooltip"
-                            data-original-title="" title=""></button>
-                    <button id="simCustomObstacle" type="button" class="blbtn typcn typcn-media-stop-outline" lkey="Blockly.Msg.MENU_SIM_ADD_OBSTACLE_TOOLTIP" rel="tooltip"
-                            data-original-title="" title=""></button>
-                    <button id="simCustomColorObject" type="button" class="blbtn typcn typcn-brush" lkey="Blockly.Msg.MENU_SIM_ADD_COLOR_OBJECT_TOOLTIP" rel="tooltip"
-                            data-original-title="" title=""></button>
-                    <button id="simImport" type="button" class="simRobot blbtn typcn typcn-upload" lkey="Blockly.Msg.MENU_SIM_IMPORT_TOOLTIP" rel="tooltip"
-                            data-original-title="" title=""></button>
+                    <div class="btn-group blbtn">
+                        <button id="simControl" type="button" class="blbtn typcn typcn-media-play-outline" lkey="Blockly.Msg.MENU_SIM_START_TOOLTIP" rel="tooltip"
+                                 data-original-title="" title=""></button>
+                    </div>
+                    <div class="btn-group blbtn">
+                        <button id="simScene" type="button" class="simScene blbtn typcn typcn-image" lkey="Blockly.Msg.MENU_SIM_SCENE_TOOLTIP" rel="tooltip"
+                                data-original-title="" title=""></button>
+                    </div>
+                    <div class="btn-group blbtn">
+                        <button id="simCustomObstacle" type="button" class="blbtn typcn typcn-media-stop-outline dropdown-toggle" data-toggle="dropdown" aria-expanded="true" lkey="Blockly.Msg.MENU_SIM_ADD_OBSTACLE_TOOLTIP" rel="tooltip"
+                                data-original-title=""></button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="typcn typcn-media-stop"></a></li>
+                                    <li><a class="typcn typcn-arrow-sorted-up"></a></li>
+                                    <li><a class="typcn typcn-media-record"></a></li>
+                                </ul>
+                    </div>
+                    <div class="btn-group blbtn">
+                        <button id="simCustomColorObject" type="button" class="blbtn typcn typcn-brush dropdown-toggle" data-toggle="dropdown" aria-expanded="true" lkey="Blockly.Msg.MENU_SIM_ADD_COLOR_OBJECT_TOOLTIP" rel="tooltip"
+                                data-original-title=""></button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="typcn typcn-media-stop" style="color: #000000"></a></li>
+                                        <li><a class="typcn typcn-media-stop" style="color: #0000FF"></a></li>
+                                        <li><a class="typcn typcn-media-stop" style="color: #585858"></a></li>
+                                        <li><a class="typcn typcn-media-stop" style="color: #FF0000"></a></li>
+                                        <li><a class="typcn typcn-media-stop" style="color: #613000"></a></li>
+                                        <li><a class="typcn typcn-media-stop" style="color: #FFFF00"></a></li>
+                                    </ul>
+                    </div>
+                    <div class="btn-group blbtn">
+                        <button id="simImport" type="button" class="simRobot blbtn typcn typcn-upload" lkey="Blockly.Msg.MENU_SIM_IMPORT_TOOLTIP" rel="tooltip"
+                                                         data-original-title="" title=""></button>
+                    </div>
                 </div>
                 <div id="canvasDiv">
                     <canvas id="backgroundLayer" class="canvasSim" style="z-index: 1" width=1 height=1></canvas>
