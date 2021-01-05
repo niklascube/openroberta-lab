@@ -22,6 +22,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         var isDownRobots = [];
         var isDownObstacle = false;
         var isDownRuler = false;
+        var isDownColorBlock = false;
         var startX;
         var startY;
         var scale = 1;
@@ -33,6 +34,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         var debugMode = false;
         var breakpoints = [];
         var customObstacleList = [];
+        var colorBlockList = [];
         var observers = {};
 
         var imgObstacle1 = new Image();
@@ -111,9 +113,10 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 setObstacle();
                 setRuler();
                 removeMouseEvents();
-                scene = new Scene(imgObjectList[currentBackground], robots, customObstacleList, imgPattern, ruler);
+                scene = new Scene(imgObjectList[currentBackground], robots, customObstacleList, imgPattern, ruler, colorBlockList);
                 scene.updateBackgrounds();
                 scene.drawObjects();
+                scene.drawColorBlock();
                 scene.drawRuler();
                 addMouseEvents();
                 reloadProgram();
@@ -307,22 +310,36 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             hOld: 0,
             isParallelToAxis: true
         };
-        /*
+
         var customObstacle2 = {
-            x: 200,
-            y: 200,
+            x: 400,
+            y: 100,
             xOld: 0,
             yOld: 0,
-            w: 200,
-            h: 200,
+            w: 100,
+            h: 100,
             wOld: 0,
             hOld: 0,
             isParallelToAxis: true,
             color: "#FF0000"
         };
-        */
+
+        var colorBlock = {
+            x: 100,
+            y: 350,
+            xOld: 0,
+            yOld: 0,
+            w: 100,
+            h: 100,
+            wOld: 0,
+            hOld: 0,
+            color: C.COLOR_ENUM.BLUE
+        };
+
+
         customObstacleList.push(customObstacle);
-        //customObstacleList.push(customObstacle2);
+        customObstacleList.push(customObstacle2);
+        colorBlockList.push(colorBlock);
         exports.obstacleList = [ground, customObstacleList];
 
         var ruler = {
@@ -413,6 +430,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     canceled = false;
                     isDownObstacle = false;
                     isDownRuler = false;
+                    isDownColorBlock = false;
                     stepCounter = 0;
                     pause = true;
                     info = false;
@@ -646,7 +664,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 ruler.w = 300;
                 ruler.h = 30;
                 ruler.img = imgRuler;
-                ruler.color = null;
+                ruler.color = '#ff0000';
             } else {
                 // All other scenes currently don't have a movable ruler.
                 ruler.x = 0;
@@ -722,8 +740,16 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     break;
                 }
             }
+            for(let key in colorBlockList) {
+                            let colorBlock = colorBlockList[key];
+                            isDownColorBlock = (startX > colorBlock.x && startX < colorBlock.x + colorBlock.w && startY > colorBlock.y && startY < colorBlock.y + colorBlock.h);
+                            if (isDownColorBlock) {
+                                selectedColorBlock = key;
+                                break;
+                            }
+                        }
             isDownRuler = (startX > ruler.x && startX < ruler.x + ruler.w && startY > ruler.y && startY < ruler.y + ruler.h);
-            if (isDownRobots || isDownObstacle || isDownRuler || isAnyRobotDown()) {
+            if (isDownRobots || isDownObstacle || isDownRuler || isDownColorBlock || isAnyRobotDown()) {
                 e.stopPropagation();
             }
         }
@@ -760,6 +786,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             }
             isDownObstacle = false;
             isDownRuler = false;
+            isDownColorBlock = false;
             for (var i = 0; i < numRobots; i++) {
                 if (isDownRobots[i]) {
                     isDownRobots[i] = false;
@@ -772,6 +799,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             e.preventDefault();
             isDownObstacle = false;
             isDownRuler = false;
+            isDownColorBlock = false;
             for (var i = 0; i < numRobots; i++) {
                 if (isDownRobots[i]) {
                     isDownRobots[i] = false;
@@ -790,7 +818,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             mouseY = (parseInt(Y - top, 10)) / scale;
             var dx;
             var dy;
-            if (!isAnyRobotDown() && !isDownObstacle && !isDownRuler) {
+            if (!isAnyRobotDown() && !isDownObstacle && !isDownRuler && !isDownColorBlock) {
                 var hoverRobot = false;
                 for (var i = 0; i < numRobots; i++) {
                     dx = mouseX - robots[i].mouse.rx;
@@ -833,6 +861,10 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 ruler.x += dx;
                 ruler.y += dy;
                 scene.drawRuler();
+            } else if (isDownColorBlock && selectedColorBlock != null) {
+                colorBlockList[selectedColorBlock].x += dx;
+                colorBlockList[selectedColorBlock].y += dy;
+                scene.drawColorBlock();
             }
         }
 
@@ -881,6 +913,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 scene.drawBackground();
                 scene.drawRuler();
                 scene.drawObjects();
+                scene.drawColorBlock();
                 e.stopPropagation();
             }
         }
@@ -901,6 +934,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 scale = Math.min(scaleX, scaleY) - 0.05;
                 scene.updateBackgrounds();
                 scene.drawObjects();
+                scene.drawColorBlock();
                 scene.drawRuler();
             }
         }
@@ -959,9 +993,10 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
 
         function initScene() {
-            scene = new Scene(imgObjectList[currentBackground], robots, customObstacleList, imgPattern, ruler);
+            scene = new Scene(imgObjectList[currentBackground], robots, customObstacleList, imgPattern, ruler, colorBlockList);
             scene.updateBackgrounds();
             scene.drawObjects();
+            scene.drawColorBlock();
             scene.drawRuler();
             scene.drawRobots();
             scene.drawVariables();
