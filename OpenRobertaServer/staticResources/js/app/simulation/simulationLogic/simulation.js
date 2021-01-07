@@ -116,7 +116,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 scene = new Scene(imgObjectList[currentBackground], robots, customObstacleList, imgPattern, ruler, colorBlockList);
                 scene.updateBackgrounds();
                 scene.drawObjects();
-                scene.drawColorBlock();
+                scene.drawColorBlocks();
                 scene.drawRuler();
                 addMouseEvents();
                 reloadProgram();
@@ -251,7 +251,6 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 info = true;
             }
         }
-
         exports.setInfo = setInfo;
 
         function resetPose() {
@@ -264,8 +263,68 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 }
             }
         }
-
         exports.resetPose = resetPose;
+
+        function addObstacle(shape) {
+            if (shape === "rectangle") {
+                let newRectangleObstacle = {
+                    x: 400,
+                    y: 100,
+                    xOld: 0,
+                    yOld: 0,
+                    w: 100,
+                    h: 100,
+                    wOld: 0,
+                    hOld: 0,
+                    isParallelToAxis: true,
+                    color: "#2b2b2b"
+                };
+                customObstacleList.push(newRectangleObstacle);
+            }
+            exports.obstacleList = [ground, customObstacleList];
+            scene.drawObjects();
+        }
+        exports.addObstacle = addObstacle;
+
+
+        function clearObstacleList() {
+            scene.undrawObjects();
+            customObstacleList = [];
+            exports.obstacleList = [ground, customObstacleList];
+            scene.updateBackgrounds();
+            scene.drawColorBlocks();
+        }
+        exports.clearObstacleList = clearObstacleList;
+
+
+        function addColorBlock(color) {
+            let newColorBlock = {
+                x: 100,
+                y: 350,
+                xOld: 0,
+                yOld: 0,
+                w: 100,
+                h: 100,
+                wOld: 0,
+                hOld: 0,
+                color: C.COLOR_ENUM.RED
+            };
+            if(color === "black") newColorBlock.color = C.COLOR_ENUM.BLACK;
+            if(color === "blue") newColorBlock.color = C.COLOR_ENUM.BLUE;
+            colorBlockList.push(newColorBlock);
+            scene.drawColorBlocks();
+        }
+        exports.addColorBlock = addColorBlock;
+
+
+        function clearColorBlockList() {
+            scene.undrawColorBlocks();
+            colorBlockList = [];
+            scene.updateBackgrounds();
+            scene.drawObjects();
+        }
+        exports.clearColorBlockList = clearColorBlockList;
+
 
         function stopProgram() {
             setPause(true);
@@ -311,35 +370,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             isParallelToAxis: true
         };
 
-        var customObstacle2 = {
-            x: 400,
-            y: 100,
-            xOld: 0,
-            yOld: 0,
-            w: 100,
-            h: 100,
-            wOld: 0,
-            hOld: 0,
-            isParallelToAxis: true,
-            color: "#FF0000"
-        };
-
-        var colorBlock = {
-            x: 100,
-            y: 350,
-            xOld: 0,
-            yOld: 0,
-            w: 100,
-            h: 100,
-            wOld: 0,
-            hOld: 0,
-            color: C.COLOR_ENUM.BLUE
-        };
-
-
         customObstacleList.push(customObstacle);
-        customObstacleList.push(customObstacle2);
-        colorBlockList.push(colorBlock);
         exports.obstacleList = [ground, customObstacleList];
 
         var ruler = {
@@ -864,7 +895,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             } else if (isDownColorBlock && selectedColorBlock != null) {
                 colorBlockList[selectedColorBlock].x += dx;
                 colorBlockList[selectedColorBlock].y += dy;
-                scene.drawColorBlock();
+                scene.drawColorBlocks();
             }
         }
 
@@ -913,7 +944,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 scene.drawBackground();
                 scene.drawRuler();
                 scene.drawObjects();
-                scene.drawColorBlock();
+                scene.drawColorBlocks();
                 e.stopPropagation();
             }
         }
@@ -934,7 +965,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 scale = Math.min(scaleX, scaleY) - 0.05;
                 scene.updateBackgrounds();
                 scene.drawObjects();
-                scene.drawColorBlock();
+                scene.drawColorBlocks();
                 scene.drawRuler();
             }
         }
@@ -996,7 +1027,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             scene = new Scene(imgObjectList[currentBackground], robots, customObstacleList, imgPattern, ruler, colorBlockList);
             scene.updateBackgrounds();
             scene.drawObjects();
-            scene.drawColorBlock();
+            scene.drawColorBlocks();
             scene.drawRuler();
             scene.drawRobots();
             scene.drawVariables();

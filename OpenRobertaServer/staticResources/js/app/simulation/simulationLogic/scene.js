@@ -16,7 +16,6 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
         this.customObstacleList = customObstacleList;
         this.numprogs = robots.length;
         this.ruler = ruler;
-        console.log(colorBlockList)
         this.colorBlockList = colorBlockList;
         this.pattern = pattern;
         this.uCtx = $('#unitBackgroundLayer')[0].getContext('2d'); // unit context
@@ -104,8 +103,23 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
         }
     };
 
+    Scene.prototype.undrawObjects = function() {
+        for (let key in this.customObstacleList) {
+            let obstacle = this.customObstacleList[key];
+
+            this.oCtx.clearRect(obstacle.xOld - 20, obstacle.yOld - 20, obstacle.wOld + 40, obstacle.hOld + 40);
+            obstacle.xOld = obstacle.x;
+            obstacle.yOld = obstacle.y;
+            obstacle.wOld = obstacle.w;
+            obstacle.hOld = obstacle.h;
+            this.oCtx.save();
+            this.oCtx.scale(SIM.getScale(), SIM.getScale());
+            console.log(this.customObstacleList);
+        }
+    };
+
     Scene.prototype.drawObjects = function() {
-      for(let key in this.customObstacleList) {
+        for(let key in this.customObstacleList) {
             let obstacle = this.customObstacleList[key];
 
             this.oCtx.clearRect(obstacle.xOld - 20, obstacle.yOld - 20, obstacle.wOld + 40, obstacle.hOld + 40);
@@ -123,16 +137,30 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                 this.oCtx.shadowBlur = 5;
                 this.oCtx.shadowColor = "black";
                 this.oCtx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
-                console.log(obstacle)
             }
        }
     };
 
-/* NEW Function
-Offenes Problem -> Welche Layer müssen verwendet werden*/
-    Scene.prototype.drawColorBlock = function() {
-      //this.updateBackgrounds();
-      for(let key in this.colorBlockList) {
+    // NEW Functions
+    Scene.prototype.undrawColorBlocks = function() {
+        for(let key in this.colorBlockList) {
+            let colorBlock = this.colorBlockList[key];
+
+            this.bCtx.clearRect(colorBlock.xOld - 20, colorBlock.yOld - 20, colorBlock.wOld + 40, colorBlock.hOld + 40);
+            this.uCtx.clearRect(colorBlock.xOld - 20, colorBlock.yOld - 20, colorBlock.wOld + 40, colorBlock.hOld + 40);
+            colorBlock.xOld = colorBlock.x;
+            colorBlock.yOld = colorBlock.y;
+            colorBlock.wOld = colorBlock.w;
+            colorBlock.hOld = colorBlock.h;
+            this.bCtx.save();
+            this.bCtx.scale(SIM.getScale(), SIM.getScale());
+        }
+    };
+
+    Scene.prototype.drawColorBlocks = function() {
+        this.updateBackgrounds();
+        this.drawObjects();
+        for(let key in this.colorBlockList) {
             let colorBlock = this.colorBlockList[key];
 
             this.bCtx.clearRect(colorBlock.xOld - 20, colorBlock.yOld - 20, colorBlock.wOld + 40, colorBlock.hOld + 40);
@@ -141,22 +169,17 @@ Offenes Problem -> Welche Layer müssen verwendet werden*/
             colorBlock.wOld = colorBlock.w;
             colorBlock.hOld = colorBlock.h;
             this.bCtx.restore();
-
             this.bCtx.save();
             this.bCtx.scale(SIM.getScale(), SIM.getScale());
             if (colorBlock.img) {
                 this.uCtx.drawImage(colorBlock.img, colorBlock.x, colorBlock.y, colorBlock.w, colorBlock.h);
             } else if (colorBlock.color) {
-                this.updateBackgrounds();
-                this.drawObjects();
                 this.uCtx.fillStyle = colorBlock.color;
                 this.bCtx.fillStyle = colorBlock.color;
                 this.uCtx.fillRect(colorBlock.x, colorBlock.y, colorBlock.w, colorBlock.h);
                 this.bCtx.fillRect(colorBlock.x, colorBlock.y, colorBlock.w, colorBlock.h);
-                console.log(colorBlock)
             }
        }
-       console.log('Success')
     };
 
     Scene.prototype.drawVariables = function() {
