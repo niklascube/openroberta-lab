@@ -169,6 +169,27 @@ define(['exports', 'message', 'log', 'util', 'simulation.simulation', 'simulatio
 
                 $("#simButtonsCollapse").collapse('hide');
             }, 'simVariables clicked');
+
+            $('#simAddObstacleRectangle').onWrap('click', function(event) {
+                SIM.addObstacle("rectangle");
+            }, 'simAddObstacle clicked');
+
+            $('#simDeleteAllObstacles').onWrap('click', function(event) {
+                SIM.clearObstacleList();
+            }, 'simDeleteAllObstacles clicked');
+
+            $('#simAddColorBlockBlack').onWrap('click', function(event) {
+                SIM.addColorBlock("black");
+            }, 'simAddColorBlockBlack clicked');
+
+            $('#simAddColorBlockBlue').onWrap('click', function(event) {
+                SIM.addColorBlock("blue");
+            }, 'simAddColorBlockBlue clicked');
+
+            $('#simDeleteAllColorBlocks').onWrap('click', function(event) {
+                SIM.clearColorBlockList();
+            }, 'simDeleteAllColorBlocks clicked');
+
         }
 
         function toggleSim() {
