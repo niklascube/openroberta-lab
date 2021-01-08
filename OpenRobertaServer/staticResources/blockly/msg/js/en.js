@@ -709,6 +709,7 @@ Blockly.Msg.MENU_SHOW_CODE = "open/close source code view";
 Blockly.Msg.MENU_SIM_ADD_COLOR_OBJECT_TOOLTIP = "Add a color block.";
 Blockly.Msg.MENU_SIM_ADD_OBSTACLE_TOOLTIP = "Add an obstacle.";
 Blockly.Msg.MENU_SIM_BACK = "Back";
+Blockly.Msg.MENU_SIM_DELETE_ELEMENTS_TOOLTIP = "Delete all color and obstacle objects.";
 Blockly.Msg.MENU_SIM_DRAW = "Drawing Scene";
 Blockly.Msg.MENU_SIM_IMPORT_TOOLTIP = "Upload your own simulation background image, it will be appended at the end of the background's list.";
 Blockly.Msg.MENU_SIM_MATH = "Math Scene";
