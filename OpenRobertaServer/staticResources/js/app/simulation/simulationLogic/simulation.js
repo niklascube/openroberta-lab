@@ -286,6 +286,16 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
         exports.addObstacle = addObstacle;
 
+        function deleteElements() {
+            while(customObstacleList.length > 0) {
+                customObstacleList.pop();
+            }
+            while(colorBlockList.length > 0) {
+                colorBlockList.pop();
+            }
+            updateSIM();
+        }
+        exports.deleteElements = deleteElements;
 
         function clearObstacleList() {
             while(customObstacleList.length > 0) {
