@@ -28,6 +28,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         var scale = 1;
         var timerStep = 0;
         var selectedObstacle;
+        var selectedColorBlock;
         var canceled;
         var storedPrograms;
         var customBackgroundLoaded = false;
@@ -781,21 +782,17 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 }
             }
             for(let key in customObstacleList) {
-                let obstacle = customObstacleList[key];
+                let obstacle = [...customObstacleList].reverse()[key];
                 isDownObstacle = (startX > obstacle.x && startX < obstacle.x + obstacle.w && startY > obstacle.y && startY < obstacle.y + obstacle.h);
-                if (isDownObstacle) {
-                    selectedObstacle = key;
-                    break;
-                }
+                selectedObstacle = customObstacleList.length - ++key;
+                if (isDownObstacle) break;
             }
             for(let key in colorBlockList) {
-                            let colorBlock = colorBlockList[key];
-                            isDownColorBlock = (startX > colorBlock.x && startX < colorBlock.x + colorBlock.w && startY > colorBlock.y && startY < colorBlock.y + colorBlock.h);
-                            if (isDownColorBlock) {
-                                selectedColorBlock = key;
-                                break;
-                            }
-                        }
+                let colorBlock = [...colorBlockList].reverse()[key];
+                isDownColorBlock = (startX > colorBlock.x && startX < colorBlock.x + colorBlock.w && startY > colorBlock.y && startY < colorBlock.y + colorBlock.h);
+                selectedColorBlock = colorBlockList.length - ++key;
+                if (isDownColorBlock) break;
+            }
             isDownRuler = (startX > ruler.x && startX < ruler.x + ruler.w && startY > ruler.y && startY < ruler.y + ruler.h);
             if (isDownRobots || isDownObstacle || isDownRuler || isDownColorBlock || isAnyRobotDown()) {
                 e.stopPropagation();
@@ -886,9 +883,18 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                         break;
                     }
                 }
-                var hoverObstacle = (mouseX > customObstacle.x && mouseX < customObstacle.x + customObstacle.w && mouseY > customObstacle.y && mouseY < customObstacle.y + customObstacle.h);
+                for(let key in customObstacleList) {
+                    let obstacle = [...customObstacleList].reverse()[key];
+                    var hoverObstacle = (mouseX > obstacle.x && mouseX < obstacle.x + obstacle.w && mouseY > obstacle.y && mouseY < obstacle.y + obstacle.h);
+                    if (hoverObstacle) break;
+                }
+                for(let key in colorBlockList) {
+                    let colorBlock = [...colorBlockList].reverse()[key];
+                    var hoverColorBlock = (mouseX > colorBlock.x && mouseX < colorBlock.x + colorBlock.w && mouseY > colorBlock.y && mouseY < colorBlock.y + colorBlock.h);
+                    if (hoverColorBlock) break;
+                }
                 var hoverRuler = (mouseX > ruler.x && mouseX < ruler.x + ruler.w && mouseY > ruler.y && mouseY < ruler.y + ruler.h);
-                if (hoverRobot || hoverObstacle || hoverRuler) {
+                if (hoverRobot || hoverObstacle || hoverRuler || hoverColorBlock) {
                     $("#robotLayer").css('cursor', 'pointer');
                 } else {
                     $("#robotLayer").css('cursor', 'auto');
@@ -911,6 +917,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 robots[mouseOnRobotIndex].mouse.rx += dx;
                 robots[mouseOnRobotIndex].mouse.ry += dy;
             } else if (isDownObstacle && selectedObstacle != null) {
+               // console.log(selectedObstacle);
                 customObstacleList[selectedObstacle].x += dx;
                 customObstacleList[selectedObstacle].y += dy;
                 updateSIM();
