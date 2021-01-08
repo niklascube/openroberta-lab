@@ -190,6 +190,10 @@ define(['exports', 'message', 'log', 'util', 'simulation.simulation', 'simulatio
                 SIM.clearColorBlockList();
             }, 'simDeleteAllColorBlocks clicked');
 
+            $('#simDeleteElements').onWrap('click', function(event) {
+                SIM.deleteElements();
+            }, 'simDeleteElements clicked');
+
         }
 
         function toggleSim() {
