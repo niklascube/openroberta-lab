@@ -279,7 +279,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     isParallelToAxis: true,
                     color: "#2b2b2b"
                 };
-                customObstacleList.push(newRectangleObstacle);
+                customObstacleList.unshift(newRectangleObstacle);
             }
             exports.obstacleList = [ground, customObstacleList];
             scene.drawObjects();
@@ -288,9 +288,10 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
 
         function clearObstacleList() {
-            scene.undrawObjects();
-            customObstacleList = [];
-            exports.obstacleList = [ground, customObstacleList];
+            while(customObstacleList.length > 0) {
+                customObstacleList.pop();
+            }
+            //exports.obstacleList = [ground, customObstacleList];
             scene.updateBackgrounds();
             scene.drawColorBlocks();
         }
@@ -311,15 +312,17 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             };
             if(color === "black") newColorBlock.color = C.COLOR_ENUM.BLACK;
             if(color === "blue") newColorBlock.color = C.COLOR_ENUM.BLUE;
-            colorBlockList.push(newColorBlock);
+            colorBlockList.unshift(newColorBlock);
             scene.drawColorBlocks();
         }
         exports.addColorBlock = addColorBlock;
 
 
         function clearColorBlockList() {
-            scene.undrawColorBlocks();
-            colorBlockList = [];
+            //scene.drawObjects();
+            while(colorBlockList.length > 0) {
+                colorBlockList.pop();
+            }
             scene.updateBackgrounds();
             scene.drawObjects();
         }
@@ -370,7 +373,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             isParallelToAxis: true
         };
 
-        customObstacleList.push(customObstacle);
+        customObstacleList.unshift(customObstacle);
         exports.obstacleList = [ground, customObstacleList];
 
         var ruler = {
@@ -620,71 +623,75 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
 
         function setObstacle() {
-
-            if (currentBackground == 3) {
-                customObstacleList[0].x = 500;
-                customObstacleList[0].y = 250;
-                customObstacleList[0].w = 100;
-                customObstacleList[0].h = 100;
-                customObstacleList[0].img = null;
-                customObstacleList[0].color = "#33B8CA";
-            } else if (currentBackground == 2) {
-                customObstacleList[0].x = 580;
-                customObstacleList[0].y = 290;
-                customObstacleList[0].w = 100;
-                customObstacleList[0].h = 100;
-                customObstacleList[0].img = null;
-                customObstacleList[0].color = "#33B8CA";
-            } else if (currentBackground == 4) {
-                customObstacleList[0].x = 500;
-                customObstacleList[0].y = 260;
-                customObstacleList[0].w = 100;
-                customObstacleList[0].h = 100;
-                customObstacleList[0].img = imgObstacle1;
-                customObstacleList[0].color = null;
-            } else if (currentBackground == 7) {
-                customObstacleList[0].x = 0;
-                customObstacleList[0].y = 0;
-                customObstacleList[0].w = 0;
-                customObstacleList[0].h = 0;
-                customObstacleList[0].color = null;
-            } else if (currentBackground == 0) {
-                customObstacleList[0].x = 0;
-                customObstacleList[0].y = 0;
-                customObstacleList[0].w = 0;
-                customObstacleList[0].h = 0;
-                customObstacleList[0].color = null;
-                customObstacleList[0].img = null;
-            } else if (currentBackground == 1) {
-                customObstacleList[0].x = 0;
-                customObstacleList[0].y = 0;
-                customObstacleList[0].w = 0;
-                customObstacleList[0].h = 0;
-                customObstacleList[0].color = null;
-                customObstacleList[0].img = null;
-            } else if (currentBackground == 5) {
-                customObstacleList[0].x = 505;
-                customObstacleList[0].y = 405;
-                customObstacleList[0].w = 20;
-                customObstacleList[0].h = 20;
-                customObstacleList[0].color = "#33B8CA";
-                customObstacleList[0].img = null;
-            } else if (currentBackground == 6) {
-                customObstacleList[0].x = 425;
-                customObstacleList[0].y = 254;
-                customObstacleList[0].w = 50;
-                customObstacleList[0].h = 50;
-                customObstacleList[0].color = "#009EE3";
-                customObstacleList[0].img = null;
+            if (customObstacleList.length>=1){
+                if (currentBackground == 3) {
+                    customObstacleList[0].x = 500;
+                    customObstacleList[0].y = 250;
+                    customObstacleList[0].w = 100;
+                    customObstacleList[0].h = 100;
+                    customObstacleList[0].img = null;
+                    customObstacleList[0].color = "#33B8CA";
+                } else if (currentBackground == 2) {
+                    customObstacleList[0].x = 580;
+                    customObstacleList[0].y = 290;
+                    customObstacleList[0].w = 100;
+                    customObstacleList[0].h = 100;
+                    customObstacleList[0].img = null;
+                    customObstacleList[0].color = "#33B8CA";
+                } else if (currentBackground == 4) {
+                    customObstacleList[0].x = 500;
+                    customObstacleList[0].y = 260;
+                    customObstacleList[0].w = 100;
+                    customObstacleList[0].h = 100;
+                    customObstacleList[0].img = imgObstacle1;
+                    customObstacleList[0].color = null;
+                } else if (currentBackground == 7) {
+                    customObstacleList[0].x = 0;
+                    customObstacleList[0].y = 0;
+                    customObstacleList[0].w = 0;
+                    customObstacleList[0].h = 0;
+                    customObstacleList[0].color = null;
+                } else if (currentBackground == 0) {
+                    customObstacleList[0].x = 0;
+                    customObstacleList[0].y = 0;
+                    customObstacleList[0].w = 0;
+                    customObstacleList[0].h = 0;
+                    customObstacleList[0].color = null;
+                    customObstacleList[0].img = null;
+                } else if (currentBackground == 1) {
+                    customObstacleList[0].x = 0;
+                    customObstacleList[0].y = 0;
+                    customObstacleList[0].w = 0;
+                    customObstacleList[0].h = 0;
+                    customObstacleList[0].color = null;
+                    customObstacleList[0].img = null;
+                } else if (currentBackground == 5) {
+                    customObstacleList[0].x = 505;
+                    customObstacleList[0].y = 405;
+                    customObstacleList[0].w = 20;
+                    customObstacleList[0].h = 20;
+                    customObstacleList[0].color = "#33B8CA";
+                    customObstacleList[0].img = null;
+                } else if (currentBackground == 6) {
+                    customObstacleList[0].x = 425;
+                    customObstacleList[0].y = 254;
+                    customObstacleList[0].w = 50;
+                    customObstacleList[0].h = 50;
+                    customObstacleList[0].color = "#009EE3";
+                    customObstacleList[0].img = null;
+                } else {
+                    var x = imgObjectList[currentBackground].width - 50;
+                    var y = imgObjectList[currentBackground].height - 50;
+                    customObstacleList[0].x = x;
+                    customObstacleList[0].y = y;
+                    customObstacleList[0].w = 50;
+                    customObstacleList[0].h = 50;
+                    customObstacleList[0].color = "#33B8CA";
+                    customObstacleList[0].img = null;
+                }
             } else {
-                var x = imgObjectList[currentBackground].width - 50;
-                var y = imgObjectList[currentBackground].height - 50;
-                customObstacleList[0].x = x;
-                customObstacleList[0].y = y;
-                customObstacleList[0].w = 50;
-                customObstacleList[0].h = 50;
-                customObstacleList[0].color = "#33B8CA";
-                customObstacleList[0].img = null;
+                customObstacleList.unshift(customObstacle);
+                setObstacle();
             }
         }
 
@@ -823,6 +830,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     isDownRobots[i] = false;
                 }
             }
+            updateSIM();
             mouseOnRobotIndex = -1;
         }
 
@@ -839,6 +847,14 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             mouseOnRobotIndex = -1;
             e.stopPropagation();
         }
+
+        function updateSIM() {
+            scene.updateBackgrounds();
+            scene.drawColorBlocks();
+            scene.drawRuler();
+            scene.drawObjects();
+        }
+
 
         function handleMouseMove(e) {
             var X = e.clientX || e.originalEvent.touches[0].pageX;
@@ -887,15 +903,15 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             } else if (isDownObstacle && selectedObstacle != null) {
                 customObstacleList[selectedObstacle].x += dx;
                 customObstacleList[selectedObstacle].y += dy;
-                scene.drawObjects();
+                updateSIM();
             } else if (isDownRuler) {
                 ruler.x += dx;
                 ruler.y += dy;
-                scene.drawRuler();
+                updateSIM();
             } else if (isDownColorBlock && selectedColorBlock != null) {
                 colorBlockList[selectedColorBlock].x += dx;
                 colorBlockList[selectedColorBlock].y += dy;
-                scene.drawColorBlocks();
+                updateSIM();
             }
         }
 
