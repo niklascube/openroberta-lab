@@ -788,13 +788,13 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 }
             }
             for(let key in customObstacleList) {
-                let obstacle = [...customObstacleList].reverse()[key];
+                let obstacle = customObstacleList.slice().reverse()[key];
                 isDownObstacle = (startX > obstacle.x && startX < obstacle.x + obstacle.w && startY > obstacle.y && startY < obstacle.y + obstacle.h);
                 selectedObstacle = customObstacleList.length - ++key;
                 if (isDownObstacle) break;
             }
             for(let key in colorBlockList) {
-                let colorBlock = [...colorBlockList].reverse()[key];
+                let colorBlock = colorBlockList.slice().reverse()[key];
                 isDownColorBlock = (startX > colorBlock.x && startX < colorBlock.x + colorBlock.w && startY > colorBlock.y && startY < colorBlock.y + colorBlock.h);
                 selectedColorBlock = colorBlockList.length - ++key;
                 if (isDownColorBlock) break;
@@ -890,12 +890,12 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     }
                 }
                 for(let key in customObstacleList) {
-                    let obstacle = [...customObstacleList].reverse()[key];
+                    let obstacle = customObstacleList.slice().reverse()[key];
                     var hoverObstacle = (mouseX > obstacle.x && mouseX < obstacle.x + obstacle.w && mouseY > obstacle.y && mouseY < obstacle.y + obstacle.h);
                     if (hoverObstacle) break;
                 }
                 for(let key in colorBlockList) {
-                    let colorBlock = [...colorBlockList].reverse()[key];
+                    let colorBlock = colorBlockList.slice().reverse()[key];
                     var hoverColorBlock = (mouseX > colorBlock.x && mouseX < colorBlock.x + colorBlock.w && mouseY > colorBlock.y && mouseY < colorBlock.y + colorBlock.h);
                     if (hoverColorBlock) break;
                 }
