@@ -277,6 +277,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     h: 100,
                     wOld: 0,
                     hOld: 0,
+                    img: null,
                     isParallelToAxis: true,
                     color: "#2b2b2b"
                 };
@@ -319,10 +320,15 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 h: 100,
                 wOld: 0,
                 hOld: 0,
-                color: C.COLOR_ENUM.RED
+                img: null,
+                color: C.COLOR_ENUM.BLACK
             };
             if(color === "black") newColorBlock.color = C.COLOR_ENUM.BLACK;
             if(color === "blue") newColorBlock.color = C.COLOR_ENUM.BLUE;
+            //if(color === "gray") newColorBlock.color = C.COLOR_ENUM.GRAY;
+            if(color === "red") newColorBlock.color = C.COLOR_ENUM.RED;
+            //if(color === "brown") newColorBlock.color = C.COLOR_ENUM.BROWN;
+            if(color === "yellow") newColorBlock.color = C.COLOR_ENUM.YELLOW;
             colorBlockList.unshift(newColorBlock);
             scene.drawColorBlocks();
         }

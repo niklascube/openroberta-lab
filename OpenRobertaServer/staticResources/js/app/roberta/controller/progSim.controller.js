@@ -186,6 +186,26 @@ define(['exports', 'message', 'log', 'util', 'simulation.simulation', 'simulatio
                 SIM.addColorBlock("blue");
             }, 'simAddColorBlockBlue clicked');
 
+            /*
+            $('#simAddColorBlockGray').onWrap('click', function(event) {
+                SIM.addColorBlock("grey");
+            }, 'simAddColorBlockGray clicked');
+            */
+
+            $('#simAddColorBlockRed').onWrap('click', function(event) {
+                SIM.addColorBlock("red");
+            }, 'simAddColorBlockRed clicked');
+
+            /*
+            $('#simAddColorBlockBrown').onWrap('click', function(event) {
+                SIM.addColorBlock("brown");
+            }, 'simAddColorBlockBrown clicked');
+            */
+            
+            $('#simAddColorBlockYellow').onWrap('click', function(event) {
+                SIM.addColorBlock("yellow");
+            }, 'simAddColorBlockYellow clicked');
+
             $('#simDeleteAllColorBlocks').onWrap('click', function(event) {
                 SIM.clearColorBlockList();
             }, 'simDeleteAllColorBlocks clicked');
