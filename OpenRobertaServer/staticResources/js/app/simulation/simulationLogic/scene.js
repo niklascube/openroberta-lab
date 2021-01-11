@@ -792,9 +792,9 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
 
                     var uA = new Array(u1, u2, u3, u4, u5);
                     ultraSensors[s].distance = C.MAXDIAG;
+                    var uDis = [Infinity, Infinity, Infinity, Infinity, Infinity];
                     for (var i = 0; i < personalObstacleList.length; i++) {
                         var obstacleLines = (SIMATH.getLinesFromRect(personalObstacleList[i]));
-                        var uDis = [Infinity, Infinity, Infinity, Infinity, Infinity];
                         for (var k = 0; k < obstacleLines.length; k++) {
                             for (var j = 0; j < uA.length; j++) {
                                 var interPoint = SIMATH.getIntersectionPoint(uA[j], obstacleLines[k]);
