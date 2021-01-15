@@ -299,6 +299,19 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     }
     exports.deleteElements = deleteElements;
 
+    function deleteSelectedObject(){
+        if (selectedColorBlock != null){
+            colorBlockList.splice(selectedColorBlock,1)
+            selectedColorBlock = null;
+        }
+        if (selectedObstacle != null){
+            customObstacleList.splice(selectedObstacle, 1)
+            selectedObstacle = null;
+            }
+        updateSIM();
+        }
+    exports.deleteSelectedObject = deleteSelectedObject
+
     function clearObstacleList() {
         while(customObstacleList.length > 0) {
             customObstacleList.pop();
@@ -935,7 +948,6 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             robots[mouseOnRobotIndex].mouse.rx += dx;
             robots[mouseOnRobotIndex].mouse.ry += dy;
         } else if (isDownObstacle && selectedObstacle != null) {
-            // console.log(selectedObstacle);
             customObstacleList[selectedObstacle].x += dx;
             customObstacleList[selectedObstacle].y += dy;
             updateSIM();
