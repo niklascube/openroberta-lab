@@ -809,9 +809,10 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
         isDownRuler = (startX > ruler.x && startX < ruler.x + ruler.w && startY > ruler.y && startY < ruler.y + ruler.h);
         if(!isDownColorBlock && !isDownObstacle) {
+            selectedColorBlock = null;
+            selectedObstacle = null;
         }
         if (isDownRobots || isDownObstacle || isDownRuler || isDownColorBlock || isAnyRobotDown()) {
-            console.log(selectedObstacle + " - " + selectedColorBlock);
             e.stopPropagation();
         }
     }
