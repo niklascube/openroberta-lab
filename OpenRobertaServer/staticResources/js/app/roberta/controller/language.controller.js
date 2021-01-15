@@ -169,6 +169,8 @@ define(['exports', 'log', 'jquery', 'guiState.controller', 'program.controller',
                 $('#simCustomObstacle').attr('data-original-title', value);
             } else if (lkey === "Blockly.Msg.MENU_SIM_DELETE_ELEMENTS_TOOLTIP") {
                 $('#simDeleteElements').attr('data-original-title', value);
+            } else if (lkey === "Blockly.Msg.MENU_SIM_EDIT_OBJECT_TOOLTIP") {
+                $('#simEditObject').attr('data-original-title', value);
             } else if (lkey === "Blockly.Msg.MENU_SIM_ROBOT_TOOLTIP") {
                 $('#simRobot').attr('data-original-title', value);
             } else if (lkey == 'Blockly.Msg.MENU_SIM_VALUES_TOOLTIP') {

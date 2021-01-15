@@ -711,6 +711,7 @@ Blockly.Msg.MENU_SIM_ADD_OBSTACLE_TOOLTIP = "Füge ein Hindernis hinzu.";
 Blockly.Msg.MENU_SIM_BACK = "Zurück";
 Blockly.Msg.MENU_SIM_DELETE_ELEMENTS_TOOLTIP = "Lösche alle Farb- und Hindernisobjekte.";
 Blockly.Msg.MENU_SIM_DRAW = "Zeichnen Umgebung";
+Blockly.Msg.MENU_SIM_EDIT_OBJECT_TOOLTIP = "Objekt anpassen.";
 Blockly.Msg.MENU_SIM_IMPORT_TOOLTIP = "Lade dein eigenes Hintergrundbild hoch, es wird am Ende der Liste der Roboterumgebungen gespeichert.";
 Blockly.Msg.MENU_SIM_MATH = "Koordinaten Umgebung";
 Blockly.Msg.MENU_SIM_POSE_TOOLTIP = "Verschiebe alle Roboter an die Ausgangsposition und entferne alle Zeichnungen.";

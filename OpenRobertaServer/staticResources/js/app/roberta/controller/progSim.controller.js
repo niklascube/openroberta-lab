@@ -214,6 +214,18 @@ define(['exports', 'message', 'log', 'util', 'simulation.simulation', 'simulatio
                 SIM.deleteElements();
             }, 'simDeleteElements clicked');
 
+            $('#simChangeObjectColor').onWrap('click', function(event) {
+                SIM.changeObjectColor();
+            }, 'simEditObject clicked');
+
+            $('#simChangeObjectSize').onWrap('click', function(event) {
+                SIM.changeObjectSize();
+            }, 'simChangeObjectSize clicked');
+
+            $('#simDeleteObject').onWrap('click', function(event) {
+                SIM.deleteSelectedObject();
+            }, 'simDeleteObject clicked');
+
         }
 
         function toggleSim() {
