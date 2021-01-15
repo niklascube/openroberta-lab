@@ -787,20 +787,31 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 mouseOnRobotIndex = i;
             }
         }
-        for(let key in customObstacleList) {
-            let obstacle = customObstacleList.slice().reverse()[key];
-            isDownObstacle = (startX > obstacle.x && startX < obstacle.x + obstacle.w && startY > obstacle.y && startY < obstacle.y + obstacle.h);
-            selectedObstacle = customObstacleList.length - ++key;
-            if (isDownObstacle) break;
-        }
         for(let key in colorBlockList) {
             let colorBlock = colorBlockList.slice().reverse()[key];
             isDownColorBlock = (startX > colorBlock.x && startX < colorBlock.x + colorBlock.w && startY > colorBlock.y && startY < colorBlock.y + colorBlock.h);
-            selectedColorBlock = colorBlockList.length - ++key;
-            if (isDownColorBlock) break;
+            key++;
+            if (isDownColorBlock) {
+                selectedObstacle = null;
+                selectedColorBlock = colorBlockList.length - key;
+                break;
+            }
+        }
+        for(let key in customObstacleList) {
+            let obstacle = customObstacleList.slice().reverse()[key];
+            isDownObstacle = (startX > obstacle.x && startX < obstacle.x + obstacle.w && startY > obstacle.y && startY < obstacle.y + obstacle.h);
+            key++;
+            if(isDownObstacle) {
+                selectedColorBlock = null;
+                selectedObstacle = customObstacleList.length - key;
+                break;
+            }
         }
         isDownRuler = (startX > ruler.x && startX < ruler.x + ruler.w && startY > ruler.y && startY < ruler.y + ruler.h);
+        if(!isDownColorBlock && !isDownObstacle) {
+        }
         if (isDownRobots || isDownObstacle || isDownRuler || isDownColorBlock || isAnyRobotDown()) {
+            console.log(selectedObstacle + " - " + selectedColorBlock);
             e.stopPropagation();
         }
     }
