@@ -780,6 +780,18 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
     }
 
+    function disableSimEditButton() {
+        simEditButton.disabled = true;
+        simEditButton.style.background = "#a9a9a9";
+        simEditButton.style.color = "#646464";
+    }
+
+    function activateSimEditButton() {
+        simEditButton.disabled = false;
+        simEditButton.style.background = "#ffffff";
+        simEditButton.style.color = "#000000";
+    }
+
     function handleMouseDown(e) {
         var X = e.clientX || e.originalEvent.touches[0].pageX;
         var Y = e.clientY || e.originalEvent.touches[0].pageY;
@@ -806,9 +818,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             isDownColorBlock = (startX > colorBlock.x && startX < colorBlock.x + colorBlock.w && startY > colorBlock.y && startY < colorBlock.y + colorBlock.h);
             key++;
             if (isDownColorBlock) {
-                simEditButton.disabled = false;
-                simEditButton.style.background = "#ffffff";
-                simEditButton.style.color = "#000000";
+                activateSimEditButton();
                 selectedObstacle = null;
                 selectedColorBlock = colorBlockList.length - key;
                 break;
@@ -819,9 +829,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             isDownObstacle = (startX > obstacle.x && startX < obstacle.x + obstacle.w && startY > obstacle.y && startY < obstacle.y + obstacle.h);
             key++;
             if(isDownObstacle) {
-                simEditButton.disabled = false;
-                simEditButton.style.background = "#ffffff";
-                simEditButton.style.color = "#000000";
+                activateSimEditButton();
                 selectedColorBlock = null;
                 selectedObstacle = customObstacleList.length - key;
                 break;
@@ -829,9 +837,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
         isDownRuler = (startX > ruler.x && startX < ruler.x + ruler.w && startY > ruler.y && startY < ruler.y + ruler.h);
         if(!isDownColorBlock && !isDownObstacle) {
-            simEditButton.disabled = true;
-            simEditButton.style.background = "#a9a9a9";
-            simEditButton.style.color = "#646464";
+            disableSimEditButton();
             selectedColorBlock = null;
             selectedObstacle = null;
         }
@@ -1105,9 +1111,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         scene.drawRobots();
         scene.drawVariables();
         addMouseEvents();
-        simEditButton.disabled = true;
-        simEditButton.style.background = "#a9a9a9";
-        simEditButton.style.color = "#646464";
+        disableSimEditButton();
         for (var i = 0; i < numRobots; i++) {
             readyRobots[i] = true;
         }
