@@ -106,7 +106,6 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
     Scene.prototype.drawObjects = function() {
         for(let key in this.customObstacleList) {
             let obstacle = this.customObstacleList[key];
-
             this.oCtx.clearRect(obstacle.xOld, obstacle.yOld, obstacle.wOld, obstacle.hOld);
             obstacle.xOld = obstacle.x;
             obstacle.yOld = obstacle.y;
@@ -122,9 +121,38 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                 this.oCtx.shadowBlur = 5;
                 this.oCtx.shadowColor = "black";
                 this.oCtx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
+                if(SIM.getSelectedObject() != null) this.highlightObject();
             }
        }
     };
+
+    Scene.prototype.highlightObject = function() {
+            let selectedObject = SIM.getSelectedObject();
+            if(selectedObject != null) {
+                const obstacleCorners = [
+                    {x: Math.round(selectedObject.x), y: Math.round(selectedObject.y)},
+                    {x: (Math.round(selectedObject.x) + selectedObject.w), y: Math.round(selectedObject.y)},
+                    {x: (Math.round(selectedObject.x)), y: (Math.round(selectedObject.y) + selectedObject.h)},
+                    {
+                        x: (Math.round(selectedObject.x) + selectedObject.w),
+                        y: (Math.round(selectedObject.y) + selectedObject.h)
+                    }
+                ];
+                for (let c in obstacleCorners) {
+                    this.oCtx.restore();
+                    this.oCtx.save();
+                    this.oCtx.scale(SIM.getScale(), SIM.getScale());
+                    this.oCtx.beginPath();
+                    this.oCtx.lineWidth = 2;
+                    this.oCtx.shadowBlur = 0;
+                    this.oCtx.strokeStyle = "gray";
+                    this.oCtx.arc(obstacleCorners[c].x, obstacleCorners[c].y, 4, 0, 2 * Math.PI);
+                    this.oCtx.fillStyle = "black";
+                    this.oCtx.stroke();
+                    this.oCtx.fill();
+                }
+            }
+    }
 
     Scene.prototype.drawColorBlocks = function() {
         for(let key in this.colorBlockList) {
@@ -144,6 +172,7 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                 this.bCtx.fillStyle = colorBlock.color;
                 this.uCtx.fillRect(colorBlock.x, colorBlock.y, colorBlock.w, colorBlock.h);
                 this.bCtx.fillRect(colorBlock.x, colorBlock.y, colorBlock.w, colorBlock.h);
+                if(SIM.getSelectedObject() != null) this.highlightObject();
             }
        }
     };
