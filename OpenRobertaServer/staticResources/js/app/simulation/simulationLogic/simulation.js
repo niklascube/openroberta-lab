@@ -354,6 +354,26 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     }
     exports.addColorBlock = addColorBlock;
 
+    function changeObjectColor(color){
+        if (selectedColorBlock != null){
+            if(color === "black") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.BLACK;
+            if(color === "blue") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.BLUE;
+            //if(color === "gray") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.GRAY;
+            if(color === "red") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.RED;
+            //if(color === "brown") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.BROWN;
+            if(color === "yellow") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.YELLOW;
+        }
+        if (selectedObstacle != null){
+            if(color === "black") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.BLACK;
+            if(color === "blue") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.BLUE;
+            //if(color === "gray") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.GRAY;
+            if(color === "red") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.RED;
+            //if(color === "brown") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.BROWN;
+            if(color === "yellow") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.YELLOW;
+        }
+        updateSIM();
+    }
+    exports.changeObjectColor = changeObjectColor;
 
     function clearColorBlockList() {
         //scene.drawObjects();
@@ -799,10 +819,10 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     function enableChangeObjectButtons() {
         simChangeObjectColorButton.disabled = false;
         simChangeObjectColorButton.style.background = "#ffffff";
-        simChangeObjectColorButton.style.color = "#000000";
+        simChangeObjectColorButton.style.color = "#333333";
         simDeleteObjectButton.disabled = false;
         simDeleteObjectButton.style.background = "#ffffff";
-        simDeleteObjectButton.style.color = "#000000";
+        simDeleteObjectButton.style.color = "#333333";
     }
 
     function handleMouseDown(e) {
