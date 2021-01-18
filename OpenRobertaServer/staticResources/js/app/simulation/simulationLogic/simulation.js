@@ -29,6 +29,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     var timerStep = 0;
     var selectedObstacle;
     var selectedColorBlock;
+    var selectedObject;
     var canceled;
     var storedPrograms;
     var customBackgroundLoaded = false;
@@ -37,7 +38,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     var customObstacleList = [];
     var colorBlockList = [];
     var observers = {};
-    const simEditButton = document.getElementById('simEditObject');
+    const simChangeObjectColorButton = document.getElementById('simChangeObjectColor');
+    const simDeleteObjectButton = document.getElementById('simDeleteObject');
 
     var imgObstacle1 = new Image();
     var imgPattern = new Image();
@@ -304,10 +306,14 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         if (selectedColorBlock != null){
             colorBlockList.splice(selectedColorBlock,1)
             selectedColorBlock = null;
+            disableChangeObjectButtons();
+            checkSelection();
         }
         if (selectedObstacle != null){
             customObstacleList.splice(selectedObstacle, 1)
             selectedObstacle = null;
+            disableChangeObjectButtons();
+            checkSelection();
             }
         updateSIM();
         }
@@ -653,6 +659,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         $('#simControl').attr('data-original-title', Blockly.Msg.MENU_SIM_START_TOOLTIP);
     }
 
+    //set standard obstacle
     function setObstacle() {
         if (customObstacleList.length>=1){
             if (currentBackground == 3) {
@@ -780,16 +787,22 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
     }
 
-    function disableSimEditButton() {
-        simEditButton.disabled = true;
-        simEditButton.style.background = "#a9a9a9";
-        simEditButton.style.color = "#646464";
+    function disableChangeObjectButtons() {
+        simChangeObjectColorButton.disabled = true;
+        simChangeObjectColorButton.style.background = "#a9a9a9";
+        simChangeObjectColorButton.style.color = "#646464";
+        simDeleteObjectButton.disabled = true;
+        simDeleteObjectButton.style.background = "#a9a9a9";
+        simDeleteObjectButton.style.color = "#646464";
     }
 
-    function activateSimEditButton() {
-        simEditButton.disabled = false;
-        simEditButton.style.background = "#ffffff";
-        simEditButton.style.color = "#000000";
+    function enableChangeObjectButtons() {
+        simChangeObjectColorButton.disabled = false;
+        simChangeObjectColorButton.style.background = "#ffffff";
+        simChangeObjectColorButton.style.color = "#000000";
+        simDeleteObjectButton.disabled = false;
+        simDeleteObjectButton.style.background = "#ffffff";
+        simDeleteObjectButton.style.color = "#000000";
     }
 
     function handleMouseDown(e) {
@@ -818,9 +831,11 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             isDownColorBlock = (startX > colorBlock.x && startX < colorBlock.x + colorBlock.w && startY > colorBlock.y && startY < colorBlock.y + colorBlock.h);
             key++;
             if (isDownColorBlock) {
-                activateSimEditButton();
+                enableChangeObjectButtons();
                 selectedObstacle = null;
                 selectedColorBlock = colorBlockList.length - key;
+                selectedObject = colorBlockList[selectedColorBlock];
+                scene.highlightObject();
                 break;
             }
         }
@@ -829,20 +844,27 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             isDownObstacle = (startX > obstacle.x && startX < obstacle.x + obstacle.w && startY > obstacle.y && startY < obstacle.y + obstacle.h);
             key++;
             if(isDownObstacle) {
-                activateSimEditButton();
+                enableChangeObjectButtons();
                 selectedColorBlock = null;
                 selectedObstacle = customObstacleList.length - key;
+                selectedObject = customObstacleList[selectedObstacle];
+                scene.highlightObject();
                 break;
             }
         }
         isDownRuler = (startX > ruler.x && startX < ruler.x + ruler.w && startY > ruler.y && startY < ruler.y + ruler.h);
-        if(!isDownColorBlock && !isDownObstacle) {
-            disableSimEditButton();
-            selectedColorBlock = null;
-            selectedObstacle = null;
-        }
+        checkSelection();
         if (isDownRobots || isDownObstacle || isDownRuler || isDownColorBlock || isAnyRobotDown()) {
             e.stopPropagation();
+        }
+    }
+
+    function checkSelection() {
+        if(!isDownColorBlock && !isDownObstacle) {
+            disableChangeObjectButtons();
+            selectedObject = null;
+            selectedColorBlock = null;
+            selectedObstacle = null;
         }
     }
 
@@ -1111,7 +1133,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         scene.drawRobots();
         scene.drawVariables();
         addMouseEvents();
-        disableSimEditButton();
+        disableChangeObjectButtons();
         for (var i = 0; i < numRobots; i++) {
             readyRobots[i] = true;
         }
@@ -1120,6 +1142,12 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         $('#backgroundDiv').on("resize", resizeAll);
         render();
     }
+
+    function getSelectedObject () {
+        return selectedObject;
+    }
+
+    exports.getSelectedObject = getSelectedObject;
 
     function getScale() {
         return scale;

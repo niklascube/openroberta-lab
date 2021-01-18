@@ -2292,17 +2292,20 @@ input[type=range]:focus::-ms-fill-upper {
     animation: iais-loading-spin 1.2s linear infinite;
 }
 
-#simEditButtons > .btn-group {
+#simEditButtons > .btn-group,
+.secondRow > .btn-group {
     width: 48px;
     height: 48px;
 }
 
-#simEditButtons > .btn-group > .dropdown-menu {
+#simEditButtons > .btn-group > .dropdown-menu,
+.secondRow > .btn-group > .dropdown-menu {
     width: 48px;
     margin-top: 6px;
 }
 
-#simEditButtons > .btn-group > .dropdown-menu > li > a {
+#simEditButtons > .btn-group > .dropdown-menu > li > a,
+.secondRow > .btn-group > .dropdown-menu > li > a {
     padding-left:5px;
     padding-right:0;
     text-align: center;

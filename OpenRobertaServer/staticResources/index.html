@@ -342,8 +342,7 @@ limitations under the License.
                                     <li><a id="simAddObstacleRectangle" class="typcn typcn-media-stop"></a></li>
                                     <li><a class="typcn typcn-arrow-sorted-up"></a></li>
                                     <li><a class="typcn typcn-media-record"></a></li>
-                                    <!--<li><a id="simDeleteAllObstacles" title="Delete all obstacles." class="typcn typcn-trash" style="border-top: 1px solid #888888;"></a></li>-->
-                                </ul>
+                                   </ul>
                     </div>
                     <div class="btn-group blbtn">
                         <button id="simCustomColorObject" type="button" class="blbtn typcn typcn-brush dropdown-toggle" data-toggle="dropdown" aria-expanded="true" lkey="Blockly.Msg.MENU_SIM_ADD_COLOR_OBJECT_TOOLTIP" rel="tooltip"
@@ -355,22 +354,29 @@ limitations under the License.
                                         <li><a id="simAddColorBlockRed" class="typcn typcn-media-stop" style="color: #FF0000"></a></li>
                                         <!--<li><a id="simAddColorBlockBrown" class="typcn typcn-media-stop" style="color: #613000"></a></li>-->
                                         <li><a id="simAddColorBlockYellow" class="typcn typcn-media-stop" style="color: #FFFF00"></a></li>
-                                        <!--<li><a id="simDeleteAllColorBlocks" title="Delete all color objects." class="typcn typcn-trash" style="border-top: 1px solid #888888;"></a></li>-->
                                     </ul>
                     </div>
                     <div class="btn-group blbtn">
                         <button id="simDeleteElements" type="button" class="blbtn typcn typcn-arrow-loop" lkey="Blockly.Msg.MENU_SIM_DELETE_ELEMENTS_TOOLTIP" rel="tooltip"
                                 data-original-title="" title=""></button>
                     </div>
-                    <div class="btn-group blbtn">
-                        <button id="simEditObject" type="button" class="blbtn typcn typcn-cog-outline dropdown-toggle" data-toggle="dropdown" aria-expanded="true" lkey="Blockly.Msg.MENU_SIM_EDIT_OBJECT_TOOLTIP" rel="tooltip"
-                                data-original-title=""></button>
-                        <ul class="dropdown-menu">
-                            <li><a id="simChangeObjectColor" class="typcn typcn-brush" style="color: #000000"></a></li>
-                            <li><a id="simChangeObjectSize" class="typcn typcn-arrow-maximise"></a></li>
-                            <li><a id="simDeleteObject" class="typcn typcn-trash" style="color: #FF0000"></a></li>
-
-                        </ul>
+                    <div class="secondRow">
+                        <div class="btn-group blbtn">
+                            <button id="simChangeObjectColor" type="button" class="blbtn typcn typcn-pipette" dropdown-toggle data-toggle="dropdown" aria-expanded="true" lkey="Blockly.Msg.MENU_SIM_CHANGE_COLOR_TOOLTIP" rel="tooltip"
+                                    data-original-title=""></button>
+                                        <ul class="dropdown-menu">
+                                            <li><a id="simChangeColorBlockBlack" class="typcn typcn-media-stop" style="color: #000000"></a></li>
+                                            <li><a id="simChangeColorBlockBlue" class="typcn typcn-media-stop" style="color: #0000FF"></a></li>
+                                            <!--<li><a id="simChangeColorBlockGray" class="typcn typcn-media-stop" style="color: #585858"></a></li>-->
+                                            <li><a id="simChangeColorBlockRed" class="typcn typcn-media-stop" style="color: #FF0000"></a></li>
+                                            <!--<li><a id="simChangeColorBlockBrown" class="typcn typcn-media-stop" style="color: #613000"></a></li>-->
+                                            <li><a id="simChangeColorBlockYellow" class="typcn typcn-media-stop" style="color: #FFFF00"></a></li>
+                                        </ul>
+                        </div>
+                        <div class="btn-group blbtn">
+                            <button id="simDeleteObject" type="button" class="blbtn typcn typcn-trash" style="color: #FF0000" lkey="Blockly.Msg.MENU_SIM_DELETE_OBJECT_TOOLTIP" rel="tooltip"
+                                    data-original-title=""></button>
+                        </div>
                     </div>
                 </div>
                 <div id="canvasDiv">
