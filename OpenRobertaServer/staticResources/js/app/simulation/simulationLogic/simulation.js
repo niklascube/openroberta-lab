@@ -23,6 +23,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     var isDownObstacle = false;
     var isDownRuler = false;
     var isDownColorBlock = false;
+    var isDownColorBlockCorner = false;
+    var isDownObstacleCorner = false;
     var startX;
     var startY;
     var scale = 1;
@@ -30,6 +32,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     var selectedObstacle;
     var selectedColorBlock;
     var selectedObject;
+    var selectedCorner;
     var canceled;
     var storedPrograms;
     var customBackgroundLoaded = false;
@@ -846,9 +849,28 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
         for(let key in colorBlockList) {
             let colorBlock = colorBlockList.slice().reverse()[key];
+
+            if(selectedColorBlock != null) {
+                const shift = 15;
+                let colorBlockCorners = [
+                    {x: (Math.round(colorBlock.x-shift)), y: (Math.round(colorBlock.y-shift) + colorBlock.h), w: shift, h:shift},
+                    {x: Math.round(colorBlock.x-shift), y: Math.round(colorBlock.y-shift), w: shift, h:shift},
+                    {x: (Math.round(colorBlock.x-shift) + colorBlock.w), y: Math.round(colorBlock.y-shift), w: shift, h:shift},
+                    {x: (Math.round(colorBlock.x-shift) + colorBlock.w), y: (Math.round(colorBlock.y-shift) + colorBlock.h), w: shift, h:shift}
+                ];
+                for(let corner_index in colorBlockCorners) {
+                    isDownColorBlockCorner = (startX > colorBlockCorners[corner_index].x && startX < colorBlockCorners[corner_index].x + colorBlockCorners[corner_index].w && startY > colorBlockCorners[corner_index].y && startY < colorBlockCorners[corner_index].y + colorBlockCorners[corner_index].h);
+                    if(isDownColorBlockCorner) {
+                        selectedCorner = corner_index;
+                        break;
+                    }
+                }
+            }
+
             isDownColorBlock = (startX > colorBlock.x && startX < colorBlock.x + colorBlock.w && startY > colorBlock.y && startY < colorBlock.y + colorBlock.h);
+
             key++;
-            if (isDownColorBlock) {
+            if (isDownColorBlock && !isDownObstacleCorner) {
                 enableChangeObjectButtons();
                 selectedObstacle = null;
                 selectedColorBlock = colorBlockList.length - key;
@@ -860,9 +882,30 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
         for(let key in customObstacleList) {
             let obstacle = customObstacleList.slice().reverse()[key];
+
+            if(selectedObstacle != null) {
+                const shift = 15;
+                let obstacleCorners = [
+                    {x: (Math.round(obstacle.x-shift)), y: (Math.round(obstacle.y-shift) + obstacle.h), w: shift, h:shift},
+                    {x: Math.round(obstacle.x-shift), y: Math.round(obstacle.y-shift), w: shift, h:shift},
+                    {x: (Math.round(obstacle.x-shift) + obstacle.w), y: Math.round(obstacle.y-shift), w: shift, h:shift},
+                    {x: (Math.round(obstacle.x-shift) + obstacle.w), y: (Math.round(obstacle.y-shift) + obstacle.h), w: shift, h:shift}
+                ];
+                console.log(obstacleCorners);
+                for(let corner_index in obstacleCorners) {
+                    isDownObstacleCorner = (startX > obstacleCorners[corner_index].x && startX < obstacleCorners[corner_index].x + obstacleCorners[corner_index].w && startY > obstacleCorners[corner_index].y && startY < obstacleCorners[corner_index].y + obstacleCorners[corner_index].h);
+                    if(isDownObstacleCorner) {
+                        selectedCorner = corner_index;
+                        console.log("corner index: " + corner_index);
+                        break;
+                    }
+                }
+            }
+
             isDownObstacle = (startX > obstacle.x && startX < obstacle.x + obstacle.w && startY > obstacle.y && startY < obstacle.y + obstacle.h);
+
             key++;
-            if(isDownObstacle) {
+            if(isDownObstacle && !isDownColorBlockCorner) {
                 enableChangeObjectButtons();
                 selectedColorBlock = null;
                 selectedObstacle = customObstacleList.length - key;
@@ -874,13 +917,13 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
         isDownRuler = (startX > ruler.x && startX < ruler.x + ruler.w && startY > ruler.y && startY < ruler.y + ruler.h);
         checkSelection();
-        if (isDownRobots || isDownObstacle || isDownRuler || isDownColorBlock || isAnyRobotDown()) {
+        if (isDownRobots || isDownObstacle || isDownObstacleCorner || isDownRuler || isDownColorBlock || isDownColorBlockCorner || isAnyRobotDown()) {
             e.stopPropagation();
         }
     }
 
     function checkSelection() {
-        if(!isDownColorBlock && !isDownObstacle) {
+        if(!isDownColorBlock && !isDownObstacle && !isDownObstacleCorner && !isDownColorBlockCorner) {
             disableChangeObjectButtons();
             selectedObject = null;
             selectedColorBlock = null;
@@ -1006,17 +1049,67 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             robots[mouseOnRobotIndex].mouse.rx += dx;
             robots[mouseOnRobotIndex].mouse.ry += dy;
             updateSIM();
-        } else if (isDownObstacle && selectedObstacle != null) {
+        } else if (isDownObstacle && selectedObstacle != null && !isDownObstacleCorner) {
             customObstacleList[selectedObstacle].x += dx;
             customObstacleList[selectedObstacle].y += dy;
+            updateSIM();
+        } else if(isDownObstacleCorner && selectedObstacle != null) {
+            if(customObstacleList[selectedObstacle].w >= 10 && customObstacleList[selectedObstacle].h >= 10) {
+                if(selectedCorner == 0) {
+                    customObstacleList[selectedObstacle].x -= dx;
+                    customObstacleList[selectedObstacle].w += dx;
+                    customObstacleList[selectedObstacle].h += dy;
+                } else if(selectedCorner == 1) {
+                    customObstacleList[selectedObstacle].x -= dx;
+                    customObstacleList[selectedObstacle].y -= dy;
+                    customObstacleList[selectedObstacle].w += dx;
+                    customObstacleList[selectedObstacle].h += dy;
+                } else if(selectedCorner == 2) {
+                    customObstacleList[selectedObstacle].y -= dy;
+                    customObstacleList[selectedObstacle].w += dx;
+                    customObstacleList[selectedObstacle].h += dy;
+                } else if(selectedCorner == 3) {
+                    customObstacleList[selectedObstacle].w += dx;
+                    customObstacleList[selectedObstacle].h += dy;
+                }
+            } else if(customObstacleList[selectedObstacle].w < 10){
+                customObstacleList[selectedObstacle].w = 11;
+            } else if(customObstacleList[selectedObstacle].h < 10) {
+                customObstacleList[selectedObstacle].h = 11;
+            }
             updateSIM();
         } else if (isDownRuler) {
             ruler.x += dx;
             ruler.y += dy;
             updateSIM();
-        } else if (isDownColorBlock && selectedColorBlock != null) {
+        } else if (isDownColorBlock && selectedColorBlock != null && !isDownColorBlockCorner) {
             colorBlockList[selectedColorBlock].x += dx;
             colorBlockList[selectedColorBlock].y += dy;
+            updateSIM();
+        } else if(isDownColorBlockCorner && selectedColorBlock != null) {
+            if(colorBlockList[selectedColorBlock].w >= 10 && colorBlockList[selectedColorBlock].h >= 10) {
+                if(selectedCorner == 0) {
+                    colorBlockList[selectedColorBlock].x -= dx;
+                    colorBlockList[selectedColorBlock].w += dx;
+                    colorBlockList[selectedColorBlock].h += dy;
+                } else if(selectedCorner == 1) {
+                    colorBlockList[selectedColorBlock].x -= dx;
+                    colorBlockList[selectedColorBlock].y -= dy;
+                    colorBlockList[selectedColorBlock].w += dx;
+                    colorBlockList[selectedColorBlock].h += dy;
+                } else if(selectedCorner == 2) {
+                    colorBlockList[selectedColorBlock].y -= dy;
+                    colorBlockList[selectedColorBlock].w += dx;
+                    colorBlockList[selectedColorBlock].h += dy;
+                } else if(selectedCorner == 3) {
+                    colorBlockList[selectedColorBlock].w += dx;
+                    colorBlockList[selectedColorBlock].h += dy;
+                }
+            } else if(colorBlockList[selectedColorBlock].w < 10){
+                colorBlockList[selectedColorBlock].w = 11;
+            } else if(colorBlockList[selectedColorBlock].h < 10) {
+                colorBlockList[selectedColorBlock].h = 11;
+            }
             updateSIM();
         }
     }

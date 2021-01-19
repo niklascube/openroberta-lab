@@ -133,10 +133,7 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                     {x: Math.round(selectedObject.x), y: Math.round(selectedObject.y)},
                     {x: (Math.round(selectedObject.x) + selectedObject.w), y: Math.round(selectedObject.y)},
                     {x: (Math.round(selectedObject.x)), y: (Math.round(selectedObject.y) + selectedObject.h)},
-                    {
-                        x: (Math.round(selectedObject.x) + selectedObject.w),
-                        y: (Math.round(selectedObject.y) + selectedObject.h)
-                    }
+                    {x: (Math.round(selectedObject.x) + selectedObject.w), y: (Math.round(selectedObject.y) + selectedObject.h)}
                 ];
                 for (let c in obstacleCorners) {
                     this.oCtx.restore();
