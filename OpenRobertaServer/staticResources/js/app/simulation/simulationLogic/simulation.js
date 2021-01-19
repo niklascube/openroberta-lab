@@ -345,9 +345,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         };
         if(color === "black") newColorBlock.color = C.COLOR_ENUM.BLACK;
         if(color === "blue") newColorBlock.color = C.COLOR_ENUM.BLUE;
-        //if(color === "gray") newColorBlock.color = C.COLOR_ENUM.GRAY;
+        if(color === "green") newColorBlock.color = C.COLOR_ENUM.GREEN;
         if(color === "red") newColorBlock.color = C.COLOR_ENUM.RED;
-        //if(color === "brown") newColorBlock.color = C.COLOR_ENUM.BROWN;
         if(color === "yellow") newColorBlock.color = C.COLOR_ENUM.YELLOW;
         colorBlockList.unshift(newColorBlock);
         scene.drawColorBlocks();
@@ -358,17 +357,15 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         if (selectedColorBlock != null){
             if(color === "black") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.BLACK;
             if(color === "blue") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.BLUE;
-            //if(color === "gray") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.GRAY;
+            if(color === "green") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.GREEN;
             if(color === "red") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.RED;
-            //if(color === "brown") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.BROWN;
             if(color === "yellow") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.YELLOW;
         }
         if (selectedObstacle != null){
             if(color === "black") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.BLACK;
             if(color === "blue") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.BLUE;
-            //if(color === "gray") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.GRAY;
+            if(color === "green") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.GREEN;
             if(color === "red") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.RED;
-            //if(color === "brown") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.BROWN;
             if(color === "yellow") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.YELLOW;
         }
         updateSIM();

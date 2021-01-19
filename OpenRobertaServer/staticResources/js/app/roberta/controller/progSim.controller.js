@@ -186,22 +186,14 @@ define(['exports', 'message', 'log', 'util', 'simulation.simulation', 'simulatio
                 SIM.addColorBlock("blue");
             }, 'simAddColorBlockBlue clicked');
 
-            /*
-            $('#simAddColorBlockGray').onWrap('click', function(event) {
-                SIM.addColorBlock("gray");
-            }, 'simAddColorBlockGray clicked');
-            */
+            $('#simAddColorBlockGreen').onWrap('click', function(event) {
+                SIM.addColorBlock("green");
+            }, 'simAddColorBlockGreen clicked');
 
             $('#simAddColorBlockRed').onWrap('click', function(event) {
                 SIM.addColorBlock("red");
             }, 'simAddColorBlockRed clicked');
 
-            /*
-            $('#simAddColorBlockBrown').onWrap('click', function(event) {
-                SIM.addColorBlock("brown");
-            }, 'simAddColorBlockBrown clicked');
-            */
-            
             $('#simAddColorBlockYellow').onWrap('click', function(event) {
                 SIM.addColorBlock("yellow");
             }, 'simAddColorBlockYellow clicked');
@@ -214,21 +206,13 @@ define(['exports', 'message', 'log', 'util', 'simulation.simulation', 'simulatio
                 SIM.changeObjectColor("blue");
             }, 'simChangeColorBlockBlue clicked');
 
-            /*
-            $('#simChangeObjectColorGray').onWrap('click', function(event) {
-                SIM.changeObjectColor("gray");
-            }, 'simChangeColorBlockGray clicked');
-            */
+            $('#simChangeObjectColorGreen').onWrap('click', function(event) {
+                SIM.changeObjectColor("green");
+            }, 'simChangeObjectColorGreen clicked');
 
             $('#simChangeObjectColorRed').onWrap('click', function(event) {
                 SIM.changeObjectColor("red");
             }, 'simChangeColorBlockRed clicked');
-
-            /*
-            $('#simChangeObjectColorBrown').onWrap('click', function(event) {
-                SIM.changeObjectColor("brown");
-            }, 'simChangeColorBlockBrown clicked');
-            */
 
             $('#simChangeObjectColorYellow').onWrap('click', function(event) {
                 SIM.changeObjectColor("yellow");
