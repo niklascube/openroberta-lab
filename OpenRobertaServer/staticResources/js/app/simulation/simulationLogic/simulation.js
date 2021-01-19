@@ -855,6 +855,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 selectedObstacle = null;
                 selectedColorBlock = colorBlockList.length - key;
                 selectedObject = colorBlockList[selectedColorBlock];
+                updateSIM();
                 scene.highlightObject();
                 break;
             }
@@ -868,6 +869,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 selectedColorBlock = null;
                 selectedObstacle = customObstacleList.length - key;
                 selectedObject = customObstacleList[selectedObstacle];
+                updateSIM();
                 scene.highlightObject();
                 break;
             }
@@ -1005,6 +1007,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             robots[mouseOnRobotIndex].pose.y += dy;
             robots[mouseOnRobotIndex].mouse.rx += dx;
             robots[mouseOnRobotIndex].mouse.ry += dy;
+            updateSIM();
         } else if (isDownObstacle && selectedObstacle != null) {
             customObstacleList[selectedObstacle].x += dx;
             customObstacleList[selectedObstacle].y += dy;
