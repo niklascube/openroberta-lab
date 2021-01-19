@@ -298,6 +298,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         while(colorBlockList.length > 0) {
             colorBlockList.pop();
         }
+        disableChangeObjectButtons();
         updateSIM();
     }
     exports.deleteElements = deleteElements;
