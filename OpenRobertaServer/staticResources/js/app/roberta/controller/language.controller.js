@@ -173,6 +173,12 @@ define(['exports', 'log', 'jquery', 'guiState.controller', 'program.controller',
                 $('#simChangeObjectColor').attr('data-original-title', value);
             } else if (lkey === "Blockly.Msg.MENU_SIM_DELETE_OBJECT_TOOLTIP") {
                 $('#simDeleteObject').attr('data-original-title', value);
+            } else if (lkey === "Blockly.Msg.MENU_SIM_CONFIG") {
+                $('#simConfig').attr('data-original-title', value);
+            } else if (lkey === "Blockly.Msg.MENU_SIM_CONFIG_DOWNLOAD") {
+                $('#simDownloadConfig').attr('data-original-title', value);
+            } else if (lkey === "Blockly.Msg.MENU_SIM_CONFIG_UPLOAD") {
+                $('#simUploadConfig').attr('data-original-title', value);
             } else if (lkey === "Blockly.Msg.MENU_SIM_ROBOT_TOOLTIP") {
                 $('#simRobot').attr('data-original-title', value);
             } else if (lkey == 'Blockly.Msg.MENU_SIM_VALUES_TOOLTIP') {
