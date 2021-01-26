@@ -2293,24 +2293,39 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 #simEditButtons > .btn-group,
+#simButtons > .btn-group,
 .secondRow > .btn-group {
     width: 48px;
     height: 48px;
 }
 
-#simEditButtons > .btn-group > .dropdown-menu,
+#simEditButtons >.btn-group > .dropdown-menu,
 .secondRow > .btn-group > .dropdown-menu {
     width: 48px;
     margin-top: 6px;
 }
 
+#simButtons >.btn-group > .dropdown-menu {
+    width: 48px;
+    margin-bottom: 6px;
+}
+
 #simEditButtons > .btn-group > .dropdown-menu > li > a,
+#simButtons > .btn-group > .dropdown-menu > li > a,
 .secondRow > .btn-group > .dropdown-menu > li > a {
     padding-left:5px;
     padding-right:0;
     text-align: center;
     height: 35px;
     font-size: 28px;
+}
+
+#simButtons > .btn-group > .dropdown-menu > li > a {
+    padding: 8px 0px 7px 0px;
+    text-align: center;
+    height: 100%;
+    margin: 0;
+    vertical-align: middle;
 }
 
 @keyframes iais-loading-spin {
