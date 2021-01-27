@@ -35,6 +35,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     var selectedCorner;
     var canceled;
     var storedPrograms;
+    var copiedObject;
     var customBackgroundLoaded = false;
     var debugMode = false;
     var breakpoints = [];
@@ -286,7 +287,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 hOld: 0,
                 img: null,
                 isParallelToAxis: true,
-                color: "#2b2b2b"
+                color: "#2b2b2b",
+                type: "obstacle"
             };
             customObstacleList.unshift(newRectangleObstacle);
         }
@@ -328,7 +330,6 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         while(customObstacleList.length > 0) {
             customObstacleList.pop();
         }
-        //exports.obstacleList = [ground, customObstacleList];
         scene.updateBackgrounds();
         scene.drawColorBlocks();
     }
@@ -346,7 +347,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             wOld: 0,
             hOld: 0,
             img: null,
-            color: C.COLOR_ENUM.BLACK
+            color: C.COLOR_ENUM.BLACK,
+            type: "colorBlock"
         };
         if(color === "black") newColorBlock.color = C.COLOR_ENUM.BLACK;
         if(color === "blue") newColorBlock.color = C.COLOR_ENUM.BLUE;
@@ -417,7 +419,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         y: 0,
         w: 500,
         h: 500,
-        isParallelToAxis: true
+        isParallelToAxis: true,
+        type: "ground"
     };
 
     var customObstacle = {
@@ -429,7 +432,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         h: 0,
         wOld: 0,
         hOld: 0,
-        isParallelToAxis: true
+        isParallelToAxis: true,
+        type: "obstacle"
     };
 
     customObstacleList.unshift(customObstacle);
@@ -443,7 +447,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         w: 0,
         h: 0,
         wOld: 0,
-        hOld: 0
+        hOld: 0,
+        type: "ruler"
     };
     // Note: The ruler is not considered an obstacle. The robot will
     // simply drive over it.
@@ -785,6 +790,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
     function handleKeyEvent(e) {
         var keyName = e.key;
+        var keyCode = e.keyCode;
         switch (keyName) {
             case "ArrowUp":
                 robots[robotIndex].pose.x += Math.cos(robots[robotIndex].pose.theta);
@@ -802,6 +808,31 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 break;
             case "ArrowRight":
                 robots[robotIndex].pose.theta += Math.PI / 180;
+                e.preventDefault();
+                break;
+            default:
+            // nothing to do so far
+        }
+        switch (keyCode) {
+            case 17 && 67:
+                if(selectedObject) copiedObject = JSON.parse(JSON.stringify(selectedObject));
+                e.preventDefault();
+                break;
+            case 17 && 86:
+                if(copiedObject && selectedObject) {
+                    copiedObject = JSON.parse(JSON.stringify(selectedObject));
+                    copiedObject.x = mouseX - copiedObject.w/2;
+                    copiedObject.y = mouseY - copiedObject.h/2;
+
+                    if(copiedObject.type === "obstacle") {
+                        customObstacleList.unshift(copiedObject);
+                        exports.obstacleList = [ground, customObstacleList];
+                    }
+                    if(copiedObject.type === "colorBlock") {
+                        colorBlockList.unshift(copiedObject);
+                    }
+                    updateSIM();
+                }
                 e.preventDefault();
                 break;
             default:
@@ -881,7 +912,6 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 selectedColorBlock = colorBlockList.length - key;
                 selectedObject = colorBlockList[selectedColorBlock];
                 updateSIM();
-                scene.highlightObject();
                 break;
             }
         }
@@ -896,7 +926,6 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 selectedObstacle = customObstacleList.length - key;
                 selectedObject = customObstacleList[selectedObstacle];
                 updateSIM();
-                scene.highlightObject();
                 break;
             }
         }
@@ -991,6 +1020,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         scene.drawColorBlocks();
         scene.drawRuler();
         scene.drawObjects();
+        scene.highlightObject();
     }
     exports.updateSIM = updateSIM;
 
