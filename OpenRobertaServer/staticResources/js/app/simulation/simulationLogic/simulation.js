@@ -274,9 +274,10 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
     function addObstacle(shape) {
         if (shape === "rectangle") {
+            console.log(getScale());
             let newRectangleObstacle = {
-                x: 400,
-                y: 100,
+                x: (Math.random() * ((ground.w-100) - 100) + 100),
+                y: (Math.random() * ((ground.h-100) - 100) + 100),
                 xOld: 0,
                 yOld: 0,
                 w: 100,
@@ -336,12 +337,12 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
     function addColorBlock(color) {
         let newColorBlock = {
-            x: 100,
-            y: 350,
+            x: (Math.random() * ((ground.w-100) - 100) + 100),
+            y: (Math.random() * ((ground.h-100) - 100) + 100),
             xOld: 0,
             yOld: 0,
-            w: 100,
-            h: 100,
+            w: 43,
+            h: 80,
             wOld: 0,
             hOld: 0,
             img: null,
