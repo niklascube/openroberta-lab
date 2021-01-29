@@ -238,6 +238,16 @@ define(['exports', 'message', 'log', 'util', 'simulation.simulation', 'simulatio
                 SIM.deleteSelectedObject();
             }, 'simDeleteObject clicked');
 
+            $('#simDownloadConfig').onWrap('click', function(event) {
+                var filename = GUISTATE_C.getProgramName() + '-sim_configuration.json';
+                UTIL.download(filename, JSON.stringify(SIM.getSimConfig()));
+                MSG.displayMessage("MENU_MESSAGE_DOWNLOAD", "TOAST", filename);
+            }, 'simDownloadConfig clicked');
+
+            $('#simUploadConfig').onWrap('click', function(event) {
+                SIM.importConfigData();
+            }, 'simUploadConfig clicked');
+
         }
 
         function toggleSim() {

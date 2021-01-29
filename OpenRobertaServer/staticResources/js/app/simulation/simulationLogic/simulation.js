@@ -1363,6 +1363,18 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
     exports.getInfo = getInfo;
 
+
+    function getSimConfig() {
+        return  {
+            "obstacles": customObstacleList,
+            "colorBlocks": colorBlockList,
+            "ruler": ruler,
+            "background": currentBackground
+        }
+    }
+    exports.getSimConfig = getSimConfig;
+
+
     function isIE() {
         var ua = window.navigator.userAgent;
         var ie = ua.indexOf('MSIE ');
@@ -1379,6 +1391,33 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         var edge = ua.indexOf('Edge');
         return edge > -1;
     }
+
+    function importConfigData() {
+        $('#backgroundFileSelector').val(null);
+        $('#backgroundFileSelector').attr("accept", ".json");
+        $('#backgroundFileSelector').trigger('click'); // opening dialog
+        $('#backgroundFileSelector').change(function(event) {
+            var file = event.target.files[0];
+            var reader = new FileReader();
+            reader.onload = (function (theFile) {
+                return function (e) {
+                    try {
+                        configData = JSON.parse(e.target.result);
+                        customObstacleList = configData["obstacles"];
+                        colorBlockList = configData["colorBlocks"];
+                        ruler = configData["ruler"];
+                        currentBackground = configData["background"];
+                        initScene();
+                    } catch (ex) {
+                        MSG.displayPopupMessage("Blockly.Msg.POPUP_BACKGROUND_STORAGE", Blockly.Msg.POPUP_CONFIG_UPLOAD_ERROR);
+                    }
+                }
+            })(file);
+            reader.readAsText(file);
+        });
+    }
+    exports.importConfigData = importConfigData;
+
 
     function importImage() {
         $('#backgroundFileSelector').val(null);
