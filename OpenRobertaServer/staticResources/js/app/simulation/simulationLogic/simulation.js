@@ -275,9 +275,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
     function addObstacle(shape) {
         if (shape === "rectangle") {
-            console.log(getScale());
             let newRectangleObstacle = {
-                x: (Math.random() * ((ground.w-100) - 100) + 100),
+                x: (Math.random() * ((ground.w-200) - 100) + 100),
                 y: (Math.random() * ((ground.h-100) - 100) + 100),
                 xOld: 0,
                 yOld: 0,
@@ -305,10 +304,11 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         while(colorBlockList.length > 0) {
             colorBlockList.pop();
         }
-        disableChangeObjectButtons();
+        checkSelection();
         updateSIM();
     }
     exports.deleteElements = deleteElements;
+
 
     function deleteSelectedObject(){
         if (selectedColorBlock != null){
@@ -327,6 +327,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
     exports.deleteSelectedObject = deleteSelectedObject
 
+
     function clearObstacleList() {
         while(customObstacleList.length > 0) {
             customObstacleList.pop();
@@ -339,7 +340,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
     function addColorBlock(color) {
         let newColorBlock = {
-            x: (Math.random() * ((ground.w-100) - 100) + 100),
+            x: (Math.random() * ((ground.w-200) - 100) + 100),
             y: (Math.random() * ((ground.h-100) - 100) + 100),
             xOld: 0,
             yOld: 0,
@@ -818,21 +819,30 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 // nothing to do so far
             }
         } else {
+            const shift = 5;
             switch (keyName) {
                 case "ArrowUp":
-                    customObstacleList[selectedObstacle].x += 1;
+                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].y -= shift;
+                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].y -= shift;
                     e.preventDefault();
                     break;
                 case "ArrowLeft":
-                    customObstacleList[selectedObstacle].theta -= Math.PI / 180;
+                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].x -= shift;
+                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].x -= shift;
+                    //if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].theta -= Math.PI / 180;
+                    //if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].theta -= Math.PI / 180;
                     e.preventDefault();
                     break;
                 case "ArrowDown":
-                    customObstacleList[selectedObstacle].x -= 1;
+                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].y += shift;
+                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].y += shift;
                     e.preventDefault();
                     break;
                 case "ArrowRight":
-                    customObstacleList[selectedObstacle].theta += Math.PI / 180;
+                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].x += shift;
+                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].x += shift;
+                    //if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].theta += Math.PI / 180;
+                    //if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].theta += Math.PI / 180;
                     e.preventDefault();
                     break;
                 default:
