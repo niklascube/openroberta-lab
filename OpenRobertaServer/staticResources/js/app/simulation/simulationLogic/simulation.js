@@ -285,6 +285,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 h: 100,
                 wOld: 0,
                 hOld: 0,
+                theta: 0,
                 img: null,
                 isParallelToAxis: true,
                 color: "#2b2b2b",
@@ -346,6 +347,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             h: 80,
             wOld: 0,
             hOld: 0,
+            theta: 0,
             img: null,
             color: C.COLOR_ENUM.BLACK,
             type: "colorBlock"
@@ -432,6 +434,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         h: 0,
         wOld: 0,
         hOld: 0,
+        theta: 0,
         isParallelToAxis: true,
         type: "obstacle"
     };
@@ -791,27 +794,50 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     function handleKeyEvent(e) {
         var keyName = e.key;
         var keyCode = e.keyCode;
-        switch (keyName) {
-            case "ArrowUp":
-                robots[robotIndex].pose.x += Math.cos(robots[robotIndex].pose.theta);
-                robots[robotIndex].pose.y += Math.sin(robots[robotIndex].pose.theta);
-                e.preventDefault();
-                break;
-            case "ArrowLeft":
-                robots[robotIndex].pose.theta -= Math.PI / 180;
-                e.preventDefault();
-                break;
-            case "ArrowDown":
-                robots[robotIndex].pose.x -= Math.cos(robots[robotIndex].pose.theta);
-                robots[robotIndex].pose.y -= Math.sin(robots[robotIndex].pose.theta);
-                e.preventDefault();
-                break;
-            case "ArrowRight":
-                robots[robotIndex].pose.theta += Math.PI / 180;
-                e.preventDefault();
-                break;
-            default:
-            // nothing to do so far
+        if(!selectedObject) {
+            switch (keyName) {
+                case "ArrowUp":
+                    robots[robotIndex].pose.x += Math.cos(robots[robotIndex].pose.theta);
+                    robots[robotIndex].pose.y += Math.sin(robots[robotIndex].pose.theta);
+                    e.preventDefault();
+                    break;
+                case "ArrowLeft":
+                    robots[robotIndex].pose.theta -= Math.PI / 180;
+                    e.preventDefault();
+                    break;
+                case "ArrowDown":
+                    robots[robotIndex].pose.x -= Math.cos(robots[robotIndex].pose.theta);
+                    robots[robotIndex].pose.y -= Math.sin(robots[robotIndex].pose.theta);
+                    e.preventDefault();
+                    break;
+                case "ArrowRight":
+                    robots[robotIndex].pose.theta += Math.PI / 180;
+                    e.preventDefault();
+                    break;
+                default:
+                // nothing to do so far
+            }
+        } else {
+            switch (keyName) {
+                case "ArrowUp":
+                    customObstacleList[selectedObstacle].x += 1;
+                    e.preventDefault();
+                    break;
+                case "ArrowLeft":
+                    customObstacleList[selectedObstacle].theta -= Math.PI / 180;
+                    e.preventDefault();
+                    break;
+                case "ArrowDown":
+                    customObstacleList[selectedObstacle].x -= 1;
+                    e.preventDefault();
+                    break;
+                case "ArrowRight":
+                    customObstacleList[selectedObstacle].theta += Math.PI / 180;
+                    e.preventDefault();
+                    break;
+                default:
+                // nothing to do so far
+            }
         }
         switch (keyCode) {
             case 17 && 67:
@@ -831,13 +857,13 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     if(copiedObject.type === "colorBlock") {
                         colorBlockList.unshift(copiedObject);
                     }
-                    updateSIM();
                 }
                 e.preventDefault();
                 break;
             default:
             // nothing to do so far
         }
+        updateSIM();
     }
 
     function disableChangeObjectButtons() {

@@ -111,12 +111,19 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
             obstacle.yOld = obstacle.y;
             obstacle.wOld = obstacle.w;
             obstacle.hOld = obstacle.h;
+
             this.oCtx.restore();
             this.oCtx.save();
+
             this.oCtx.scale(SIM.getScale(), SIM.getScale());
+
             if (obstacle.img) {
                 this.oCtx.drawImage(obstacle.img, obstacle.x, obstacle.y, obstacle.w, obstacle.h);
             } else if (obstacle.color) {
+                this.oCtx.translate(obstacle.x, obstacle.y);
+                this.oCtx.rotate(obstacle.theta);
+                this.oCtx.translate(-obstacle.x, -obstacle.y);
+
                 this.oCtx.fillStyle = obstacle.color;
                 this.oCtx.shadowBlur = 5;
                 this.oCtx.shadowColor = "black";
@@ -167,6 +174,8 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
             } else if (colorBlock.color) {
                 this.uCtx.fillStyle = colorBlock.color;
                 this.bCtx.fillStyle = colorBlock.color;
+                this.oCtx.rotate(colorBlock.theta - Math.PI / 2);
+                this.bCtx.rotate(colorBlock.theta - Math.PI / 2);
                 this.uCtx.fillRect(colorBlock.x, colorBlock.y, colorBlock.w, colorBlock.h);
                 this.bCtx.fillRect(colorBlock.x, colorBlock.y, colorBlock.w, colorBlock.h);
                 if(SIM.getSelectedObject() != null) this.highlightObject();
