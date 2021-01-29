@@ -118,6 +118,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
     function setBackground(num, callback) {
         if (num == undefined) {
+            deleteElements();
             setObstacle();
             setRuler();
             removeMouseEvents();
