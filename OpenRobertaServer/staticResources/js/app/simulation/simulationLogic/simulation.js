@@ -486,9 +486,9 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
         if (robotType.indexOf("calliope") >= 0) {
             currentBackground = 0;
-            $('.dropdown.sim, .simScene, #simImport, #simResetPose, #simButtonsHead, #simCustomColorObject, #simCustomObstacle').hide();
+            $('.dropdown.sim, .simScene, #simImport, #simResetPose, #simButtonsHead, #simEditButtons').hide();
         } else if (robotType === 'microbit') {
-            $('.dropdown.sim, .simScene, #simImport, #simResetPose, #simButtonsHead, #simCustomColorObject, #simCustomObstacle').hide();
+            $('.dropdown.sim, .simScene, #simImport, #simResetPose, #simButtonsHead, #simEditButtons').hide();
             currentBackground = 1;
         } else if (currentBackground === 0 || currentBackground == 1) {
             currentBackground = 2;
@@ -498,7 +498,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 $('.dropdown.sim, .simScene').show();
                 $('#simImport').hide();
             } else {
-                $('.dropdown.sim, .simScene, #simImport, #simResetPose, #simCustomColorObject, #simCustomObstacle').show();
+                $('.dropdown.sim, .simScene, #simImport, #simResetPose, #simButtonsHead, #simEditButtons').show();
             }
             if ($('#device-size').find('div:visible').first().attr('id')) {
                 $('#simButtonsHead').show();
