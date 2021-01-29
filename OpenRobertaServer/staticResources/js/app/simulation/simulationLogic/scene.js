@@ -51,6 +51,7 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
         this.drawBackground();
     };
 
+
     Scene.prototype.drawBackground = function(option_scale, option_context) {
         var ctx = option_context || this.bCtx;
         var sc = option_scale || SIM.getScale();
@@ -104,13 +105,9 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
     };
 
     Scene.prototype.drawObjects = function() {
+        this.oCtx.clearRect(SIM.getGround().x-20, SIM.getGround().y-20, SIM.getGround().w+40, SIM.getGround().h+40);
         for(let key in this.customObstacleList) {
             let obstacle = this.customObstacleList[key];
-            this.oCtx.clearRect(obstacle.xOld, obstacle.yOld, obstacle.wOld, obstacle.hOld);
-            obstacle.xOld = obstacle.x;
-            obstacle.yOld = obstacle.y;
-            obstacle.wOld = obstacle.w;
-            obstacle.hOld = obstacle.h;
             this.oCtx.restore();
             this.oCtx.save();
             this.oCtx.scale(SIM.getScale(), SIM.getScale());
@@ -120,7 +117,6 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
             if (obstacle.img) {
                 this.oCtx.drawImage(obstacle.img, obstacle.x, obstacle.y, obstacle.w, obstacle.h);
             } else if (obstacle.color) {
-
                 this.oCtx.fillStyle = obstacle.color;
                 this.oCtx.shadowBlur = 5;
                 this.oCtx.shadowColor = "black";
@@ -131,15 +127,15 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
     };
 
     Scene.prototype.highlightObject = function() {
-            let selectedObject = SIM.getSelectedObject();
-            if(selectedObject != null) {
-                const obstacleCorners = [
-                    {x: Math.round(selectedObject.x), y: Math.round(selectedObject.y)},
-                    {x: (Math.round(selectedObject.x) + selectedObject.w), y: Math.round(selectedObject.y)},
-                    {x: (Math.round(selectedObject.x)), y: (Math.round(selectedObject.y) + selectedObject.h)},
-                    {x: (Math.round(selectedObject.x) + selectedObject.w), y: (Math.round(selectedObject.y) + selectedObject.h)}
-                ];
-                for (let c in obstacleCorners) {
+        let selectedObject = SIM.getSelectedObject();
+        if(selectedObject != null) {
+            const objectCorners = [
+                {x: Math.round(selectedObject.x), y: Math.round(selectedObject.y)},
+                {x: (Math.round(selectedObject.x) + selectedObject.w), y: Math.round(selectedObject.y)},
+                {x: Math.round(selectedObject.x), y: (Math.round(selectedObject.y) + selectedObject.h)},
+                {x: (Math.round(selectedObject.x) + selectedObject.w), y: (Math.round(selectedObject.y) + selectedObject.h)}
+            ];
+                for (let c in objectCorners) {
                     this.oCtx.restore();
                     this.oCtx.save();
                     this.oCtx.scale(SIM.getScale(), SIM.getScale());
@@ -147,12 +143,12 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                     this.oCtx.lineWidth = 2;
                     this.oCtx.shadowBlur = 0;
                     this.oCtx.strokeStyle = "gray";
-                    this.oCtx.arc(obstacleCorners[c].x, obstacleCorners[c].y, 4, 0, 2 * Math.PI);
+                    this.oCtx.arc(objectCorners[c].x, objectCorners[c].y, 4, 0, 2 * Math.PI);
                     this.oCtx.fillStyle = "black";
                     this.oCtx.stroke();
                     this.oCtx.fill();
-                }
             }
+        }
     }
 
     Scene.prototype.drawColorBlocks = function() {
@@ -177,13 +173,10 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
             if (colorBlock.img) {
                 this.uCtx.drawImage(colorBlock.img, colorBlock.x, colorBlock.y, colorBlock.w, colorBlock.h);
             } else if (colorBlock.color) {
-
                 this.uCtx.fillStyle = colorBlock.color;
                 this.bCtx.fillStyle = colorBlock.color;
-
                 this.uCtx.fillRect(colorBlock.x, colorBlock.y, colorBlock.w, colorBlock.h);
                 this.bCtx.fillRect(colorBlock.x, colorBlock.y, colorBlock.w, colorBlock.h);
-
                 if(SIM.getSelectedObject() != null) this.highlightObject();
 
             }

@@ -306,7 +306,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             colorBlockList.pop();
         }
         checkSelection();
-        updateSIM();
+        updateColorLayer();
+        updateObstacleLayer();
     }
     exports.deleteElements = deleteElements;
 
@@ -317,14 +318,15 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             selectedColorBlock = null;
             disableChangeObjectButtons();
             checkSelection();
+            updateColorLayer();
         }
         if (selectedObstacle != null){
             customObstacleList.splice(selectedObstacle, 1)
             selectedObstacle = null;
             disableChangeObjectButtons();
             checkSelection();
+            updateObstacleLayer();
             }
-        updateSIM();
         }
     exports.deleteSelectedObject = deleteSelectedObject
 
@@ -379,7 +381,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             if(color === "red") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.RED;
             if(color === "yellow") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.YELLOW;
         }
-        updateSIM();
+        updateObstacleLayer();
     }
     exports.changeObjectColor = changeObjectColor;
 
@@ -864,17 +866,20 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     if(copiedObject.type === "obstacle") {
                         customObstacleList.unshift(copiedObject);
                         exports.obstacleList = [ground, customObstacleList];
+                        updateObstacleLayer();
                     }
                     if(copiedObject.type === "colorBlock") {
                         colorBlockList.unshift(copiedObject);
+                        updateColorLayer();
                     }
+
+
                 }
                 e.preventDefault();
                 break;
             default:
             // nothing to do so far
         }
-        updateSIM();
     }
 
     function disableChangeObjectButtons() {
@@ -948,7 +953,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 selectedObstacle = null;
                 selectedColorBlock = colorBlockList.length - key;
                 selectedObject = colorBlockList[selectedColorBlock];
-                updateSIM();
+                updateColorLayer();
                 break;
             }
         }
@@ -962,7 +967,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 selectedColorBlock = null;
                 selectedObstacle = customObstacleList.length - key;
                 selectedObject = customObstacleList[selectedObstacle];
-                updateSIM();
+                updateObstacleLayer();
                 break;
             }
         }
@@ -991,6 +996,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             selectedObject = null;
             selectedColorBlock = null;
             selectedObstacle = null;
+            scene.drawObjects();
         }
     }
 
@@ -1034,7 +1040,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 isDownRobots[i] = false;
             }
         }
-        updateSIM();
+        //updateSIM();
         mouseOnRobotIndex = -1;
     }
 
@@ -1052,15 +1058,20 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         e.stopPropagation();
     }
 
-    function updateSIM() {
+    function updateColorLayer() {
         scene.updateBackgrounds();
         scene.drawColorBlocks();
+        scene.drawObjects();
+        scene.highlightObject();
+    }
+    exports.updateColorLayer = updateColorLayer;
+
+    function updateObstacleLayer() {
         scene.drawRuler();
         scene.drawObjects();
         scene.highlightObject();
     }
-    exports.updateSIM = updateSIM;
-
+    exports.updateObstacleLayer = updateObstacleLayer;
 
     function handleMouseMove(e) {
         var X = e.clientX || e.originalEvent.touches[0].pageX;
@@ -1137,11 +1148,10 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             robots[mouseOnRobotIndex].pose.y += dy;
             robots[mouseOnRobotIndex].mouse.rx += dx;
             robots[mouseOnRobotIndex].mouse.ry += dy;
-            updateSIM();
         } else if (isDownObstacle && selectedObstacle != null && !isDownObstacleCorner) {
             customObstacleList[selectedObstacle].x += dx;
             customObstacleList[selectedObstacle].y += dy;
-            updateSIM();
+            updateObstacleLayer();
         }  else if(isDownObstacleCorner && selectedObstacle != null) {
             if(customObstacleList[selectedObstacle].w >= 10 && customObstacleList[selectedObstacle].h >= 10) {
                 if(selectedCorner == 0) {
@@ -1166,15 +1176,16 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             } else if(customObstacleList[selectedObstacle].h < 10) {
                 customObstacleList[selectedObstacle].h = 11;
             }
-            updateSIM();
+            updateObstacleLayer();
+
         }else if (isDownRuler) {
             ruler.x += dx;
             ruler.y += dy;
-            updateSIM();
+            scene.drawRuler();
         } else if (isDownColorBlock && selectedColorBlock != null && !isDownColorBlockCorner) {
             colorBlockList[selectedColorBlock].x += dx;
             colorBlockList[selectedColorBlock].y += dy;
-            updateSIM();
+            updateColorLayer();
         } else if(isDownColorBlockCorner && selectedColorBlock != null) {
             if(colorBlockList[selectedColorBlock].w >= 10 && colorBlockList[selectedColorBlock].h >= 10) {
                 if(selectedCorner == 0) {
@@ -1199,7 +1210,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             } else if(colorBlockList[selectedColorBlock].h < 10) {
                 colorBlockList[selectedColorBlock].h = 11;
             }
-            updateSIM();
+            updateColorLayer();
         }
     }
 
@@ -1357,6 +1368,12 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     }
 
     exports.getScale = getScale;
+
+    function getGround() {
+        return ground;
+    }
+
+    exports.getGround = getGround;
 
     function getInfo() {
         return info;
