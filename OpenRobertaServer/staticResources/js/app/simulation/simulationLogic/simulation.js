@@ -1378,6 +1378,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
     function getSimConfig() {
         return  {
+            "robotPose": robots[0].pose,
             "obstacles": customObstacleList,
             "colorBlocks": colorBlockList,
             "ruler": ruler,
@@ -1414,7 +1415,9 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             reader.onload = (function (theFile) {
                 return function (e) {
                     try {
+                        resetScene();
                         configData = JSON.parse(e.target.result);
+                        robots[0].pose = configData["robotPose"];
                         customObstacleList = configData["obstacles"];
                         colorBlockList = configData["colorBlocks"];
                         ruler = configData["ruler"];
@@ -1429,6 +1432,19 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         });
     }
     exports.importConfigData = importConfigData;
+
+
+    function resetScene() {
+        colorBlockList = [];
+        customObstacleList = [];
+        selectedObject = null;
+        selectedColorBlock = null;
+        selectedObstacle = null;
+        selectedCorner = null;
+        selectedCornerObject = null;
+        resetPose();
+    }
+    exports.resetScene = resetScene;
 
 
     function importImage() {
