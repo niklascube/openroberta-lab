@@ -1433,6 +1433,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                         ruler = configData["ruler"];
                         currentBackground = configData["background"];
                         initScene();
+                        exports.obstacleList = [ground, customObstacleList];
                     } catch (ex) {
                         MSG.displayPopupMessage("Blockly.Msg.POPUP_BACKGROUND_STORAGE", Blockly.Msg.POPUP_CONFIG_UPLOAD_ERROR);
                     }
