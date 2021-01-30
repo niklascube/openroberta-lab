@@ -177,8 +177,7 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                 this.bCtx.fillStyle = colorBlock.color;
                 this.uCtx.fillRect(colorBlock.x, colorBlock.y, colorBlock.w, colorBlock.h);
                 this.bCtx.fillRect(colorBlock.x, colorBlock.y, colorBlock.w, colorBlock.h);
-                if(SIM.getSelectedObject() != null) this.highlightObject();
-
+                if(SIM.getSelectedObject() != null) this.highlightObject()
             }
        }
     };

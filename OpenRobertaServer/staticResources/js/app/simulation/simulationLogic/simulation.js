@@ -33,6 +33,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     var selectedColorBlock;
     var selectedObject;
     var selectedCorner;
+    var selectedCornerObject;
     var canceled;
     var storedPrograms;
     var copiedObject;
@@ -928,6 +929,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 isDownObstacleCorner = (startX > obstacleCorners[corner_index].x && startX < obstacleCorners[corner_index].x + obstacleCorners[corner_index].w && startY > obstacleCorners[corner_index].y && startY < obstacleCorners[corner_index].y + obstacleCorners[corner_index].h);
                 if(isDownObstacleCorner) {
                     selectedCorner = corner_index;
+                    selectedCornerObject = customObstacleList[selectedObstacle];
                     break;
                 }
             }
@@ -938,6 +940,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 isDownColorBlockCorner = (startX > colorBlockCorners[corner_index].x && startX < colorBlockCorners[corner_index].x + colorBlockCorners[corner_index].w && startY > colorBlockCorners[corner_index].y && startY < colorBlockCorners[corner_index].y + colorBlockCorners[corner_index].h);
                 if(isDownColorBlockCorner) {
                     selectedCorner = corner_index;
+                    selectedCornerObject = colorBlockList[selectedColorBlock];
                     break;
                 }
             }
@@ -953,6 +956,9 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 selectedObstacle = null;
                 selectedColorBlock = colorBlockList.length - key;
                 selectedObject = colorBlockList[selectedColorBlock];
+                colorBlockList.splice(selectedColorBlock, 1);
+                colorBlockList.push(selectedObject);
+                selectedColorBlock = colorBlockList.length-1;
                 updateColorLayer();
                 break;
             }
@@ -967,6 +973,9 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 selectedColorBlock = null;
                 selectedObstacle = customObstacleList.length - key;
                 selectedObject = customObstacleList[selectedObstacle];
+                customObstacleList.splice(selectedObstacle, 1);
+                customObstacleList.push(selectedObject);
+                selectedObstacle = customObstacleList.length-1;
                 updateObstacleLayer();
                 break;
             }
@@ -1062,14 +1071,12 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         scene.updateBackgrounds();
         scene.drawColorBlocks();
         scene.drawObjects();
-        scene.highlightObject();
     }
     exports.updateColorLayer = updateColorLayer;
 
     function updateObstacleLayer() {
         scene.drawRuler();
         scene.drawObjects();
-        scene.highlightObject();
     }
     exports.updateObstacleLayer = updateObstacleLayer;
 
@@ -1152,7 +1159,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             customObstacleList[selectedObstacle].x += dx;
             customObstacleList[selectedObstacle].y += dy;
             updateObstacleLayer();
-        }  else if(isDownObstacleCorner && selectedObstacle != null) {
+        }  else if(isDownObstacleCorner && selectedObject == selectedCornerObject && selectedObstacle != null) {
             if(customObstacleList[selectedObstacle].w >= 10 && customObstacleList[selectedObstacle].h >= 10) {
                 if(selectedCorner == 0) {
                     customObstacleList[selectedObstacle].x += dx;
@@ -1186,7 +1193,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             colorBlockList[selectedColorBlock].x += dx;
             colorBlockList[selectedColorBlock].y += dy;
             updateColorLayer();
-        } else if(isDownColorBlockCorner && selectedColorBlock != null) {
+        } else if(isDownColorBlockCorner && selectedObject == selectedCornerObject && selectedColorBlock != null) {
             if(colorBlockList[selectedColorBlock].w >= 10 && colorBlockList[selectedColorBlock].h >= 10) {
                 if(selectedCorner == 0) {
                     colorBlockList[selectedColorBlock].x += dx;
