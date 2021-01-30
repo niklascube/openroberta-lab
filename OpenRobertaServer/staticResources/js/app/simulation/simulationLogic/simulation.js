@@ -840,6 +840,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
         switch (keyCode) {
             case 17 && 67:
+                copiedObject = null;
                 if(selectedObject) copiedObject = JSON.parse(JSON.stringify(selectedObject));
                 e.preventDefault();
                 break;
@@ -849,17 +850,19 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     copiedObject.x = mouseX - copiedObject.w/2;
                     copiedObject.y = mouseY - copiedObject.h/2;
 
+                    console.log(copiedObject);
                     if(copiedObject.type === "obstacle") {
                         customObstacleList.unshift(copiedObject);
                         exports.obstacleList = [ground, customObstacleList];
                         updateObstacleLayer();
-                    }
-                    if(copiedObject.type === "colorBlock") {
+                        e.preventDefault();
+                        break;
+                    } else if(copiedObject.type === "colorBlock") {
                         colorBlockList.unshift(copiedObject);
                         updateColorLayer();
+                        e.preventDefault();
+                        break;
                     }
-
-
                 }
                 e.preventDefault();
                 break;
@@ -945,6 +948,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 colorBlockList.push(selectedObject);
                 selectedColorBlock = colorBlockList.length-1;
                 updateColorLayer();
+                updateObstacleLayer();
                 break;
             }
         }
@@ -990,6 +994,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             selectedObject = null;
             selectedColorBlock = null;
             selectedObstacle = null;
+            selectedCornerObject = null;
             scene.drawObstacles();
         }
     }
@@ -1421,7 +1426,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 return function (e) {
                     try {
                         resetScene();
-                        configData = JSON.parse(e.target.result);
+                        const configData = JSON.parse(e.target.result);
                         robots[0].pose = configData["robotPose"];
                         customObstacleList = configData["obstacles"];
                         colorBlockList = configData["colorBlocks"];
@@ -1440,14 +1445,15 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
 
     function resetScene() {
-        colorBlockList = [];
-        customObstacleList = [];
+        deleteElements();
         selectedObject = null;
         selectedColorBlock = null;
         selectedObstacle = null;
         selectedCorner = null;
         selectedCornerObject = null;
+        copiedObject = null;
         resetPose();
+        removeMouseEvents();
     }
     exports.resetScene = resetScene;
 
