@@ -126,7 +126,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             removeMouseEvents();
             scene = new Scene(imgObjectList[currentBackground], robots, customObstacleList, imgPattern, ruler, colorBlockList);
             scene.updateBackgrounds();
-            scene.drawObjects();
+            scene.drawObstacles();
             scene.drawColorBlocks();
             scene.drawRuler();
             addMouseEvents();
@@ -230,7 +230,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 colorBlocksActivated = false;
                 selectedColorBlock = null;
                 selectedObject = null;
-                scene.drawObjects();
+                scene.drawObstacles();
                 $('#simControl').addClass('typcn-media-stop').removeClass('typcn-media-play-outline');
                 $('#simControl').attr('data-original-title', Blockly.Msg.MENU_SIM_STOP_TOOLTIP);
             }
@@ -301,7 +301,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             customObstacleList.unshift(newRectangleObstacle);
         }
         exports.obstacleList = [ground, customObstacleList];
-        scene.drawObjects();
+        scene.drawObstacles();
     }
     exports.addObstacle = addObstacle;
 
@@ -335,17 +335,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             updateObstacleLayer();
             }
         }
-    exports.deleteSelectedObject = deleteSelectedObject
-
-
-    function clearObstacleList() {
-        while(customObstacleList.length > 0) {
-            customObstacleList.pop();
-        }
-        scene.updateBackgrounds();
-        scene.drawColorBlocks();
-    }
-    exports.clearObstacleList = clearObstacleList;
+    exports.deleteSelectedObject = deleteSelectedObject;
 
 
     function addColorBlock(color) {
@@ -391,17 +381,6 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         updateObstacleLayer();
     }
     exports.changeObjectColor = changeObjectColor;
-
-    function clearColorBlockList() {
-        //scene.drawObjects();
-        while(colorBlockList.length > 0) {
-            colorBlockList.pop();
-        }
-        scene.updateBackgrounds();
-        scene.drawObjects();
-    }
-    exports.clearColorBlockList = clearColorBlockList;
-
 
     function stopProgram() {
         setPause(true);
@@ -832,25 +811,25 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             const shift = 5;
             switch (keyName) {
                 case "ArrowUp":
-                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].y -= shift;
-                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].y -= shift;
+                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].y -= shift; updateObstacleLayer();
+                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].y -= shift; updateColorLayer();
                     e.preventDefault();
                     break;
                 case "ArrowLeft":
-                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].x -= shift;
-                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].x -= shift;
+                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].x -= shift; updateObstacleLayer();
+                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].x -= shift; updateColorLayer();
                     //if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].theta -= Math.PI / 180;
                     //if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].theta -= Math.PI / 180;
                     e.preventDefault();
                     break;
                 case "ArrowDown":
-                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].y += shift;
-                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].y += shift;
+                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].y += shift; updateObstacleLayer();
+                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].y += shift; updateColorLayer();
                     e.preventDefault();
                     break;
                 case "ArrowRight":
-                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].x += shift;
-                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].x += shift;
+                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].x += shift; updateObstacleLayer();
+                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].x += shift; updateColorLayer();
                     //if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].theta += Math.PI / 180;
                     //if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].theta += Math.PI / 180;
                     e.preventDefault();
@@ -1011,7 +990,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             selectedObject = null;
             selectedColorBlock = null;
             selectedObstacle = null;
-            scene.drawObjects();
+            scene.drawObstacles();
         }
     }
 
@@ -1076,13 +1055,13 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     function updateColorLayer() {
         scene.updateBackgrounds();
         scene.drawColorBlocks();
-        scene.drawObjects();
+        scene.drawObstacles();
     }
     exports.updateColorLayer = updateColorLayer;
 
     function updateObstacleLayer() {
         scene.drawRuler();
-        scene.drawObjects();
+        scene.drawObstacles();
     }
     exports.updateObstacleLayer = updateObstacleLayer;
 
@@ -1186,13 +1165,13 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     customObstacleList[selectedObstacle].w += dx;
                     customObstacleList[selectedObstacle].h += dy;
                 }
-            } else if(customObstacleList[selectedObstacle].w < 10){
-                customObstacleList[selectedObstacle].w = 11;
-            } else if(customObstacleList[selectedObstacle].h < 10) {
-                customObstacleList[selectedObstacle].h = 11;
+            } else if(customObstacleList[selectedObstacle].w <= 10){
+                customObstacleList[selectedObstacle].w = 10;
+            } else if(customObstacleList[selectedObstacle].h <= 10) {
+                customObstacleList[selectedObstacle].h = 10;
             }
             updateObstacleLayer();
-
+        console.log(customObstacleList[selectedObstacle]);
         }else if (isDownRuler) {
             ruler.x += dx;
             ruler.y += dy;
@@ -1273,7 +1252,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         if (zoom) {
             scene.drawBackground();
             scene.drawRuler();
-            scene.drawObjects();
+            scene.drawObstacles();
             scene.drawColorBlocks();
             e.stopPropagation();
         }
@@ -1294,7 +1273,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             var scaleY = scene.playground.h / (ground.h + 20);
             scale = Math.min(scaleX, scaleY) - 0.05;
             scene.updateBackgrounds();
-            scene.drawObjects();
+            scene.drawObstacles();
             scene.drawColorBlocks();
             scene.drawRuler();
         }
@@ -1356,7 +1335,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     function initScene() {
         scene = new Scene(imgObjectList[currentBackground], robots, customObstacleList, imgPattern, ruler, colorBlockList);
         scene.updateBackgrounds();
-        scene.drawObjects();
+        scene.drawObstacles();
         scene.drawColorBlocks();
         scene.drawRuler();
         scene.drawRobots();

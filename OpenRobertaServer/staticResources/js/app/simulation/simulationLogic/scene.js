@@ -104,7 +104,7 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
         }
     };
 
-    Scene.prototype.drawObjects = function() {
+    Scene.prototype.drawObstacles = function() {
         this.oCtx.clearRect(SIM.getGround().x-20, SIM.getGround().y-20, SIM.getGround().w+40, SIM.getGround().h+40);
         for(let key in this.customObstacleList) {
             let obstacle = this.customObstacleList[key];
