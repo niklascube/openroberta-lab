@@ -167,6 +167,7 @@ define(['exports', 'log', 'jquery', 'guiState.controller', 'program.controller',
                 $('#simCustomColorObject').attr('data-original-title', value);
             } else if (lkey === "Blockly.Msg.MENU_SIM_ADD_OBSTACLE_TOOLTIP") {
                 $('#simCustomObstacle').attr('data-original-title', value);
+                $('#simAddObstacleRectangle').attr('data-original-title', value);
             } else if (lkey === "Blockly.Msg.MENU_SIM_DELETE_ELEMENTS_TOOLTIP") {
                 $('#simDeleteElements').attr('data-original-title', value);
             } else if (lkey === "Blockly.Msg.MENU_SIM_CHANGE_COLOR_TOOLTIP") {
