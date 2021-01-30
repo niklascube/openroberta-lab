@@ -2320,7 +2320,7 @@ input[type=range]:focus::-ms-fill-upper {
     font-size: 28px;
 }
 
-#simButtons > .btn-group > .dropdown-menu > li > a {
+#simEditButtons > .config > .dropdown-menu > li > a {
     padding: 8px 0px 7px 0px;
     text-align: center;
     height: 100%;

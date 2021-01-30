@@ -25,6 +25,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     var isDownColorBlock = false;
     var isDownColorBlockCorner = false;
     var isDownObstacleCorner = false;
+    var colorBlocksActivated = true;
     var startX;
     var startY;
     var scale = 1;
@@ -222,9 +223,14 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             }, 100);
         } else {
             if (value && !debugMode) {
+                colorBlocksActivated = true;
                 $('#simControl').addClass('typcn-media-play-outline').removeClass('typcn-media-stop');
                 $('#simControl').attr('data-original-title', Blockly.Msg.MENU_SIM_START_TOOLTIP);
             } else {
+                colorBlocksActivated = false;
+                selectedColorBlock = null;
+                selectedObject = null;
+                scene.drawObjects();
                 $('#simControl').addClass('typcn-media-stop').removeClass('typcn-media-play-outline');
                 $('#simControl').attr('data-original-title', Blockly.Msg.MENU_SIM_STOP_TOOLTIP);
             }
@@ -951,7 +957,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
             isDownColorBlock = (startX > colorBlock.x && startX < colorBlock.x + colorBlock.w && startY > colorBlock.y && startY < colorBlock.y + colorBlock.h);
             key++;
-            if (isDownColorBlock && !isDownObstacleCorner) {
+            if (isDownColorBlock && !isDownObstacleCorner && colorBlocksActivated) {
                 enableChangeObjectButtons();
                 selectedObstacle = null;
                 selectedColorBlock = colorBlockList.length - key;
@@ -1128,11 +1134,13 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 if (hoverObstacle) break;
             }
             var hoverRuler = (mouseX > ruler.x && mouseX < ruler.x + ruler.w && mouseY > ruler.y && mouseY < ruler.y + ruler.h);
-            if(hoverObstacleCorners || hoverColorBlockCorners) {
+            if(hoverObstacleCorners || (hoverColorBlockCorners && colorBlocksActivated)) {
                 if(hoveringCorner == 0) $("#robotLayer").css('cursor', 'nesw-resize');
                 if(hoveringCorner == 1) $("#robotLayer").css('cursor', 'nw-resize');
                 if(hoveringCorner == 2) $("#robotLayer").css('cursor', 'ne-resize');
                 if(hoveringCorner == 3) $("#robotLayer").css('cursor', 'nwse-resize');
+            } else if(hoverColorBlock && !colorBlocksActivated) {
+                $("#robotLayer").css('cursor', 'not-allowed');
             } else if (hoverRobot || hoverObstacle || hoverRuler || hoverColorBlock) {
                  $("#robotLayer").css('cursor', 'pointer');
             } else {
