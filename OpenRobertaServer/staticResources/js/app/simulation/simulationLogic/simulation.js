@@ -1132,6 +1132,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         dy = (mouseY - startY);
         startX = mouseX;
         startY = mouseY;
+        const minSizeObjects = 15;
         if (isAnyRobotDown()) {
             if (robots[mouseOnRobotIndex].drawWidth) {
                 robots[mouseOnRobotIndex].canDraw = false;
@@ -1147,7 +1148,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             customObstacleList[selectedObstacle].y += dy;
             updateObstacleLayer();
         }  else if(isDownObstacleCorner && selectedObject == selectedCornerObject && selectedObstacle != null) {
-            if(customObstacleList[selectedObstacle].w >= 10 && customObstacleList[selectedObstacle].h >= 10) {
+            if(customObstacleList[selectedObstacle].w >= minSizeObjects && customObstacleList[selectedObstacle].h >= minSizeObjects) {
+                console.log(selectedCorner);
                 if(selectedCorner == 0) {
                     customObstacleList[selectedObstacle].x += dx;
                     customObstacleList[selectedObstacle].w -= dx;
@@ -1165,13 +1167,14 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     customObstacleList[selectedObstacle].w += dx;
                     customObstacleList[selectedObstacle].h += dy;
                 }
-            } else if(customObstacleList[selectedObstacle].w <= 10){
-                customObstacleList[selectedObstacle].w = 10;
-            } else if(customObstacleList[selectedObstacle].h <= 10) {
-                customObstacleList[selectedObstacle].h = 10;
+            } else if(customObstacleList[selectedObstacle].w < minSizeObjects){
+                if(selectedCorner == 0 || selectedCorner == 1) customObstacleList[selectedObstacle].x -= minSizeObjects-customObstacleList[selectedObstacle].w;
+                customObstacleList[selectedObstacle].w = minSizeObjects;
+            } else if(customObstacleList[selectedObstacle].h < minSizeObjects) {
+                if(selectedCorner == 1 || selectedCorner == 2) customObstacleList[selectedObstacle].y -= minSizeObjects-customObstacleList[selectedObstacle].h;
+                customObstacleList[selectedObstacle].h = minSizeObjects;
             }
             updateObstacleLayer();
-        console.log(customObstacleList[selectedObstacle]);
         }else if (isDownRuler) {
             ruler.x += dx;
             ruler.y += dy;
@@ -1181,7 +1184,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             colorBlockList[selectedColorBlock].y += dy;
             updateColorLayer();
         } else if(isDownColorBlockCorner && selectedObject == selectedCornerObject && selectedColorBlock != null) {
-            if(colorBlockList[selectedColorBlock].w >= 10 && colorBlockList[selectedColorBlock].h >= 10) {
+            if(colorBlockList[selectedColorBlock].w >= minSizeObjects && colorBlockList[selectedColorBlock].h >= 10) {
                 if(selectedCorner == 0) {
                     colorBlockList[selectedColorBlock].x += dx;
                     colorBlockList[selectedColorBlock].w -= dx;
@@ -1199,10 +1202,12 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     colorBlockList[selectedColorBlock].w += dx;
                     colorBlockList[selectedColorBlock].h += dy;
                 }
-            } else if(colorBlockList[selectedColorBlock].w < 10){
-                colorBlockList[selectedColorBlock].w = 11;
-            } else if(colorBlockList[selectedColorBlock].h < 10) {
-                colorBlockList[selectedColorBlock].h = 11;
+            } else if(colorBlockList[selectedColorBlock].w < minSizeObjects){
+                if(selectedCorner == 0 || selectedCorner == 1) colorBlockList[selectedColorBlock].x -= minSizeObjects-colorBlockList[selectedColorBlock].w;
+                colorBlockList[selectedColorBlock].w = minSizeObjects;
+            } else if(colorBlockList[selectedColorBlock].h < minSizeObjects) {
+                if(selectedCorner == 1 || selectedCorner == 2) colorBlockList[selectedColorBlock].y -= minSizeObjects-colorBlockList[selectedColorBlock].h;
+                colorBlockList[selectedColorBlock].h = minSizeObjects;
             }
             updateColorLayer();
         }

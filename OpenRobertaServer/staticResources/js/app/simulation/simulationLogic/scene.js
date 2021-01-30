@@ -154,11 +154,6 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
     Scene.prototype.drawColorBlocks = function() {
         for(let key in this.colorBlockList) {
             let colorBlock = this.colorBlockList[key];
-            this.bCtx.clearRect(colorBlock.xOld, colorBlock.yOld, colorBlock.wOld, colorBlock.hOld);
-            colorBlock.xOld = colorBlock.x;
-            colorBlock.yOld = colorBlock.y;
-            colorBlock.wOld = colorBlock.w;
-            colorBlock.hOld = colorBlock.h;
             this.bCtx.restore();
             this.bCtx.save();
             this.bCtx.scale(SIM.getScale(), SIM.getScale());
