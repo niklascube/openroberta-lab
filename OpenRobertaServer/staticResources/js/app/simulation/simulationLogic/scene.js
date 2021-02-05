@@ -116,7 +116,7 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
             //this.oCtx.translate(-obstacle.x - (obstacle.w/2), -obstacle.y - (obstacle.h/2));
             if (obstacle.img) {
                 this.oCtx.drawImage(obstacle.img, obstacle.x, obstacle.y, obstacle.w, obstacle.h);
-            } else if (obstacle.color) {
+            } else if (obstacle.color && obstacle.form === "rectangle") {
                 this.oCtx.fillStyle = obstacle.color;
                 this.oCtx.shadowColor = '#3e3e3e';
                 this.oCtx.shadowOffsetY = 5;
@@ -124,13 +124,25 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                 this.oCtx.shadowBlur = 5;
                 this.oCtx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
                 if(SIM.getSelectedObject() != null) this.highlightObject();
+            } else if (obstacle.color && obstacle.form === "triangle") {
+                this.oCtx.fillStyle = obstacle.color;
+                this.oCtx.shadowColor = '#3e3e3e';
+                this.oCtx.shadowOffsetY = 5;
+                this.oCtx.shadowOffsetX = 5;
+                this.oCtx.shadowBlur = 5;
+                this.oCtx.beginPath();
+                this.oCtx.moveTo(obstacle.ax, obstacle.ay);
+                this.oCtx.lineTo(obstacle.bx, obstacle.by);
+                this.oCtx.lineTo(obstacle.cx, obstacle.cy);
+                this.oCtx.fill();
+                if(SIM.getSelectedObject() != null) this.highlightObject();
             }
        }
     };
 
     Scene.prototype.highlightObject = function() {
         let selectedObject = SIM.getSelectedObject();
-        if(selectedObject != null) {
+        if(selectedObject != null && selectedObject.form==="rectangle") {
             const objectCorners = [
                 {x: Math.round(selectedObject.x), y: Math.round(selectedObject.y)},
                 {x: (Math.round(selectedObject.x) + selectedObject.w), y: Math.round(selectedObject.y)},

@@ -296,10 +296,26 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 img: null,
                 isParallelToAxis: true,
                 color: "#2b2b2b",
-                type: "obstacle"
+                type: "obstacle",
+                form: "rectangle"
             };
             customObstacleList.unshift(newRectangleObstacle);
         }
+        else if (shape === "triangle") {
+            let newTriangleObstacle = {
+                ax: 200,
+                ay: 200,
+                bx: 300,
+                by: 300,
+                cx: 300,
+                cy: 100,
+                isParallelToAxis: true,
+                color: "2b2b2b",
+                type: "obstacle",
+                form: "triangle"
+                };
+                customObstacleList.unshift(newTriangleObstacle);
+            }
         exports.obstacleList = [ground, customObstacleList];
         scene.drawObstacles();
     }
@@ -692,13 +708,21 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 customObstacleList[0].h = 100;
                 customObstacleList[0].img = null;
                 customObstacleList[0].color = "#33B8CA";
+                customObstacleList[0].form = "rectangle";
             } else if (currentBackground == 2) {
-                customObstacleList[0].x = 580;
+                /*customObstacleList[0].x = 580;
                 customObstacleList[0].y = 290;
                 customObstacleList[0].w = 100;
-                customObstacleList[0].h = 100;
+                customObstacleList[0].h = 100;*/
+                customObstacleList[0].ax = 500;
+                customObstacleList[0].ay = 250;
+                customObstacleList[0].bx = 600;
+                customObstacleList[0].by = 350;
+                customObstacleList[0].cx = 600;
+                customObstacleList[0].cy = 150;
                 customObstacleList[0].img = null;
                 customObstacleList[0].color = "#33B8CA";
+                customObstacleList[0].form = "triangle";
             } else if (currentBackground == 4) {
                 customObstacleList[0].x = 500;
                 customObstacleList[0].y = 260;
@@ -706,12 +730,14 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 customObstacleList[0].h = 100;
                 customObstacleList[0].img = imgObstacle1;
                 customObstacleList[0].color = null;
+                customObstacleList[0].form = "rectangle";
             } else if (currentBackground == 7) {
                 customObstacleList[0].x = 0;
                 customObstacleList[0].y = 0;
                 customObstacleList[0].w = 0;
                 customObstacleList[0].h = 0;
                 customObstacleList[0].color = null;
+                customObstacleList[0].form = "rectangle";
             } else if (currentBackground == 0) {
                 customObstacleList[0].x = 0;
                 customObstacleList[0].y = 0;
@@ -719,6 +745,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 customObstacleList[0].h = 0;
                 customObstacleList[0].color = null;
                 customObstacleList[0].img = null;
+                customObstacleList[0].form = "rectangle";
             } else if (currentBackground == 1) {
                 customObstacleList[0].x = 0;
                 customObstacleList[0].y = 0;
@@ -726,6 +753,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 customObstacleList[0].h = 0;
                 customObstacleList[0].color = null;
                 customObstacleList[0].img = null;
+                customObstacleList[0].form = "rectangle";
             } else if (currentBackground == 5) {
                 customObstacleList[0].x = 505;
                 customObstacleList[0].y = 405;
@@ -733,6 +761,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 customObstacleList[0].h = 20;
                 customObstacleList[0].color = "#33B8CA";
                 customObstacleList[0].img = null;
+                customObstacleList[0].form = "rectangle";
             } else if (currentBackground == 6) {
                 customObstacleList[0].x = 425;
                 customObstacleList[0].y = 254;
@@ -740,6 +769,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 customObstacleList[0].h = 50;
                 customObstacleList[0].color = "#009EE3";
                 customObstacleList[0].img = null;
+                customObstacleList[0].form = "rectangle";
             } else {
                 var x = imgObjectList[currentBackground].width - 50;
                 var y = imgObjectList[currentBackground].height - 50;
@@ -749,6 +779,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 customObstacleList[0].h = 50;
                 customObstacleList[0].color = "#33B8CA";
                 customObstacleList[0].img = null;
+                customObstacleList[0].form = "rectangle";
             }
         } else {
             customObstacleList.unshift(customObstacle);
@@ -958,18 +989,35 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         for(let key in customObstacleList) {
             let obstacle = customObstacleList.slice().reverse()[key];
 
-            isDownObstacle = (startX > obstacle.x && startX < obstacle.x + obstacle.w && startY > obstacle.y && startY < obstacle.y + obstacle.h);
-            key++;
-            if(isDownObstacle && !isDownColorBlockCorner) {
-                enableChangeObjectButtons();
-                selectedColorBlock = null;
-                selectedObstacle = customObstacleList.length - key;
-                selectedObject = customObstacleList[selectedObstacle];
-                customObstacleList.splice(selectedObstacle, 1);
-                customObstacleList.push(selectedObject);
-                selectedObstacle = customObstacleList.length-1;
-                updateObstacleLayer();
-                break;
+            if (obstacle.form === "rectangle") {
+                isDownObstacle = (startX > obstacle.x && startX < obstacle.x + obstacle.w && startY > obstacle.y && startY < obstacle.y + obstacle.h);
+                key++;
+                if(isDownObstacle && !isDownColorBlockCorner) {
+                    enableChangeObjectButtons();
+                    selectedColorBlock = null;
+                    selectedObstacle = customObstacleList.length - key;
+                    selectedObject = customObstacleList[selectedObstacle];
+                    customObstacleList.splice(selectedObstacle, 1);
+                    customObstacleList.push(selectedObject);
+                    selectedObstacle = customObstacleList.length-1;
+                    updateObstacleLayer();
+                    break;
+                }
+            } else if (obstacle.form === "triangle"){
+                isDownObstacle = (startX > obstacle.ax && startX < obstacle.bx && startY > obstacle.ay && startY < obstacle.by);
+                key++;
+                if(isDownObstacle && !isDownColorBlockCorner) {
+                    enableChangeObjectButtons();
+                    selectedColorBlock = null;
+                    selectedObstacle = customObstacleList.length - key;
+                    selectedObject = customObstacleList[selectedObstacle];
+                    customObstacleList.splice(selectedObstacle, 1);
+                    customObstacleList.push(selectedObject);
+                    selectedObstacle = customObstacleList.length-1;
+                    updateObstacleLayer();
+                    console.log(selectedObstacle)
+                    break;
+                }
             }
         }
 
@@ -1095,27 +1143,30 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             }
             for(let key in customObstacleList) {
                 let obstacle = customObstacleList.slice().reverse()[key];
-
-                var hoverObstacle = (mouseX > obstacle.x && mouseX < obstacle.x + obstacle.w && mouseY > obstacle.y && mouseY < obstacle.y + obstacle.h);
-                let obstacleCorners = calculateCorners(obstacle);
-                for (let corner_index in obstacleCorners) {
-                    var hoverObstacleCorners = (mouseX > obstacleCorners[corner_index].x && mouseX < obstacleCorners[corner_index].x + obstacleCorners[corner_index].w && mouseY > obstacleCorners[corner_index].y && mouseY < obstacleCorners[corner_index].y + obstacleCorners[corner_index].h);
-                    if (hoverObstacleCorners) {
-                        var hoveringCorner = corner_index;
-                        break;
+                if (obstacle.form === "rectangle") {
+                    var hoverObstacle = (mouseX > obstacle.x && mouseX < obstacle.x + obstacle.w && mouseY > obstacle.y && mouseY < obstacle.y + obstacle.h);
+                    let obstacleCorners = calculateCorners(obstacle);
+                    for (let corner_index in obstacleCorners) {
+                        var hoverObstacleCorners = (mouseX > obstacleCorners[corner_index].x && mouseX < obstacleCorners[corner_index].x + obstacleCorners[corner_index].w && mouseY > obstacleCorners[corner_index].y && mouseY < obstacleCorners[corner_index].y + obstacleCorners[corner_index].h);
+                        if (hoverObstacleCorners) {
+                            var hoveringCorner = corner_index;
+                            break;
+                        }
                     }
                 }
                 if (hoverObstacle) break;
             }
             for(let key in colorBlockList) {
                 let colorBlock = colorBlockList.slice().reverse()[key];
-                var hoverColorBlock = (mouseX > colorBlock.x && mouseX < colorBlock.x + colorBlock.w && mouseY > colorBlock.y && mouseY < colorBlock.y + colorBlock.h);
-                let colorBlockCorners = calculateCorners(colorBlock);
-                for (let corner_index in colorBlockCorners) {
-                    var hoverColorBlockCorners = (mouseX > colorBlockCorners[corner_index].x && mouseX < colorBlockCorners[corner_index].x + colorBlockCorners[corner_index].w && mouseY > colorBlockCorners[corner_index].y && mouseY < colorBlockCorners[corner_index].y + colorBlockCorners[corner_index].h);
-                    if (hoverColorBlockCorners) {
-                        var hoveringCorner = corner_index;
-                        break;
+                if (obstacle.form === "rectangle") {
+                    var hoverColorBlock = (mouseX > colorBlock.x && mouseX < colorBlock.x + colorBlock.w && mouseY > colorBlock.y && mouseY < colorBlock.y + colorBlock.h);
+                    let colorBlockCorners = calculateCorners(colorBlock);
+                    for (let corner_index in colorBlockCorners) {
+                        var hoverColorBlockCorners = (mouseX > colorBlockCorners[corner_index].x && mouseX < colorBlockCorners[corner_index].x + colorBlockCorners[corner_index].w && mouseY > colorBlockCorners[corner_index].y && mouseY < colorBlockCorners[corner_index].y + colorBlockCorners[corner_index].h);
+                        if (hoverColorBlockCorners) {
+                            var hoveringCorner = corner_index;
+                            break;
+                        }
                     }
                 }
                 if (hoverObstacle) break;
@@ -1151,11 +1202,23 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             robots[mouseOnRobotIndex].pose.y += dy;
             robots[mouseOnRobotIndex].mouse.rx += dx;
             robots[mouseOnRobotIndex].mouse.ry += dy;
-        } else if (isDownObstacle && selectedObstacle != null && !isDownObstacleCorner) {
+        } else if (isDownObstacle && selectedObstacle != null && !isDownObstacleCorner && customObstacleList[selectedObstacle].form === "rectangle") {
+            console.log(selectedObject)
             customObstacleList[selectedObstacle].x += dx;
             customObstacleList[selectedObstacle].y += dy;
             updateObstacleLayer();
-        }  else if(isDownObstacleCorner && selectedObject == selectedCornerObject && selectedObstacle != null) {
+            console.log(selectedObstacle);
+        } else if (isDownObstacle && selectedObstacle != null && !isDownObstacleCorner && customObstacleList[selectedObstacle].form === "triangle") {
+            console.log("Triangle")
+            customObstacleList[selectedObstacle].ax += dx;
+            customObstacleList[selectedObstacle].ay += dy;
+            customObstacleList[selectedObstacle].bx += dx;
+            customObstacleList[selectedObstacle].by += dy;
+            customObstacleList[selectedObstacle].cx += dx;
+            customObstacleList[selectedObstacle].cy += dy;
+            updateObstacleLayer();
+            console.log(selectedObstacle);
+          } else if(isDownObstacleCorner && selectedObject == selectedCornerObject && selectedObstacle != null) {
             if(customObstacleList[selectedObstacle].w >= minSizeObjects && customObstacleList[selectedObstacle].h >= minSizeObjects) {
                 console.log(selectedCorner);
                 if(selectedCorner == 0) {
