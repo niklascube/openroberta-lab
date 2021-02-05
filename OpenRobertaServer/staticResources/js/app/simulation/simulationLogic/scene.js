@@ -118,8 +118,10 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                 this.oCtx.drawImage(obstacle.img, obstacle.x, obstacle.y, obstacle.w, obstacle.h);
             } else if (obstacle.color) {
                 this.oCtx.fillStyle = obstacle.color;
+                this.oCtx.shadowColor = '#3e3e3e';
+                this.oCtx.shadowOffsetY = 5;
+                this.oCtx.shadowOffsetX = 5;
                 this.oCtx.shadowBlur = 5;
-                this.oCtx.shadowColor = "black";
                 this.oCtx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
                 if(SIM.getSelectedObject() != null) this.highlightObject();
             }

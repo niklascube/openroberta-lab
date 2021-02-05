@@ -370,6 +370,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             if(color === "green") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.GREEN;
             if(color === "red") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.RED;
             if(color === "yellow") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.YELLOW;
+            updateColorLayer();
         }
         if (selectedObstacle != null){
             if(color === "black") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.BLACK;
@@ -377,8 +378,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             if(color === "green") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.GREEN;
             if(color === "red") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.RED;
             if(color === "yellow") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.YELLOW;
+            updateObstacleLayer();
         }
-        updateObstacleLayer();
     }
     exports.changeObjectColor = changeObjectColor;
 
@@ -475,8 +476,10 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
         if (robotType.indexOf("calliope") >= 0) {
             currentBackground = 0;
+            resetScene();
             $('.dropdown.sim, .simScene, #simImport, #simResetPose, #simButtonsHead, #simEditButtons').hide();
         } else if (robotType === 'microbit') {
+            resetScene();
             $('.dropdown.sim, .simScene, #simImport, #simResetPose, #simButtonsHead, #simEditButtons').hide();
             currentBackground = 1;
         } else if (currentBackground === 0 || currentBackground == 1) {
