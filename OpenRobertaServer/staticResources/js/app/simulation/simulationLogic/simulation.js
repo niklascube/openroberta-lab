@@ -1016,10 +1016,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     break;
                 }
             } else if (obstacle.form === "triangle"){
-                isDownObstacle = (startX > obstacle.ax && startX < obstacle.bx && startY > obstacle.ay && startY < obstacle.by);
+                isDownObstacle = checkDownTriangle(startX, startY, obstacle.ax,obstacle.ay,obstacle.bx, obstacle.by, obstacle.cx, obstacle.cy)
 
-                //---> Hier ansetzen oCtx-Layer muss aus scene importiert werden (?)
-                //isDownObstacle = context.isPointInPath(startX, startY);
                 key++;
                 if(isDownObstacle && !isDownColorBlockCorner) {
                     enableChangeObjectButtons();
@@ -1062,6 +1060,21 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
     }
 
+    function checkDownTriangle(px, py, x1, y1, x2, y2, x3, y3) {
+
+        var areaOrig = Math.floor(Math.abs((x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)));
+
+        var area1 = Math.floor(Math.abs((x1 - px) * (y2 - py) - (x2 - px) * (y1 - py)));
+        var area2 = Math.floor(Math.abs((x2 - px) * (y3 - py) - (x3 - px) * (y2 - py)));
+        var area3 = Math.floor(Math.abs((x3 - px) * (y1 - py) - (x1 - px) * (y3 - py)));
+
+        if (area1 + area2 + area3 <= areaOrig) {
+            return true;
+        }
+        return false;
+    }
+    exports.checkDownTriangle = checkDownTriangle;
+
     function calculateCorners(object) {
         const shift = 10;
         let objectCorners = [
@@ -1072,6 +1085,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         ];
         return objectCorners;
     }
+    exports.calculateCorners = calculateCorners;
 
     function checkSelection() {
         if(!isDownColorBlock && !isDownObstacle && !isDownObstacleCorner && !isDownColorBlockCorner) {
@@ -1083,6 +1097,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             scene.drawObstacles();
         }
     }
+    exports.checkSelection = checkSelection;
 
     function handleDoubleMouseClick(e) {
         if (numRobots > 1) {
