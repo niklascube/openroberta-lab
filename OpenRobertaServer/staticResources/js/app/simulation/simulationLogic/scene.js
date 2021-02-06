@@ -573,48 +573,91 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                     if (i === 0) {
                         var x = this.robots[r].frontLeft.rx;
                         var y = this.robots[r].frontLeft.ry;
-                        if (x < p.x || x > p.x + p.w || y < p.y || y > p.y + p.h) {
+
+                        if(p.form === "triangle") {
+                            if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
+                                this.robots[r].frontLeft.bumped = true;
+                                touchSensor.value = 1;
+                            }
+                        }
+                        else if (x < p.x || x > p.x + p.w || y < p.y || y > p.y + p.h) {
                             this.robots[r].frontLeft.bumped = true;
                             touchSensor.value = 1;
                         }
                         x = this.robots[r].frontRight.rx;
                         y = this.robots[r].frontRight.ry;
-                        if (x < p.x || x > p.x + p.w || y < p.y || y > p.y + p.h) {
+                        if(p.form === "triangle") {
+                            if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
+                                this.robots[r].frontRight.bumped = true;
+                            }
+                        }
+                        else if (x < p.x || x > p.x + p.w || y < p.y || y > p.y + p.h) {
                             this.robots[r].frontRight.bumped = true;
-                            touchSensor.value = 1;
                         }
                         x = this.robots[r].backLeft.rx;
                         y = this.robots[r].backLeft.ry;
-                        if (x < p.x || x > p.x + p.w || y < p.y || y > p.y + p.h) {
+                        if(p.form === "triangle") {
+                            if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
+                                this.robots[r].backLeft.bumped = true;
+                            }
+                        }
+                        else if (x < p.x || x > p.x + p.w || y < p.y || y > p.y + p.h) {
                             this.robots[r].backLeft.bumped = true;
                         }
                         x = this.robots[r].backRight.rx;
                         y = this.robots[r].backRight.ry;
-                        if (x < p.x || x > p.x + p.w || y < p.y || y > p.y + p.h) {
+                        if(p.form === "triangle") {
+                            if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
+                                this.robots[r].backRight.bumped = true;
+                            }
+                        }
+                        else if (x < p.x || x > p.x + p.w || y < p.y || y > p.y + p.h) {
                             this.robots[r].backRight.bumped = true;
                         }
                     } else {
                         if (p.isParallelToAxis) {
                             var x = this.robots[r].frontLeft.rx;
                             var y = this.robots[r].frontLeft.ry;
-                            if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
+                            if(p.form === "triangle") {
+                                if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
+                                    this.robots[r].frontLeft.bumped = true;
+                                    touchSensor.value = 1;
+                                }
+                            }
+                            else if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
                                 this.robots[r].frontLeft.bumped = true;
                                 touchSensor.value = 1;
                             }
                             x = this.robots[r].frontRight.rx;
                             y = this.robots[r].frontRight.ry;
-                            if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
+                            if(p.form === "triangle") {
+                                if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
+                                    this.robots[r].frontRight.bumped = true;
+                                    touchSensor.value = 1;
+                                }
+                            }
+                            else if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
                                 this.robots[r].frontRight.bumped = true;
                                 touchSensor.value = 1;
                             }
                             x = this.robots[r].backLeft.rx;
                             y = this.robots[r].backLeft.ry;
-                            if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
+                            if(p.form === "triangle") {
+                                if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
+                                    this.robots[r].backLeft.bumped = true;
+                                }
+                            }
+                            else if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
                                 this.robots[r].backLeft.bumped = true;
                             }
                             x = this.robots[r].backRight.rx;
                             y = this.robots[r].backRight.ry;
-                            if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
+                            if(p.form === "triangle") {
+                                if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
+                                    this.robots[r].backRight.bumped = true;
+                                }
+                            }
+                            else if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
                                 this.robots[r].backRight.bumped = true;
                             }
                         } else {
