@@ -300,22 +300,34 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 form: "rectangle"
             };
             customObstacleList.unshift(newRectangleObstacle);
-        }
-        else if (shape === "triangle") {
+        } else if (shape === "triangle") {
             let newTriangleObstacle = {
                 ax: 200,
                 ay: 200,
-                bx: 300,
-                by: 300,
-                cx: 300,
-                cy: 100,
+                bx: 275,
+                by: 275,
+                cx: 275,
+                cy: 125,
                 isParallelToAxis: true,
                 color: "2b2b2b",
                 type: "obstacle",
                 form: "triangle"
-                };
-                customObstacleList.unshift(newTriangleObstacle);
-            }
+            };
+            customObstacleList.unshift(newTriangleObstacle);
+        } else if (shape === "circle") {
+            let newCircleObstacle = {
+                x: 200,
+                y: 300,
+                r: 50,
+                startAngle: 50,
+                endAngle: 0,
+                isParallelToAxis: true,
+                color: "2b2b2b",
+                type: "obstacle",
+                form: "circle"
+            };
+            customObstacleList.unshift(newCircleObstacle);
+        }
         exports.obstacleList = [ground, customObstacleList];
         scene.drawObstacles();
     }
@@ -716,10 +728,10 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 customObstacleList[0].h = 100;*/
                 customObstacleList[0].ax = 500;
                 customObstacleList[0].ay = 250;
-                customObstacleList[0].bx = 600;
-                customObstacleList[0].by = 350;
-                customObstacleList[0].cx = 600;
-                customObstacleList[0].cy = 150;
+                customObstacleList[0].bx = 575;
+                customObstacleList[0].by = 325;
+                customObstacleList[0].cx = 575;
+                customObstacleList[0].cy = 175;
                 customObstacleList[0].img = null;
                 customObstacleList[0].color = "#33B8CA";
                 customObstacleList[0].form = "triangle";
@@ -1005,6 +1017,26 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 }
             } else if (obstacle.form === "triangle"){
                 isDownObstacle = (startX > obstacle.ax && startX < obstacle.bx && startY > obstacle.ay && startY < obstacle.by);
+
+                //---> Hier ansetzen oCtx-Layer muss aus scene importiert werden (?)
+                //isDownObstacle = context.isPointInPath(startX, startY);
+                key++;
+                if(isDownObstacle && !isDownColorBlockCorner) {
+                    enableChangeObjectButtons();
+                    selectedColorBlock = null;
+                    selectedObstacle = customObstacleList.length - key;
+                    selectedObject = customObstacleList[selectedObstacle];
+                    customObstacleList.splice(selectedObstacle, 1);
+                    customObstacleList.push(selectedObject);
+                    selectedObstacle = customObstacleList.length-1;
+                    updateObstacleLayer();
+                    console.log(selectedObstacle)
+                    break;
+                }
+            } else if (obstacle.form === "circle"){
+                isDownObstacle = (startX > obstacle.x - obstacle.r && startX < obstacle.x + obstacle.r && startY > obstacle.y - obstacle.r && startY < obstacle.y + obstacle.r);
+                //---> Hier ansetzen oCtx-Layer muss aus scene importiert werden (?)
+                //isDownObstacle = context.isPointInPath(startX, startY);
                 key++;
                 if(isDownObstacle && !isDownColorBlockCorner) {
                     enableChangeObjectButtons();
@@ -1019,6 +1051,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     break;
                 }
             }
+
+
         }
 
         isDownRuler = (startX > ruler.x && startX < ruler.x + ruler.w && startY > ruler.y && startY < ruler.y + ruler.h);
@@ -1203,13 +1237,10 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             robots[mouseOnRobotIndex].mouse.rx += dx;
             robots[mouseOnRobotIndex].mouse.ry += dy;
         } else if (isDownObstacle && selectedObstacle != null && !isDownObstacleCorner && customObstacleList[selectedObstacle].form === "rectangle") {
-            console.log(selectedObject)
             customObstacleList[selectedObstacle].x += dx;
             customObstacleList[selectedObstacle].y += dy;
             updateObstacleLayer();
-            console.log(selectedObstacle);
         } else if (isDownObstacle && selectedObstacle != null && !isDownObstacleCorner && customObstacleList[selectedObstacle].form === "triangle") {
-            console.log("Triangle")
             customObstacleList[selectedObstacle].ax += dx;
             customObstacleList[selectedObstacle].ay += dy;
             customObstacleList[selectedObstacle].bx += dx;
@@ -1217,8 +1248,11 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             customObstacleList[selectedObstacle].cx += dx;
             customObstacleList[selectedObstacle].cy += dy;
             updateObstacleLayer();
-            console.log(selectedObstacle);
-          } else if(isDownObstacleCorner && selectedObject == selectedCornerObject && selectedObstacle != null) {
+        } else if (isDownObstacle && selectedObstacle != null && !isDownObstacleCorner && customObstacleList[selectedObstacle].form === "circle") {
+            customObstacleList[selectedObstacle].x += dx;
+            customObstacleList[selectedObstacle].y += dy;
+            updateObstacleLayer();
+        } else if(isDownObstacleCorner && selectedObject == selectedCornerObject && selectedObstacle != null) {
             if(customObstacleList[selectedObstacle].w >= minSizeObjects && customObstacleList[selectedObstacle].h >= minSizeObjects) {
                 console.log(selectedCorner);
                 if(selectedCorner == 0) {

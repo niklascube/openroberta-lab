@@ -136,6 +136,16 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                 this.oCtx.lineTo(obstacle.cx, obstacle.cy);
                 this.oCtx.fill();
                 if(SIM.getSelectedObject() != null) this.highlightObject();
+            } else if (obstacle.color && obstacle.form === "circle") {
+                this.oCtx.fillStyle = obstacle.color;
+                this.oCtx.shadowColor = '#3e3e3e';
+                this.oCtx.shadowOffsetY = 5;
+                this.oCtx.shadowOffsetX = 5;
+                this.oCtx.shadowBlur = 5;
+                this.oCtx.beginPath();
+                this.oCtx.arc(obstacle.x, obstacle.y, obstacle.r, obstacle.startAngle, obstacle.endAngle, Math.PI*2, true);
+                this.oCtx.fill();
+                if(SIM.getSelectedObject() != null) this.highlightObject();
             }
        }
     };

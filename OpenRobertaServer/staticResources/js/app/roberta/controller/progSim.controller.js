@@ -178,6 +178,10 @@ define(['exports', 'message', 'log', 'util', 'simulation.simulation', 'simulatio
                 SIM.addObstacle("triangle");
             }, 'simAddObstacle clicked');
 
+            $('#simAddObstacleCircle').onWrap('click', function(event) {
+                SIM.addObstacle("circle");
+            }, 'simAddObstacle clicked');
+
             $('#simDeleteAllObstacles').onWrap('click', function(event) {
                 SIM.clearObstacleList();
             }, 'simDeleteAllObstacles clicked');
