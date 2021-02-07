@@ -143,26 +143,35 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
 
     Scene.prototype.highlightObject = function() {
         let selectedObject = SIM.getSelectedObject();
-        if(selectedObject != null && selectedObject.form==="rectangle") {
-            const objectCorners = [
-                {x: Math.round(selectedObject.x), y: Math.round(selectedObject.y)},
-                {x: (Math.round(selectedObject.x) + selectedObject.w), y: Math.round(selectedObject.y)},
-                {x: Math.round(selectedObject.x), y: (Math.round(selectedObject.y) + selectedObject.h)},
-                {x: (Math.round(selectedObject.x) + selectedObject.w), y: (Math.round(selectedObject.y) + selectedObject.h)}
-            ];
-                for (let c in objectCorners) {
-                    this.oCtx.restore();
-                    this.oCtx.save();
-                    this.oCtx.scale(SIM.getScale(), SIM.getScale());
-                    this.oCtx.beginPath();
-                    this.oCtx.lineWidth = 2;
-                    this.oCtx.shadowBlur = 0;
-                    this.oCtx.strokeStyle = "gray";
-                    this.oCtx.arc(objectCorners[c].x, objectCorners[c].y, 4, 0, 2 * Math.PI);
-                    this.oCtx.fillStyle = "black";
-                    this.oCtx.stroke();
-                    this.oCtx.fill();
+        if(selectedObject != null) {
+            var objectCorners;
+            if(selectedObject.form === "rectangle") {
+                objectCorners = [
+                    {x: Math.round(selectedObject.x), y: Math.round(selectedObject.y)},
+                    {x: (Math.round(selectedObject.x) + selectedObject.w), y: Math.round(selectedObject.y)},
+                    {x: Math.round(selectedObject.x), y: (Math.round(selectedObject.y) + selectedObject.h)},
+                    {x: (Math.round(selectedObject.x) + selectedObject.w), y: (Math.round(selectedObject.y) + selectedObject.h)}
+                ];
+            } else if(selectedObject.form === "triangle") {
+                objectCorners = [
+                    {x: Math.round(selectedObject.ax), y: Math.round(selectedObject.ay)},
+                    {x: Math.round(selectedObject.bx), y: Math.round(selectedObject.by)},
+                    {x: Math.round(selectedObject.cx), y: Math.round(selectedObject.cy)}
+                ];
             }
+            for (let c in objectCorners) {
+                this.oCtx.restore();
+                this.oCtx.save();
+                this.oCtx.scale(SIM.getScale(), SIM.getScale());
+                this.oCtx.beginPath();
+                this.oCtx.lineWidth = 2;
+                this.oCtx.shadowBlur = 0;
+                this.oCtx.strokeStyle = "gray";
+                this.oCtx.arc(objectCorners[c].x, objectCorners[c].y, 4, 0, 2 * Math.PI);
+                this.oCtx.fillStyle = "black";
+                this.oCtx.stroke();
+                this.oCtx.fill();
+        }
         }
     }
 

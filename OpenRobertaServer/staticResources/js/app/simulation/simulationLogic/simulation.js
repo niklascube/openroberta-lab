@@ -893,10 +893,19 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             case 17 && 86:
                 if(copiedObject && selectedObject) {
                     copiedObject = JSON.parse(JSON.stringify(selectedObject));
-                    copiedObject.x = mouseX - copiedObject.w/2;
-                    copiedObject.y = mouseY - copiedObject.h/2;
-
-                    console.log(copiedObject);
+                    if(copiedObject.form === "triangle") {
+                        const diffx = copiedObject.ax - mouseX;
+                        const diffy = copiedObject.ay - mouseY;
+                        copiedObject.ax = mouseX;
+                        copiedObject.ay = mouseY;
+                        copiedObject.bx -= diffx;
+                        copiedObject.by -= diffy;
+                        copiedObject.cx -= diffx;
+                        copiedObject.cy -= diffy;
+                    } else if (copiedObject.form === "rectangle"){
+                        copiedObject.x = mouseX - copiedObject.w/2;
+                        copiedObject.y = mouseY - copiedObject.h/2;
+                    }
                     if(copiedObject.type === "obstacle") {
                         customObstacleList.unshift(copiedObject);
                         exports.obstacleList = [ground, customObstacleList];
@@ -1077,12 +1086,21 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
     function calculateCorners(object) {
         const shift = 10;
-        let objectCorners = [
-            {x: (Math.round(object.x-shift)), y: (Math.round(object.y-shift) + object.h), w: shift*2, h:shift*2},
-            {x: Math.round(object.x-shift), y: Math.round(object.y-shift), w: shift*2, h:shift*2},
-            {x: (Math.round(object.x-shift) + object.w), y: Math.round(object.y-shift), w: shift*2, h:shift*2},
-            {x: (Math.round(object.x-shift) + object.w), y: (Math.round(object.y-shift) + object.h), w: shift*2, h:shift*2}
-        ];
+        var objectCorners;
+        if(object.form === "rectangle") {
+            objectCorners = [
+                {x: (Math.round(object.x-shift)), y: (Math.round(object.y-shift) + object.h), w: shift*2, h:shift*2},
+                {x: Math.round(object.x-shift), y: Math.round(object.y-shift), w: shift*2, h:shift*2},
+                {x: (Math.round(object.x-shift) + object.w), y: Math.round(object.y-shift), w: shift*2, h:shift*2},
+                {x: (Math.round(object.x-shift) + object.w), y: (Math.round(object.y-shift) + object.h), w: shift*2, h:shift*2}
+            ];
+        } else if(object.form === "triangle") {
+            objectCorners = [
+                {x: Math.round(object.ax-shift), y: Math.round(object.ay-shift), w: shift*2, h:shift*2},
+                {x: Math.round(object.bx-shift), y: Math.round(object.by-shift), w: shift*2, h:shift*2},
+                {x: Math.round(object.cx-shift), y: Math.round(object.cy-shift), w: shift*2, h:shift*2},
+            ];
+        }
         return objectCorners;
     }
     exports.calculateCorners = calculateCorners;
@@ -1269,23 +1287,35 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             updateObstacleLayer();
         } else if(isDownObstacleCorner && selectedObject == selectedCornerObject && selectedObstacle != null) {
             if(customObstacleList[selectedObstacle].w >= minSizeObjects && customObstacleList[selectedObstacle].h >= minSizeObjects) {
-                console.log(selectedCorner);
-                if(selectedCorner == 0) {
-                    customObstacleList[selectedObstacle].x += dx;
-                    customObstacleList[selectedObstacle].w -= dx;
-                    customObstacleList[selectedObstacle].h += dy;
-                } else if(selectedCorner == 1) {
-                    customObstacleList[selectedObstacle].x += dx;
-                    customObstacleList[selectedObstacle].y += dy;
-                    customObstacleList[selectedObstacle].w -= dx;
-                    customObstacleList[selectedObstacle].h -= dy;
-                } else if(selectedCorner == 2) {
-                    customObstacleList[selectedObstacle].y += dy;
-                    customObstacleList[selectedObstacle].w += dx;
-                    customObstacleList[selectedObstacle].h -= dy;
-                } else if(selectedCorner == 3) {
-                    customObstacleList[selectedObstacle].w += dx;
-                    customObstacleList[selectedObstacle].h += dy;
+                if(customObstacleList[selectedObstacle].form === "triangle") {
+                    if(selectedCorner == 0) {
+                        customObstacleList[selectedObstacle].ax += dx;
+                        customObstacleList[selectedObstacle].ay += dy;
+                    } else if(selectedCorner == 1) {
+                        customObstacleList[selectedObstacle].bx += dx;
+                        customObstacleList[selectedObstacle].by += dy;
+                    } else if(selectedCorner == 2) {
+                        customObstacleList[selectedObstacle].cx += dx;
+                        customObstacleList[selectedObstacle].cy += dy;
+                    }
+                } else if(customObstacleList[selectedObstacle].form === "rectangle") {
+                    if(selectedCorner == 0) {
+                        customObstacleList[selectedObstacle].x += dx;
+                        customObstacleList[selectedObstacle].w -= dx;
+                        customObstacleList[selectedObstacle].h += dy;
+                    } else if(selectedCorner == 1) {
+                        customObstacleList[selectedObstacle].x += dx;
+                        customObstacleList[selectedObstacle].y += dy;
+                        customObstacleList[selectedObstacle].w -= dx;
+                        customObstacleList[selectedObstacle].h -= dy;
+                    } else if(selectedCorner == 2) {
+                        customObstacleList[selectedObstacle].y += dy;
+                        customObstacleList[selectedObstacle].w += dx;
+                        customObstacleList[selectedObstacle].h -= dy;
+                    } else if(selectedCorner == 3) {
+                        customObstacleList[selectedObstacle].w += dx;
+                        customObstacleList[selectedObstacle].h += dy;
+                    }
                 }
             } else if(customObstacleList[selectedObstacle].w < minSizeObjects){
                 if(selectedCorner == 0 || selectedCorner == 1) customObstacleList[selectedObstacle].x -= minSizeObjects-customObstacleList[selectedObstacle].w;
