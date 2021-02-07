@@ -72,6 +72,43 @@ define([ 'exports', 'simulation.constants' ], function(exports, CONSTANTS) {
         };
     };
     /**
+     * Get intersection point from a line and a circle.
+     *
+     * @memberOf exports
+     * @param {line1}
+     *            one line
+     * @param {line2}
+     *            another line
+     * @returns {point} or null, if no intersection found
+     */
+    exports.getIntersectionPointCircle = function(line, circle) {
+        var baX = line.x2 - line.x1;
+        var baY = line.y2 - line.y1;
+        var caX = circle.x;
+        var caY = circle.y;
+
+        var a = baX * baX + baY * baY;
+        var bBy2 = baX * caX + baY * caY;
+        var c = caX * caX + caY * caY - circle.r * circle.r;
+
+        var pBy2 = bBy2 / a;
+        var q = c / a;
+
+        var disc = pBy2 * pBy2 - q;
+        if (disc < 0) {
+            return null;
+        }
+
+        var tmpSqrt = Math.sqrt(disc);
+        var abScalingFactor1 = -pBy2 + tmpSqrt;
+        var abScalingFactor2 = -pBy2 - tmpSqrt;
+
+        var p1 = {y: line.x1 - baX * abScalingFactor1, y: line.y1 - baY * abScalingFactor1};
+        var p2 = {y: line.x1 - baX * abScalingFactor2, y: line.y1 - baY * abScalingFactor2};
+        console.log(p1 + p2);
+        return p1;
+    }
+    /**
      * Get four lines from a rectangle.
      * 
      * @memberOf exports
@@ -130,6 +167,72 @@ define([ 'exports', 'simulation.constants' ], function(exports, CONSTANTS) {
 
     };
     /**
+     * Get distance from a line to a circle.
+     *
+     * @memberOf exports
+     * @param {circle}
+     *            circle
+     * @param {line1}
+     *            a line point
+     * @param {line2}
+     *            another line point
+     * @returns {distance} nearest distance
+     */
+    exports.getDistanceToCircle = function(circle, line) {
+            var v1, v2, v3, u;
+            v1 = {};
+            v2 = {};
+            v3 = {};
+            v1.x = line.x;
+            v1.y = line.y;
+            v2.x = circle.x - line.x;
+            v2.y = circle.y - line.y;
+            u = (v2.x * v1.x + v2.y * v1.y) / (v1.y * v1.y + v1.x * v1.x); // unit dist of point on line
+            if(u >= 0 && u <= 1){
+                v3.x = (v1.x * u + line.x) - circle.x;
+                v3.y = (v1.y * u + line.y) - circle.y;
+                v3.x *= v3.x;
+                v3.y *= v3.y;
+                return Math.sqrt(v3.y + v3.x); // return distance from line
+            }
+            // get distance from end points
+            v3.x = circle.x - line.x;
+            v3.y = circle.y - line.y;
+            v3.x *= v3.x;  // square vectors
+            v3.y *= v3.y;
+            v2.x *= v2.x;
+            v2.y *= v2.y;
+            return Math.min(Math.sqrt(v2.y + v2.x), Math.sqrt(v3.y + v3.x));
+    };
+    /**
+     * Get four lines from a triangle.
+     *
+     * @memberOf exports
+     * @param {tria}
+     *            a triangle
+     * @returns {Array} three lines
+     */
+    exports.getLinesFromTria = function(tria) {
+        if (tria.isParallelToAxis) {
+            return [{
+                x1: tria.ax,
+                x2: tria.bx,
+                y1: tria.ay,
+                y2: tria.by
+            }, {
+                x1: tria.bx,
+                x2: tria.cx,
+                y1: tria.by,
+                y2: tria.cy
+            }, {
+                x1: tria.ax,
+                x2: tria.cx,
+                y1: tria.ay,
+                y2: tria.cy
+            }];
+        }
+    };
+        /**
      * Calculate the square of a number.
      * 
      * @memberOf exports
