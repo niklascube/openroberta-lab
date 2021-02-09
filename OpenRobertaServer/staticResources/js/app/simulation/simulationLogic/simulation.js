@@ -35,6 +35,11 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     var selectedObject;
     var selectedCorner;
     var selectedCornerObject;
+    var hoverColorBlock;
+    var hoverObstacle;
+    var hoverObstacleCorners;
+    var hoverColorBlockCorners;
+    var hoveringCorner;
     var canceled;
     var storedPrograms;
     var copiedObject;
@@ -46,7 +51,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     var observers = {};
     const simChangeObjectColorButton = document.getElementById('simChangeObjectColor');
     const simDeleteObjectButton = document.getElementById('simDeleteObject');
-
+    const colorpicker = new CP(document.getElementById('simChangeObjectColor'));
     var imgObstacle1 = new Image();
     var imgPattern = new Image();
     var imgRuler = new Image();
@@ -306,9 +311,9 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
             let newTriangleObstacle = {
                 ax: x-50,
-                ay: y-50,
-                bx: x-50,
-                by: y+50,
+                ay: y+50,
+                bx: x,
+                by: y-50,
                 cx: x+50,
                 cy: y+50,
                 isParallelToAxis: true,
@@ -392,6 +397,16 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     }
     exports.addColorBlock = addColorBlock;
 
+    function changeColorWithColorPicker(r, g, b, a) {
+        this.source.value = this.color(r, g, b, a);
+        document.body.style.backgroundColor = this.color(r, g, b, a);
+        if(selectedObject != null) {
+            selectedObject.color = this.color(r, g, b, a);
+            updateColorLayer();
+            updateObstacleLayer();
+        }
+    }
+
     function changeObjectColor(color){
         if (selectedColorBlock != null){
             if(color === "black") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.BLACK;
@@ -456,6 +471,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         hOld: 0,
         theta: 0,
         isParallelToAxis: true,
+        form: "rectangle",
         type: "obstacle"
     };
 
@@ -966,6 +982,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 mouseOnRobotIndex = i;
             }
         }
+        colorpicker.on('change', changeColorWithColorPicker);
 
         if(selectedObstacle != null) {
             let obstacleCorners = calculateCorners(customObstacleList[selectedObstacle]);
@@ -1003,7 +1020,6 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 colorBlockList.splice(selectedColorBlock, 1);
                 colorBlockList.push(selectedObject);
                 selectedColorBlock = colorBlockList.length-1;
-                console.log(selectedObject);
                 updateColorLayer();
                 updateObstacleLayer();
                 break;
@@ -1041,9 +1057,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     }
 
     function checkDownTriangle(px, py, x1, y1, x2, y2, x3, y3) {
-
         var areaOrig = Math.floor(Math.abs((x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)));
-
         var area1 = Math.floor(Math.abs((x1 - px) * (y2 - py) - (x2 - px) * (y1 - py)));
         var area2 = Math.floor(Math.abs((x2 - px) * (y3 - py) - (x3 - px) * (y2 - py)));
         var area3 = Math.floor(Math.abs((x3 - px) * (y1 - py) - (x1 - px) * (y3 - py)));
@@ -1057,7 +1071,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
     function calculateCorners(object) {
         const shift = 10;
-        var objectCorners;
+        let objectCorners;
         if(object.form === "rectangle") {
             objectCorners = [
                 {x: (Math.round(object.x-shift)), y: (Math.round(object.y-shift) + object.h), w: shift*2, h:shift*2},
@@ -1133,7 +1147,6 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 isDownRobots[i] = false;
             }
         }
-        //updateSIM();
         mouseOnRobotIndex = -1;
     }
 
@@ -1185,35 +1198,32 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 }
             }
             for(let key in customObstacleList) {
-                let obstacle = customObstacleList.slice().reverse()[key];
-                var hoverObstacle;
+                let obstacle = customObstacleList.slice()[key];
                 if (obstacle.form === "rectangle") hoverObstacle = (mouseX > obstacle.x && mouseX < obstacle.x + obstacle.w && mouseY > obstacle.y && mouseY < obstacle.y + obstacle.h);
                 else if (obstacle.form === "triangle") hoverObstacle = checkDownTriangle(mouseX, mouseY, obstacle.ax, obstacle.ay, obstacle.bx, obstacle.by, obstacle.cx, obstacle.cy);
                 let obstacleCorners = calculateCorners(obstacle);
                 for (let corner_index in obstacleCorners) {
-                    var hoverObstacleCorners = (mouseX > obstacleCorners[corner_index].x && mouseX < obstacleCorners[corner_index].x + obstacleCorners[corner_index].w && mouseY > obstacleCorners[corner_index].y && mouseY < obstacleCorners[corner_index].y + obstacleCorners[corner_index].h);
+                    hoverObstacleCorners = (mouseX > obstacleCorners[corner_index].x && mouseX < obstacleCorners[corner_index].x + obstacleCorners[corner_index].w && mouseY > obstacleCorners[corner_index].y && mouseY < obstacleCorners[corner_index].y + obstacleCorners[corner_index].h);
                     if (hoverObstacleCorners) {
-                        var hoveringCorner = corner_index;
+                        hoveringCorner = corner_index;
                         break;
                     }
                 }
-
                 if (hoverObstacle) break;
             }
             for(let key in colorBlockList) {
-                let colorBlock = colorBlockList.slice().reverse()[key];
-                var hoverColorBlock;
+                let colorBlock = colorBlockList.slice()[key];
                 if (colorBlock.form === "rectangle") hoverColorBlock = (mouseX > colorBlock.x && mouseX < colorBlock.x + colorBlock.w && mouseY > colorBlock.y && mouseY < colorBlock.y + colorBlock.h);
                 else if (colorBlock.form === "triangle") hoverColorBlock = checkDownTriangle(mouseX, mouseY, colorBlock.ax, colorBlock.ay, colorBlock.bx, colorBlock.by, colorBlock.cx, colorBlock.cy);
                 let colorBlockCorners = calculateCorners(colorBlock);
                 for (let corner_index in colorBlockCorners) {
-                    var hoverColorBlockCorners = (mouseX > colorBlockCorners[corner_index].x && mouseX < colorBlockCorners[corner_index].x + colorBlockCorners[corner_index].w && mouseY > colorBlockCorners[corner_index].y && mouseY < colorBlockCorners[corner_index].y + colorBlockCorners[corner_index].h);
+                    hoverColorBlockCorners = (mouseX > colorBlockCorners[corner_index].x && mouseX < colorBlockCorners[corner_index].x + colorBlockCorners[corner_index].w && mouseY > colorBlockCorners[corner_index].y && mouseY < colorBlockCorners[corner_index].y + colorBlockCorners[corner_index].h);
                     if (hoverColorBlockCorners) {
-                        var hoveringCorner = corner_index;
+                        hoveringCorner = corner_index;
                         break;
                     }
                 }
-                if (hoverObstacle) break;
+                if (hoverColorBlock) break;
             }
             var hoverRuler = (mouseX > ruler.x && mouseX < ruler.x + ruler.w && mouseY > ruler.y && mouseY < ruler.y + ruler.h);
             if(hoverObstacleCorners || (hoverColorBlockCorners && colorBlocksActivated)) {
@@ -1230,7 +1240,6 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             }
             return;
         }
-        $("#robotLayer").css('cursor', 'pointer');
         dx = (mouseX - startX);
         dy = (mouseY - startY);
         startX = mouseX;
@@ -1263,43 +1272,43 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             customObstacleList[selectedObstacle].y += dy;
             updateObstacleLayer();
         } else if(isDownObstacleCorner && selectedObject == selectedCornerObject && selectedObstacle != null) {
-            if(customObstacleList[selectedObstacle].w >= minSizeObjects && customObstacleList[selectedObstacle].h >= minSizeObjects) {
-                if(customObstacleList[selectedObstacle].form === "triangle") {
-                    if(selectedCorner == 0) {
-                        customObstacleList[selectedObstacle].ax += dx;
-                        customObstacleList[selectedObstacle].ay += dy;
-                    } else if(selectedCorner == 1) {
-                        customObstacleList[selectedObstacle].bx += dx;
-                        customObstacleList[selectedObstacle].by += dy;
-                    } else if(selectedCorner == 2) {
-                        customObstacleList[selectedObstacle].cx += dx;
-                        customObstacleList[selectedObstacle].cy += dy;
-                    }
-                } else if(customObstacleList[selectedObstacle].form === "rectangle") {
-                    if(selectedCorner == 0) {
-                        customObstacleList[selectedObstacle].x += dx;
-                        customObstacleList[selectedObstacle].w -= dx;
-                        customObstacleList[selectedObstacle].h += dy;
-                    } else if(selectedCorner == 1) {
-                        customObstacleList[selectedObstacle].x += dx;
-                        customObstacleList[selectedObstacle].y += dy;
-                        customObstacleList[selectedObstacle].w -= dx;
-                        customObstacleList[selectedObstacle].h -= dy;
-                    } else if(selectedCorner == 2) {
-                        customObstacleList[selectedObstacle].y += dy;
-                        customObstacleList[selectedObstacle].w += dx;
-                        customObstacleList[selectedObstacle].h -= dy;
-                    } else if(selectedCorner == 3) {
-                        customObstacleList[selectedObstacle].w += dx;
-                        customObstacleList[selectedObstacle].h += dy;
-                    }
+            if(customObstacleList[selectedObstacle].form === "triangle") {
+                if(selectedCorner == 0) {
+                    customObstacleList[selectedObstacle].ax += dx;
+                    customObstacleList[selectedObstacle].ay += dy;
+                } else if(selectedCorner == 1) {
+                    customObstacleList[selectedObstacle].bx += dx;
+                    customObstacleList[selectedObstacle].by += dy;
+                } else if(selectedCorner == 2) {
+                    customObstacleList[selectedObstacle].cx += dx;
+                    customObstacleList[selectedObstacle].cy += dy;
                 }
-            } else if(customObstacleList[selectedObstacle].w < minSizeObjects){
-                if(selectedCorner == 0 || selectedCorner == 1) customObstacleList[selectedObstacle].x -= minSizeObjects-customObstacleList[selectedObstacle].w;
-                customObstacleList[selectedObstacle].w = minSizeObjects;
-            } else if(customObstacleList[selectedObstacle].h < minSizeObjects) {
-                if(selectedCorner == 1 || selectedCorner == 2) customObstacleList[selectedObstacle].y -= minSizeObjects-customObstacleList[selectedObstacle].h;
-                customObstacleList[selectedObstacle].h = minSizeObjects;
+            } else if(customObstacleList[selectedObstacle].form === "rectangle") {
+                if(customObstacleList[selectedObstacle].w >= minSizeObjects && customObstacleList[selectedObstacle].h >= minSizeObjects) {
+                    if (selectedCorner == 0) {
+                        customObstacleList[selectedObstacle].x += dx;
+                        customObstacleList[selectedObstacle].w -= dx;
+                        customObstacleList[selectedObstacle].h += dy;
+                    } else if (selectedCorner == 1) {
+                        customObstacleList[selectedObstacle].x += dx;
+                        customObstacleList[selectedObstacle].y += dy;
+                        customObstacleList[selectedObstacle].w -= dx;
+                        customObstacleList[selectedObstacle].h -= dy;
+                    } else if (selectedCorner == 2) {
+                        customObstacleList[selectedObstacle].y += dy;
+                        customObstacleList[selectedObstacle].w += dx;
+                        customObstacleList[selectedObstacle].h -= dy;
+                    } else if (selectedCorner == 3) {
+                        customObstacleList[selectedObstacle].w += dx;
+                        customObstacleList[selectedObstacle].h += dy;
+                    }
+                } else if(customObstacleList[selectedObstacle].w < minSizeObjects){
+                    if(selectedCorner == 0 || selectedCorner == 1) customObstacleList[selectedObstacle].x -= minSizeObjects-customObstacleList[selectedObstacle].w;
+                    customObstacleList[selectedObstacle].w = minSizeObjects;
+                } else if(customObstacleList[selectedObstacle].h < minSizeObjects) {
+                    if(selectedCorner == 1 || selectedCorner == 2) customObstacleList[selectedObstacle].y -= minSizeObjects-customObstacleList[selectedObstacle].h;
+                    customObstacleList[selectedObstacle].h = minSizeObjects;
+                }
             }
             updateObstacleLayer();
         }else if (isDownRuler) {

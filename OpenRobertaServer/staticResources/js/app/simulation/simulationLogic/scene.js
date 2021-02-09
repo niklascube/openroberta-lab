@@ -734,7 +734,6 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
 
                                 } else {
                                     interPoint = SIMATH.getIntersectionPoint(robotSeg, obstacleLines[k]);
-                                    console.log(interPoint);
                                 }
                                 if (interPoint) {
                                     if (Math.abs(this.robots[r].frontLeft.rx - interPoint.x) < Math.abs(this.robots[r].frontRight.rx - interPoint.x)) {
