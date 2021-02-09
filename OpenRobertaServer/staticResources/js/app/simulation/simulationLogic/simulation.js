@@ -304,7 +304,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 type: "obstacle",
                 form: "rectangle"
             };
-            customObstacleList.unshift(newRectangleObstacle);
+            customObstacleList.push(newRectangleObstacle);
         } else if (shape === "triangle") {
             let x = (Math.random() * ((ground.w-125) - 125) + 125);
             let y = (Math.random() * ((ground.h-125) - 125) + 125);
@@ -321,7 +321,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 type: "obstacle",
                 form: "triangle"
             };
-            customObstacleList.unshift(newTriangleObstacle);
+            customObstacleList.push(newTriangleObstacle);
         } else if (shape === "circle") {
             let newCircleObstacle = {
                 x: 200,
@@ -334,8 +334,12 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 type: "obstacle",
                 form: "circle"
             };
-            customObstacleList.unshift(newCircleObstacle);
+            customObstacleList.push(newCircleObstacle);
         }
+        selectedColorBlock = null;
+        selectedObstacle = colorBlockList.length-1;
+        selectedObject = customObstacleList[selectedObstacle];
+        enableChangeObjectButtons();
         exports.obstacleList = [ground, customObstacleList];
         scene.drawObstacles();
     }
@@ -392,8 +396,13 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         if(color === "green") newColorBlock.color = C.COLOR_ENUM.GREEN;
         if(color === "red") newColorBlock.color = C.COLOR_ENUM.RED;
         if(color === "yellow") newColorBlock.color = C.COLOR_ENUM.YELLOW;
-        colorBlockList.unshift(newColorBlock);
+        colorBlockList.push(newColorBlock);
+        selectedObstacle = null;
+        selectedColorBlock = colorBlockList.length-1;
+        selectedObject = colorBlockList[selectedColorBlock];
+        enableChangeObjectButtons();
         scene.drawColorBlocks();
+        scene.drawObstacles();
     }
     exports.addColorBlock = addColorBlock;
 
@@ -937,6 +946,12 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                     }
                 }
                 e.preventDefault();
+                break;
+            case 8:
+                deleteSelectedObject();
+                break;
+            case 46:
+                deleteSelectedObject();
                 break;
             default:
             // nothing to do so far
