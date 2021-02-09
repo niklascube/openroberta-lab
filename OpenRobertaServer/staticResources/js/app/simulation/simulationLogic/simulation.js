@@ -301,13 +301,16 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             };
             customObstacleList.unshift(newRectangleObstacle);
         } else if (shape === "triangle") {
+            let x = (Math.random() * ((ground.w-125) - 125) + 125);
+            let y = (Math.random() * ((ground.h-125) - 125) + 125);
+
             let newTriangleObstacle = {
-                ax: 200,
-                ay: 200,
-                bx: 275,
-                by: 275,
-                cx: 275,
-                cy: 125,
+                ax: x-50,
+                ay: y-50,
+                bx: x-50,
+                by: y+50,
+                cx: x+50,
+                cy: y+50,
                 isParallelToAxis: true,
                 color: "2b2b2b",
                 type: "obstacle",
@@ -334,13 +337,14 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     exports.addObstacle = addObstacle;
 
     function deleteElements() {
+        resetSelection();
         while(customObstacleList.length > 0) {
             customObstacleList.pop();
         }
         while(colorBlockList.length > 0) {
             colorBlockList.pop();
         }
-        checkSelection();
+        setObstacle();
         updateColorLayer();
         updateObstacleLayer();
     }
@@ -349,17 +353,13 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
     function deleteSelectedObject(){
         if (selectedColorBlock != null){
-            colorBlockList.splice(selectedColorBlock,1)
-            selectedColorBlock = null;
-            disableChangeObjectButtons();
-            checkSelection();
+            colorBlockList.splice(selectedColorBlock,1);
+            resetSelection();
             updateColorLayer();
         }
         if (selectedObstacle != null){
             customObstacleList.splice(selectedObstacle, 1)
-            selectedObstacle = null;
-            disableChangeObjectButtons();
-            checkSelection();
+            resetSelection();
             updateObstacleLayer();
             }
         }
@@ -379,6 +379,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             theta: 0,
             img: null,
             color: C.COLOR_ENUM.BLACK,
+            form: "rectangle",
             type: "colorBlock"
         };
         if(color === "black") newColorBlock.color = C.COLOR_ENUM.BLACK;
@@ -1002,6 +1003,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 colorBlockList.splice(selectedColorBlock, 1);
                 colorBlockList.push(selectedObject);
                 selectedColorBlock = colorBlockList.length-1;
+                console.log(selectedObject);
                 updateColorLayer();
                 updateObstacleLayer();
                 break;
@@ -1012,54 +1014,23 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
             if (obstacle.form === "rectangle") {
                 isDownObstacle = (startX > obstacle.x && startX < obstacle.x + obstacle.w && startY > obstacle.y && startY < obstacle.y + obstacle.h);
-                key++;
-                if(isDownObstacle && !isDownColorBlockCorner) {
-                    enableChangeObjectButtons();
-                    selectedColorBlock = null;
-                    selectedObstacle = customObstacleList.length - key;
-                    selectedObject = customObstacleList[selectedObstacle];
-                    customObstacleList.splice(selectedObstacle, 1);
-                    customObstacleList.push(selectedObject);
-                    selectedObstacle = customObstacleList.length-1;
-                    updateObstacleLayer();
-                    break;
-                }
-            } else if (obstacle.form === "triangle"){
-                isDownObstacle = checkDownTriangle(startX, startY, obstacle.ax,obstacle.ay,obstacle.bx, obstacle.by, obstacle.cx, obstacle.cy)
-
-                key++;
-                if(isDownObstacle && !isDownColorBlockCorner) {
-                    enableChangeObjectButtons();
-                    selectedColorBlock = null;
-                    selectedObstacle = customObstacleList.length - key;
-                    selectedObject = customObstacleList[selectedObstacle];
-                    customObstacleList.splice(selectedObstacle, 1);
-                    customObstacleList.push(selectedObject);
-                    selectedObstacle = customObstacleList.length-1;
-                    updateObstacleLayer();
-                    console.log(selectedObstacle)
-                    break;
-                }
-            } else if (obstacle.form === "circle"){
+            } else if (obstacle.form === "triangle") {
+                isDownObstacle = checkDownTriangle(startX, startY, obstacle.ax, obstacle.ay, obstacle.bx, obstacle.by, obstacle.cx, obstacle.cy)
+            } else if (obstacle.form === "circle") {
                 isDownObstacle = (startX > obstacle.x - obstacle.r && startX < obstacle.x + obstacle.r && startY > obstacle.y - obstacle.r && startY < obstacle.y + obstacle.r);
-                //---> Hier ansetzen oCtx-Layer muss aus scene importiert werden (?)
-                //isDownObstacle = context.isPointInPath(startX, startY);
-                key++;
-                if(isDownObstacle && !isDownColorBlockCorner) {
-                    enableChangeObjectButtons();
-                    selectedColorBlock = null;
-                    selectedObstacle = customObstacleList.length - key;
-                    selectedObject = customObstacleList[selectedObstacle];
-                    customObstacleList.splice(selectedObstacle, 1);
-                    customObstacleList.push(selectedObject);
-                    selectedObstacle = customObstacleList.length-1;
-                    updateObstacleLayer();
-                    console.log(selectedObstacle)
-                    break;
-                }
             }
-
-
+            key++;
+            if(isDownObstacle && !isDownColorBlockCorner) {
+                enableChangeObjectButtons();
+                selectedColorBlock = null;
+                selectedObstacle = customObstacleList.length - key;
+                selectedObject = customObstacleList[selectedObstacle];
+                customObstacleList.splice(selectedObstacle, 1);
+                customObstacleList.push(selectedObject);
+                selectedObstacle = customObstacleList.length-1;
+                updateObstacleLayer();
+                break;
+            }
         }
 
         isDownRuler = (startX > ruler.x && startX < ruler.x + ruler.w && startY > ruler.y && startY < ruler.y + ruler.h);
@@ -1107,15 +1078,20 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
     function checkSelection() {
         if(!isDownColorBlock && !isDownObstacle && !isDownObstacleCorner && !isDownColorBlockCorner) {
-            disableChangeObjectButtons();
-            selectedObject = null;
-            selectedColorBlock = null;
-            selectedObstacle = null;
-            selectedCornerObject = null;
+            resetSelection();
             scene.drawObstacles();
         }
     }
     exports.checkSelection = checkSelection;
+
+    function resetSelection() {
+        disableChangeObjectButtons();
+        selectedObject = null;
+        selectedColorBlock = null;
+        selectedObstacle = null;
+        selectedCornerObject = null;
+    }
+    exports.resetSelection = resetSelection;
 
     function handleDoubleMouseClick(e) {
         if (numRobots > 1) {
@@ -1210,30 +1186,31 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             }
             for(let key in customObstacleList) {
                 let obstacle = customObstacleList.slice().reverse()[key];
-                if (obstacle.form === "rectangle") {
-                    var hoverObstacle = (mouseX > obstacle.x && mouseX < obstacle.x + obstacle.w && mouseY > obstacle.y && mouseY < obstacle.y + obstacle.h);
-                    let obstacleCorners = calculateCorners(obstacle);
-                    for (let corner_index in obstacleCorners) {
-                        var hoverObstacleCorners = (mouseX > obstacleCorners[corner_index].x && mouseX < obstacleCorners[corner_index].x + obstacleCorners[corner_index].w && mouseY > obstacleCorners[corner_index].y && mouseY < obstacleCorners[corner_index].y + obstacleCorners[corner_index].h);
-                        if (hoverObstacleCorners) {
-                            var hoveringCorner = corner_index;
-                            break;
-                        }
+                var hoverObstacle;
+                if (obstacle.form === "rectangle") hoverObstacle = (mouseX > obstacle.x && mouseX < obstacle.x + obstacle.w && mouseY > obstacle.y && mouseY < obstacle.y + obstacle.h);
+                else if (obstacle.form === "triangle") hoverObstacle = checkDownTriangle(mouseX, mouseY, obstacle.ax, obstacle.ay, obstacle.bx, obstacle.by, obstacle.cx, obstacle.cy);
+                let obstacleCorners = calculateCorners(obstacle);
+                for (let corner_index in obstacleCorners) {
+                    var hoverObstacleCorners = (mouseX > obstacleCorners[corner_index].x && mouseX < obstacleCorners[corner_index].x + obstacleCorners[corner_index].w && mouseY > obstacleCorners[corner_index].y && mouseY < obstacleCorners[corner_index].y + obstacleCorners[corner_index].h);
+                    if (hoverObstacleCorners) {
+                        var hoveringCorner = corner_index;
+                        break;
                     }
                 }
+
                 if (hoverObstacle) break;
             }
             for(let key in colorBlockList) {
                 let colorBlock = colorBlockList.slice().reverse()[key];
-                if (obstacle.form === "rectangle") {
-                    var hoverColorBlock = (mouseX > colorBlock.x && mouseX < colorBlock.x + colorBlock.w && mouseY > colorBlock.y && mouseY < colorBlock.y + colorBlock.h);
-                    let colorBlockCorners = calculateCorners(colorBlock);
-                    for (let corner_index in colorBlockCorners) {
-                        var hoverColorBlockCorners = (mouseX > colorBlockCorners[corner_index].x && mouseX < colorBlockCorners[corner_index].x + colorBlockCorners[corner_index].w && mouseY > colorBlockCorners[corner_index].y && mouseY < colorBlockCorners[corner_index].y + colorBlockCorners[corner_index].h);
-                        if (hoverColorBlockCorners) {
-                            var hoveringCorner = corner_index;
-                            break;
-                        }
+                var hoverColorBlock;
+                if (colorBlock.form === "rectangle") hoverColorBlock = (mouseX > colorBlock.x && mouseX < colorBlock.x + colorBlock.w && mouseY > colorBlock.y && mouseY < colorBlock.y + colorBlock.h);
+                else if (colorBlock.form === "triangle") hoverColorBlock = checkDownTriangle(mouseX, mouseY, colorBlock.ax, colorBlock.ay, colorBlock.bx, colorBlock.by, colorBlock.cx, colorBlock.cy);
+                let colorBlockCorners = calculateCorners(colorBlock);
+                for (let corner_index in colorBlockCorners) {
+                    var hoverColorBlockCorners = (mouseX > colorBlockCorners[corner_index].x && mouseX < colorBlockCorners[corner_index].x + colorBlockCorners[corner_index].w && mouseY > colorBlockCorners[corner_index].y && mouseY < colorBlockCorners[corner_index].y + colorBlockCorners[corner_index].h);
+                    if (hoverColorBlockCorners) {
+                        var hoveringCorner = corner_index;
+                        break;
                     }
                 }
                 if (hoverObstacle) break;
@@ -1592,11 +1569,6 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
 
     function resetScene() {
         deleteElements();
-        selectedObject = null;
-        selectedColorBlock = null;
-        selectedObstacle = null;
-        selectedCorner = null;
-        selectedCornerObject = null;
         copiedObject = null;
         resetPose();
         removeMouseEvents();

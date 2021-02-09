@@ -72,42 +72,76 @@ define([ 'exports', 'simulation.constants' ], function(exports, CONSTANTS) {
         };
     };
     /**
-     * Get intersection point from a line and a circle.
-     *
-     * @memberOf exports
-     * @param {line1}
-     *            one line
-     * @param {line2}
-     *            another line
-     * @returns {point} or null, if no intersection found
+     * Finds the intersection between a circles border
+     * and a line from the origin to the otherLineEndPoint.
+     * @param  {Vector} origin            - center of the circle and start of the line
+     * @param  {number} radius            - radius of the circle
+     * @param  {Vector} otherLineEndPoint - end of the line
+     * @return {Vector}                   - point of the intersection
      */
-    exports.getIntersectionPointCircle = function(line, circle) {
-        var baX = line.x2 - line.x1;
-        var baY = line.y2 - line.y1;
-        var caX = circle.x;
-        var caY = circle.y;
+     exports.getIntersectionPointsCircle = function(line, circle) {
+        // Calculate the euclidean distance between a & b
+        const eDistAtoB = Math.sqrt( Math.pow(line.x2-line.x1, 2) + Math.pow(line.y2-line.x2, 2) );
 
-        var a = baX * baX + baY * baY;
-        var bBy2 = baX * caX + baY * caY;
-        var c = caX * caX + caY * caY - circle.r * circle.r;
+        // compute the direction vector d from a to b
+        const dx = (line.x2-line.x1)/eDistAtoB;
+        const dy =(line.y2-line.y1)/eDistAtoB;
 
-        var pBy2 = bBy2 / a;
-        var q = c / a;
+        // Now the line equation is x = dx*t + ax, y = dy*t + ay with 0 <= t <= 1.
 
-        var disc = pBy2 * pBy2 - q;
-        if (disc < 0) {
-            return null;
+        // compute the value t of the closest point to the circle center (cx, cy)
+        const t = (dx * (circle.x-line.x1)) + (dy * (circle.y-line.y1));
+
+        // compute the coordinates of the point e on line and closest to c
+        let e = {x: 0, y: 0, onLine:false};
+        e.x = (t * dx) + line.x1;
+        e.y = (t * dy) + line.y1;
+
+         const vX = e.x - circle.x;
+         const vY = e.y - circle.y;
+         const magV = Math.sqrt(vX*vX + vY*vY);
+
+         const poc = {
+             x: circle.x + vX / magV * circle.r,
+             y: circle.y + vY / magV * circle.r
+         }
+
+         // Calculate the euclidean distance between c & e
+        let eDistCtoE = Math.sqrt(Math.pow(e.x - circle.x, 2) + Math.pow(e.y - circle.y, 2));
+
+
+        // test if the line intersects the circle
+        if(eDistCtoE < circle.r) {
+            // compute distance from t to circle intersection point
+            dt = Math.sqrt( Math.pow(circle.r, 2) - Math.pow(eDistCtoE, 2));
+
+            // compute first intersection point
+            let f = {x: 0, y: 0, onLine:false};
+            f.x = ((t-dt) * dx) + line.x1;
+            f.y = ((t-dt) * dy) + line.y2;
+            // check if f lies on the line
+            f.onLine = Math.sqrt( Math.pow(line.x1-f.x, 2) + Math.pow(line.y1-f.y, 2) )
+                + Math.sqrt( Math.pow(f.x-line.x2, 2) + Math.pow(f.y-line.y2, 2) )
+                == Math.sqrt( Math.pow(line.x1-line.x2, 2) + Math.pow(line.y1-line.y2, 2));
+
+            // compute second intersection point
+            let g = {x: 0, y: 0, onLine:false};
+            g.x = ((t+dt) * dx) + line.x1;
+            g.y= ((t+dt) * dy) + line.y1;
+            // check if g lies on the line
+            g.onLine = Math.sqrt( Math.pow(line.x1-g.x, 2) + Math.pow(line.y1-g.y, 2) )
+                + Math.sqrt( Math.pow(g.x-line.x2, 2) + Math.pow(g.y-line.y2, 2) )
+                == Math.sqrt( Math.pow(line.x1-line.x2, 2) + Math.pow(line.y1-line.y2, 2));
+            return {points: {intersection1:f, intersection2:g}, distance: eDistCtoE, pointOnCircle: poc};
+
+        } else if (parseInt(eDistCtoE) === parseInt(circle.r)) {
+            // console.log("Only one intersection");
+            return {points: false, distance: eDistCtoE, pointOnCircle: poc};
+        } else {
+            // console.log("No intersection");
+            return {points: false, distance: eDistCtoE, pointOnCircle: poc};
         }
-
-        var tmpSqrt = Math.sqrt(disc);
-        var abScalingFactor1 = -pBy2 + tmpSqrt;
-        var abScalingFactor2 = -pBy2 - tmpSqrt;
-
-        var p1 = {y: line.x1 - baX * abScalingFactor1, y: line.y1 - baY * abScalingFactor1};
-        var p2 = {y: line.x1 - baX * abScalingFactor2, y: line.y1 - baY * abScalingFactor2};
-        console.log(p1 + p2);
-        return p1;
-    }
+    };
     /**
      * Get four lines from a rectangle.
      * 
