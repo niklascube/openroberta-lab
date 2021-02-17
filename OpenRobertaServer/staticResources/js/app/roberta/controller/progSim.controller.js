@@ -182,10 +182,6 @@ define(['exports', 'message', 'log', 'util', 'simulation.simulation', 'simulatio
                 SIM.addObstacle("circle");
             }, 'simAddObstacle clicked');
 
-            $('#simDeleteAllObstacles').onWrap('click', function(event) {
-                SIM.clearObstacleList();
-            }, 'simDeleteAllObstacles clicked');
-
             $('#simAddColorBlockBlack').onWrap('click', function(event) {
                 SIM.addColorBlock("black");
             }, 'simAddColorBlockBlack clicked');
@@ -226,16 +222,12 @@ define(['exports', 'message', 'log', 'util', 'simulation.simulation', 'simulatio
                 SIM.changeObjectColor("yellow");
             }, 'simChangeColorBlockYellow clicked');
 
-            $('#simDeleteAllColorBlocks').onWrap('click', function(event) {
-                SIM.clearColorBlockList();
-            }, 'simDeleteAllColorBlocks clicked');
-
             $('#simDeleteElements').onWrap('click', function(event) {
                 SIM.deleteElements();
             }, 'simDeleteElements clicked');
 
             $('#simChangeObjectColor').onWrap('click', function(event) {
-                SIM.changeObjectColor();
+                SIM.displayColorPicker();
             }, 'simEditObject clicked');
 
             $('#simChangeObjectSize').onWrap('click', function(event) {

@@ -51,7 +51,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     var observers = {};
     const simChangeObjectColorButton = document.getElementById('simChangeObjectColor');
     const simDeleteObjectButton = document.getElementById('simDeleteObject');
-    const colorpicker = new CP(document.getElementById('simChangeObjectColor'));
+    const colorpicker = new CP(document.getElementById('colorpicker'));
     var imgObstacle1 = new Image();
     var imgPattern = new Image();
     var imgRuler = new Image();
@@ -337,7 +337,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             customObstacleList.push(newCircleObstacle);
         }
         selectedColorBlock = null;
-        selectedObstacle = colorBlockList.length-1;
+        selectedObstacle = customObstacleList.length-1;
+        console.log(selectedObstacle)
         selectedObject = customObstacleList[selectedObstacle];
         enableChangeObjectButtons();
         exports.obstacleList = [ground, customObstacleList];
@@ -407,14 +408,17 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     exports.addColorBlock = addColorBlock;
 
     function changeColorWithColorPicker(r, g, b, a) {
-        this.source.value = this.color(r, g, b, a);
-        document.body.style.backgroundColor = this.color(r, g, b, a);
         if(selectedObject != null) {
             selectedObject.color = this.color(r, g, b, a);
             updateColorLayer();
             updateObstacleLayer();
         }
     }
+
+    function displayColorPicker() {
+            colorpicker.enter();
+    }
+    exports.displayColorPicker = displayColorPicker;
 
     function changeObjectColor(color){
         if (selectedColorBlock != null){
