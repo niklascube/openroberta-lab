@@ -325,7 +325,6 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         }
         selectedColorBlock = null;
         selectedObstacle = customObstacleList.length-1;
-        console.log(selectedObstacle)
         selectedObject = customObstacleList[selectedObstacle];
         enableChangeObjectButtons();
         exports.obstacleList = [ground, customObstacleList];
@@ -406,26 +405,6 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             colorpicker.enter();
     }
     exports.displayColorPicker = displayColorPicker;
-
-    function changeObjectColor(color){
-        if (selectedColorBlock != null){
-            if(color === "black") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.BLACK;
-            if(color === "blue") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.BLUE;
-            if(color === "green") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.GREEN;
-            if(color === "red") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.RED;
-            if(color === "yellow") colorBlockList[selectedColorBlock].color = C.COLOR_ENUM.YELLOW;
-            updateColorLayer();
-        }
-        if (selectedObstacle != null){
-            if(color === "black") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.BLACK;
-            if(color === "blue") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.BLUE;
-            if(color === "green") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.GREEN;
-            if(color === "red") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.RED;
-            if(color === "yellow") customObstacleList[selectedObstacle].color = C.COLOR_ENUM.YELLOW;
-            updateObstacleLayer();
-        }
-    }
-    exports.changeObjectColor = changeObjectColor;
 
     function stopProgram() {
         setPause(true);

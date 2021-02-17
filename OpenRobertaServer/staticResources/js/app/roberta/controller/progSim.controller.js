@@ -198,26 +198,6 @@ define(['exports', 'message', 'log', 'util', 'simulation.simulation', 'simulatio
                 SIM.addColorBlock("yellow");
             }, 'simAddColorBlockYellow clicked');
 
-            $('#simChangeObjectColorBlack').onWrap('click', function(event) {
-                SIM.changeObjectColor("black");
-            }, 'simChangeColorBlockBlack clicked');
-
-            $('#simChangeObjectColorBlue').onWrap('click', function(event) {
-                SIM.changeObjectColor("blue");
-            }, 'simChangeColorBlockBlue clicked');
-
-            $('#simChangeObjectColorGreen').onWrap('click', function(event) {
-                SIM.changeObjectColor("green");
-            }, 'simChangeObjectColorGreen clicked');
-
-            $('#simChangeObjectColorRed').onWrap('click', function(event) {
-                SIM.changeObjectColor("red");
-            }, 'simChangeColorBlockRed clicked');
-
-            $('#simChangeObjectColorYellow').onWrap('click', function(event) {
-                SIM.changeObjectColor("yellow");
-            }, 'simChangeColorBlockYellow clicked');
-
             $('#simDeleteElements').onWrap('click', function(event) {
                 SIM.deleteElements();
             }, 'simDeleteElements clicked');
@@ -225,10 +205,6 @@ define(['exports', 'message', 'log', 'util', 'simulation.simulation', 'simulatio
             $('#simChangeObjectColor').onWrap('click', function(event) {
                 SIM.displayColorPicker();
             }, 'simEditObject clicked');
-
-            $('#simChangeObjectSize').onWrap('click', function(event) {
-                SIM.changeObjectSize();
-            }, 'simChangeObjectSize clicked');
 
             $('#simDeleteObject').onWrap('click', function(event) {
                 SIM.deleteSelectedObject();
