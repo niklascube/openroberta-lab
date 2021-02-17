@@ -130,10 +130,6 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                     this.oCtx.lineTo(obstacle.bx, obstacle.by);
                     this.oCtx.lineTo(obstacle.cx, obstacle.cy);
                     this.oCtx.fill();
-                } else if (obstacle.form === "circle") {
-                    this.oCtx.beginPath();
-                    this.oCtx.arc(obstacle.x, obstacle.y, obstacle.r, obstacle.startAngle, obstacle.endAngle, Math.PI*2, true);
-                    this.oCtx.fill();
                 }
                 if(SIM.getSelectedObject() != null) this.highlightObject();
             }
@@ -716,9 +712,6 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                             }
                         }
                         if (touchSensor.value === 0) {
-                            if(personalObstacleList[i].form !== "circle") {
-
-                            }
                             var obstacleLines = SIMATH.getLinesFromRect(personalObstacleList[i]);
                             if(personalObstacleList[i].form === "triangle") obstacleLines = SIMATH.getLinesFromTria(personalObstacleList[i]);
                             for (var k = 0; k < obstacleLines.length; k++) {
@@ -729,12 +722,7 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                                     y1: this.robots[r].frontLeft.ry,
                                     y2: this.robots[r].frontRight.ry
                                 };
-                                if(personalObstacleList[i].form === "circle") { //does not work yet
-                                    //interPoint = SIMATH.getIntersectionPointsCircle(robotSeg, personalObstacleList[i]).pointOnCircle;
-
-                                } else {
-                                    interPoint = SIMATH.getIntersectionPoint(robotSeg, obstacleLines[k]);
-                                }
+                                interPoint = SIMATH.getIntersectionPoint(robotSeg, obstacleLines[k]);
                                 if (interPoint) {
                                     if (Math.abs(this.robots[r].frontLeft.rx - interPoint.x) < Math.abs(this.robots[r].frontRight.rx - interPoint.x)) {
                                         this.robots[r].frontLeft.bumped = true;
@@ -744,9 +732,6 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                                     touchSensor.value = 1;
                                 } else {
                                     var p = null;
-                                    if(personalObstacleList[i].form === "circle") {
-                                      //  p = SIMATH.getIntersectionPointsCircle(robotSeg, personalObstacleList[i]).distance;
-                                    } else {
                                         p = SIMATH.getDistanceToLine({
                                             x: touchSensor.rx,
                                             y: touchSensor.ry
@@ -757,7 +742,6 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                                             x: obstacleLines[k].x2,
                                             y: obstacleLines[k].y2
                                         });
-                                    }
                                     var thisTolerance = Math.max(Math.abs(this.robots[r].right), Math.abs(this.robots[r].left));
                                     if (SIMATH.sqr(touchSensor.rx - p.x) + SIMATH.sqr(touchSensor.ry - p.y) <
                                         SIM.getDt() * (personalObstacleList[i].tolerance + thisTolerance)) {
