@@ -164,7 +164,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 robots[i].debug = debug;
                 robots[i].reset();
             }
-            callback();
+            if(callback != null) callback();
         });
     }
 
@@ -718,19 +718,12 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 customObstacleList[0].color = "#33B8CA";
                 customObstacleList[0].form = "rectangle";
             } else if (currentBackground == 2) {
-                /*customObstacleList[0].x = 580;
+                customObstacleList[0].x = 580;
                 customObstacleList[0].y = 290;
                 customObstacleList[0].w = 100;
-                customObstacleList[0].h = 100;*/
-                customObstacleList[0].ax = 500;
-                customObstacleList[0].ay = 250;
-                customObstacleList[0].bx = 575;
-                customObstacleList[0].by = 325;
-                customObstacleList[0].cx = 575;
-                customObstacleList[0].cy = 175;
-                customObstacleList[0].img = null;
+                customObstacleList[0].h = 100;
                 customObstacleList[0].color = "#33B8CA";
-                customObstacleList[0].form = "triangle";
+                customObstacleList[0].form = "rectangle";
             } else if (currentBackground == 4) {
                 customObstacleList[0].x = 500;
                 customObstacleList[0].y = 260;
@@ -1586,6 +1579,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                         colorBlockList = configData["colorBlocks"];
                         ruler = configData["ruler"];
                         currentBackground = configData["background"];
+                        setBackground(currentBackground, null);
                         initScene();
                         exports.obstacleList = [ground, customObstacleList];
                     } catch (ex) {
