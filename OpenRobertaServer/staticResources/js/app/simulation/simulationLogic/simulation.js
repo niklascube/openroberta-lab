@@ -853,27 +853,71 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             const shift = 5;
             switch (keyName) {
                 case "ArrowUp":
-                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].y -= shift; updateObstacleLayer();
-                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].y -= shift; updateColorLayer();
+                    if(selectedObject.type == "obstacle") {
+                        if (selectedObject.form == "rectangle") {
+                            customObstacleList[selectedObstacle].y -= shift;
+                        } else if (selectedObject.form == "triangle") {
+                            customObstacleList[selectedObstacle].ay -= shift;
+                            customObstacleList[selectedObstacle].by -= shift;
+                            customObstacleList[selectedObstacle].cy -= shift;
+                        }
+                        updateObstacleLayer();
+                    }
+                    else if(selectedObject.type == "colorBlock"){
+                        colorBlockList[selectedColorBlock].y -= shift;
+                        updateColorLayer();
+                    }
                     e.preventDefault();
                     break;
                 case "ArrowLeft":
-                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].x -= shift; updateObstacleLayer();
-                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].x -= shift; updateColorLayer();
-                    //if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].theta -= Math.PI / 180;
-                    //if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].theta -= Math.PI / 180;
+                    if(selectedObject.type == "obstacle") {
+                        if (selectedObject.form == "rectangle") {
+                            customObstacleList[selectedObstacle].x -= shift;
+                        } else if (selectedObject.form == "triangle") {
+                            customObstacleList[selectedObstacle].ax -= shift;
+                            customObstacleList[selectedObstacle].bx -= shift;
+                            customObstacleList[selectedObstacle].cx -= shift;
+                        }
+                        updateObstacleLayer();
+                    }
+                    else if(selectedObject.type == "colorBlock"){
+                        colorBlockList[selectedColorBlock].x -= shift;
+                        updateColorLayer();
+                    }
                     e.preventDefault();
                     break;
                 case "ArrowDown":
-                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].y += shift; updateObstacleLayer();
-                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].y += shift; updateColorLayer();
+                    if(selectedObject.type == "obstacle") {
+                        if (selectedObject.form == "rectangle") {
+                            customObstacleList[selectedObstacle].y += shift;
+                        } else if (selectedObject.form == "triangle") {
+                            customObstacleList[selectedObstacle].ay += shift;
+                            customObstacleList[selectedObstacle].by += shift;
+                            customObstacleList[selectedObstacle].cy += shift;
+                        }
+                        updateObstacleLayer();
+                    }
+                    else if(selectedObject.type == "colorBlock"){
+                        colorBlockList[selectedColorBlock].y += shift;
+                        updateColorLayer();
+                    }
                     e.preventDefault();
                     break;
                 case "ArrowRight":
-                    if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].x += shift; updateObstacleLayer();
-                    if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].x += shift; updateColorLayer();
-                    //if(selectedObject.type == "obstacle") customObstacleList[selectedObstacle].theta += Math.PI / 180;
-                    //if(selectedObject.type == "colorBlock") colorBlockList[selectedColorBlock].theta += Math.PI / 180;
+                    if(selectedObject.type == "obstacle") {
+                        if (selectedObject.form == "rectangle") {
+                            customObstacleList[selectedObstacle].x += shift;
+                        } else if (selectedObject.form == "triangle") {
+                            customObstacleList[selectedObstacle].ax += shift;
+                            customObstacleList[selectedObstacle].bx += shift;
+                            customObstacleList[selectedObstacle].cx += shift;
+                        }
+                        updateObstacleLayer();
+                    }
+                    else if(selectedObject.type == "colorBlock"){
+                        colorBlockList[selectedColorBlock].x += shift;
+                        updateColorLayer();
+                    }
                     e.preventDefault();
                     break;
                 default:

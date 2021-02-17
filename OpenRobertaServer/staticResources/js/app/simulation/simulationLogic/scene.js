@@ -111,9 +111,6 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
             this.oCtx.restore();
             this.oCtx.save();
             this.oCtx.scale(SIM.getScale(), SIM.getScale());
-            //this.oCtx.translate(obstacle.x + (obstacle.w/2), obstacle.y + (obstacle.h/2));
-            //this.oCtx.rotate(obstacle.theta);
-            //this.oCtx.translate(-obstacle.x - (obstacle.w/2), -obstacle.y - (obstacle.h/2));
             if (obstacle.img) {
                 this.oCtx.drawImage(obstacle.img, obstacle.x, obstacle.y, obstacle.w, obstacle.h);
             } else if (obstacle.color) {
@@ -178,14 +175,6 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
             this.bCtx.restore();
             this.bCtx.save();
             this.bCtx.scale(SIM.getScale(), SIM.getScale());
-
-            /*this.uCtx.translate(colorBlock.x + (colorBlock.w/2), colorBlock.y + (colorBlock.h/2));
-            this.bCtx.translate(colorBlock.x + (colorBlock.w/2), colorBlock.y + (colorBlock.h/2));
-            this.uCtx.rotate(colorBlock.theta);
-            this.bCtx.rotate(colorBlock.theta);
-            this.uCtx.translate(-colorBlock.x - (colorBlock.w/2), -colorBlock.y - (colorBlock.h/2));
-            this.bCtx.translate(-colorBlock.x - (colorBlock.w/2), -colorBlock.y - (colorBlock.h/2));*/
-
             if (colorBlock.img) {
                 this.uCtx.drawImage(colorBlock.img, colorBlock.x, colorBlock.y, colorBlock.w, colorBlock.h);
             } else if (colorBlock.color) {
