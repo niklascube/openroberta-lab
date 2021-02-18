@@ -127,6 +127,10 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                     this.oCtx.lineTo(obstacle.bx, obstacle.by);
                     this.oCtx.lineTo(obstacle.cx, obstacle.cy);
                     this.oCtx.fill();
+                } else if (obstacle.form === "circle") {
+                    this.oCtx.beginPath();
+                    this.oCtx.arc(obstacle.x, obstacle.y, obstacle.r, obstacle.startAngle, obstacle.endAngle, Math.PI*2, true);
+                    this.oCtx.fill();
                 }
                 if(SIM.getSelectedObject() != null) this.highlightObject();
             }
@@ -565,6 +569,11 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                                 this.robots[r].frontLeft.bumped = true;
                                 touchSensor.value = 1;
                             }
+                        } else if(p.form === "circle") {
+                            if(SIM.checkDownCircle(x,y, p.x, p.y, p.r)) {
+                                this.robots[r].frontLeft.bumped = true;
+                                touchSensor.value = 1;
+                            }
                         }
                         else if (x < p.x || x > p.x + p.w || y < p.y || y > p.y + p.h) {
                             this.robots[r].frontLeft.bumped = true;
@@ -576,6 +585,11 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                             if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
                                 this.robots[r].frontRight.bumped = true;
                             }
+                        } else if(p.form === "circle") {
+                            if(SIM.checkDownCircle(x,y, p.x, p.y, p.r)) {
+                                this.robots[r].frontRight.bumped = true;
+                                touchSensor.value = 1;
+                            }
                         }
                         else if (x < p.x || x > p.x + p.w || y < p.y || y > p.y + p.h) {
                             this.robots[r].frontRight.bumped = true;
@@ -585,6 +599,11 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                         if(p.form === "triangle") {
                             if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
                                 this.robots[r].backLeft.bumped = true;
+                            }
+                        } else if(p.form === "circle") {
+                            if(SIM.checkDownCircle(x,y, p.x, p.y, p.r)) {
+                                this.robots[r].backLeft.bumped = true;
+                                touchSensor.value = 1;
                             }
                         }
                         else if (x < p.x || x > p.x + p.w || y < p.y || y > p.y + p.h) {
@@ -596,6 +615,11 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                             if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
                                 this.robots[r].backRight.bumped = true;
                             }
+                        } else if(p.form === "circle") {
+                            if(SIM.checkDownCircle(x,y, p.x, p.y, p.r)) {
+                                this.robots[r].backRight.bumped = true;
+                                touchSensor.value = 1;
+                            }
                         }
                         else if (x < p.x || x > p.x + p.w || y < p.y || y > p.y + p.h) {
                             this.robots[r].backRight.bumped = true;
@@ -604,46 +628,62 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                         if (p.isParallelToAxis) {
                             var x = this.robots[r].frontLeft.rx;
                             var y = this.robots[r].frontLeft.ry;
-                            if(p.form === "triangle") {
-                                if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
+                            if (p.form === "triangle") {
+                                if (SIM.checkDownTriangle(x, y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
                                     this.robots[r].frontLeft.bumped = true;
                                     touchSensor.value = 1;
                                 }
-                            }
-                            else if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
+                            } else if (p.form === "circle") {
+                                if (SIM.checkDownCircle(x, y, p.x, p.y, p.r)) {
+                                    this.robots[r].frontLeft.bumped = true;
+                                    touchSensor.value = 1;
+                                }
+                            } else if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
                                 this.robots[r].frontLeft.bumped = true;
                                 touchSensor.value = 1;
                             }
                             x = this.robots[r].frontRight.rx;
                             y = this.robots[r].frontRight.ry;
-                            if(p.form === "triangle") {
-                                if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
+                            if (p.form === "triangle") {
+                                if (SIM.checkDownTriangle(x, y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
                                     this.robots[r].frontRight.bumped = true;
                                     touchSensor.value = 1;
                                 }
-                            }
-                            else if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
+                            } else if (p.form === "circle") {
+                                if (SIM.checkDownCircle(x, y, p.x, p.y, p.r)) {
+                                    this.robots[r].frontRight.bumped = true;
+                                    touchSensor.value = 1;
+                                }
+                            } else if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
                                 this.robots[r].frontRight.bumped = true;
                                 touchSensor.value = 1;
                             }
                             x = this.robots[r].backLeft.rx;
                             y = this.robots[r].backLeft.ry;
-                            if(p.form === "triangle") {
-                                if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
+                            if (p.form === "triangle") {
+                                if (SIM.checkDownTriangle(x, y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
                                     this.robots[r].backLeft.bumped = true;
                                 }
-                            }
-                            else if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
+                            } else if (p.form === "circle") {
+                                if (SIM.checkDownCircle(x, y, p.x, p.y, p.r)) {
+                                    this.robots[r].backLeft.bumped = true;
+                                    touchSensor.value = 1;
+                                }
+                            } else if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
                                 this.robots[r].backLeft.bumped = true;
                             }
                             x = this.robots[r].backRight.rx;
                             y = this.robots[r].backRight.ry;
-                            if(p.form === "triangle") {
-                                if(SIM.checkDownTriangle(x,y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
+                            if (p.form === "triangle") {
+                                if (SIM.checkDownTriangle(x, y, p.ax, p.ay, p.bx, p.by, p.cx, p.cy)) {
                                     this.robots[r].backRight.bumped = true;
                                 }
-                            }
-                            else if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
+                            } else if (p.form === "circle") {
+                                if (SIM.checkDownCircle(x, y, p.x, p.y, p.r)) {
+                                    this.robots[r].backRight.bumped = true;
+                                    touchSensor.value = 1;
+                                }
+                            } else if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
                                 this.robots[r].backRight.bumped = true;
                             }
                         } else {
@@ -701,26 +741,27 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                             }
                         }
                         if (touchSensor.value === 0) {
-                            var obstacleLines = SIMATH.getLinesFromRect(personalObstacleList[i]);
-                            if(personalObstacleList[i].form === "triangle") obstacleLines = SIMATH.getLinesFromTria(personalObstacleList[i]);
-                            for (var k = 0; k < obstacleLines.length; k++) {
-                                var interPoint;
-                                const robotSeg = {
-                                    x1: this.robots[r].frontLeft.rx,
-                                    x2: this.robots[r].frontRight.rx,
-                                    y1: this.robots[r].frontLeft.ry,
-                                    y2: this.robots[r].frontRight.ry
-                                };
-                                interPoint = SIMATH.getIntersectionPoint(robotSeg, obstacleLines[k]);
-                                if (interPoint) {
-                                    if (Math.abs(this.robots[r].frontLeft.rx - interPoint.x) < Math.abs(this.robots[r].frontRight.rx - interPoint.x)) {
-                                        this.robots[r].frontLeft.bumped = true;
+                            const robotSeg = {
+                                x1: this.robots[r].frontLeft.rx,
+                                x2: this.robots[r].frontRight.rx,
+                                y1: this.robots[r].frontLeft.ry,
+                                y2: this.robots[r].frontRight.ry
+                            };
+                            var p;
+                            if(personalObstacleList[i].form !== "circle") {
+
+                                var obstacleLines = SIMATH.getLinesFromRect(personalObstacleList[i]);
+                                if (personalObstacleList[i].form === "triangle") obstacleLines = SIMATH.getLinesFromTria(personalObstacleList[i]);
+                                for (var k = 0; k < obstacleLines.length; k++) {
+                                    var interPoint = SIMATH.getIntersectionPoint(robotSeg, obstacleLines[k]);
+                                    if (interPoint) {
+                                        if (Math.abs(this.robots[r].frontLeft.rx - interPoint.x) < Math.abs(this.robots[r].frontRight.rx - interPoint.x)) {
+                                            this.robots[r].frontLeft.bumped = true;
+                                        } else {
+                                            this.robots[r].frontRight.bumped = true;
+                                        }
+                                        touchSensor.value = 1;
                                     } else {
-                                        this.robots[r].frontRight.bumped = true;
-                                    }
-                                    touchSensor.value = 1;
-                                } else {
-                                    var p = null;
                                         p = SIMATH.getDistanceToLine({
                                             x: touchSensor.rx,
                                             y: touchSensor.ry
@@ -731,6 +772,7 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                                             x: obstacleLines[k].x2,
                                             y: obstacleLines[k].y2
                                         });
+                                    }
                                     var thisTolerance = Math.max(Math.abs(this.robots[r].right), Math.abs(this.robots[r].left));
                                     if (SIMATH.sqr(touchSensor.rx - p.x) + SIMATH.sqr(touchSensor.ry - p.y) <
                                         SIM.getDt() * (personalObstacleList[i].tolerance + thisTolerance)) {
@@ -751,21 +793,67 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                                                 this.robots[r].backRight.bumped = true;
                                             }
                                         } else {
-                                            var p = SIMATH.getDistanceToLine({
-                                                x: touchSensor.rx,
-                                                y: touchSensor.ry
-                                            }, {
-                                                x: obstacleLines[k].x1,
-                                                y: obstacleLines[k].y1
-                                            }, {
-                                                x: obstacleLines[k].x2,
-                                                y: obstacleLines[k].y2
-                                            });
+                                            p = SIMATH.getDistanceToLine({
+                                                    x: touchSensor.rx,
+                                                    y: touchSensor.ry
+                                                }, {
+                                                    x: obstacleLines[k].x1,
+                                                    y: obstacleLines[k].y1
+                                                }, {
+                                                    x: obstacleLines[k].x2,
+                                                    y: obstacleLines[k].y2
+                                                });
+                                            }
                                             if (SIMATH.sqr(this.robots[r].backMiddle.rx - p.x) + SIMATH.sqr(this.robots[r].backMiddle.ry - p.y) <
                                                 SIM.getDt() * (personalObstacleList[i].tolerance + thisTolerance)) {
                                                 this.robots[r].backLeft.bumped = true;
                                                 this.robots[r].backRight.bumped = true;
                                             }
+                                        }
+                                    }
+                            } else {
+                                var interPoint = SIMATH.getClosestIntersectionPointCircle(robotSeg, personalObstacleList[i]);
+                                if (interPoint) {
+                                    if (Math.abs(this.robots[r].frontLeft.rx - interPoint.x) < Math.abs(this.robots[r].frontRight.rx - interPoint.x)) {
+                                        this.robots[r].frontLeft.bumped = true;
+                                    } else {
+                                        this.robots[r].frontRight.bumped = true;
+                                    }
+                                    touchSensor.value = 1;
+                                } else {
+                                    p = SIMATH.getDistanceToCircle({
+                                        x: touchSensor.rx,
+                                        y: touchSensor.ry
+                                    }, personalObstacleList[i]);
+                                }
+                                var thisTolerance = Math.max(Math.abs(this.robots[r].right), Math.abs(this.robots[r].left));
+                                if (SIMATH.sqr(touchSensor.rx - p.x) + SIMATH.sqr(touchSensor.ry - p.y) <
+                                    SIM.getDt() * (personalObstacleList[i].tolerance + thisTolerance)) {
+                                    this.robots[r].frontLeft.bumped = true;
+                                    this.robots[r].frontRight.bumped = true;
+                                    touchSensor.value = 1;
+                                } else {
+                                    var interPoint = SIMATH.getClosestIntersectionPointCircle({
+                                        x1: this.robots[r].backLeft.rx,
+                                        x2: this.robots[r].backRight.rx,
+                                        y1: this.robots[r].backLeft.ry,
+                                        y2: this.robots[r].backRight.ry
+                                    }, personalObstacleList[i]);
+                                    if (interPoint) {
+                                        if (Math.abs(this.robots[r].backLeft.rx - interPoint.x) < Math.abs(this.robots[r].backRight.rx - interPoint.x)) {
+                                            this.robots[r].backLeft.bumped = true;
+                                        } else {
+                                            this.robots[r].backRight.bumped = true;
+                                        }
+                                    } else {
+                                        p = SIMATH.getDistanceToCircle({
+                                            x: touchSensor.rx,
+                                            y: touchSensor.ry
+                                        }, personalObstacleList[i]);
+                                        if (SIMATH.sqr(this.robots[r].backMiddle.rx - p.x) + SIMATH.sqr(this.robots[r].backMiddle.ry - p.y) <
+                                            SIM.getDt() * (personalObstacleList[i].tolerance + thisTolerance)) {
+                                            this.robots[r].backLeft.bumped = true;
+                                            this.robots[r].backRight.bumped = true;
                                         }
                                     }
                                 }
@@ -880,11 +968,32 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                     ultraSensors[s].distance = C.MAXDIAG;
                     var uDis = [Infinity, Infinity, Infinity, Infinity, Infinity];
                     for (var i = 0; i < personalObstacleList.length; i++) {
-                        var obstacleLines = (SIMATH.getLinesFromRect(personalObstacleList[i]));
-                        if(personalObstacleList[i].form === "triangle") obstacleLines = SIMATH.getLinesFromTria(personalObstacleList[i]);
-                        for (var k = 0; k < obstacleLines.length; k++) {
+
+                        if(personalObstacleList[i].form !== "circle") {
+                            var obstacleLines = (SIMATH.getLinesFromRect(personalObstacleList[i]));
+                            if(personalObstacleList[i].form === "triangle") obstacleLines = SIMATH.getLinesFromTria(personalObstacleList[i]);
+                            for (var k = 0; k < obstacleLines.length; k++) {
+                                for (var j = 0; j < uA.length; j++) {
+                                    var interPoint = SIMATH.getIntersectionPoint(uA[j], obstacleLines[k]);
+                                    if (interPoint) {
+                                        var dis = Math.sqrt((interPoint.x - ultraSensors[s].rx) * (interPoint.x - ultraSensors[s].rx) + (interPoint.y - ultraSensors[s].ry) * (interPoint.y - ultraSensors[s].ry));
+                                        if (dis < ultraSensors[s].distance) {
+                                            ultraSensors[s].distance = dis;
+                                            ultraSensors[s].cx = interPoint.x;
+                                            ultraSensors[s].cy = interPoint.y;
+
+                                        }
+                                        if (dis < uDis[j]) {
+                                            uDis[j] = dis;
+                                            ultraSensors[s].u[j] = interPoint;
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
                             for (var j = 0; j < uA.length; j++) {
-                                var interPoint = SIMATH.getIntersectionPoint(uA[j], obstacleLines[k]);
+                                var interPoint = SIMATH.getClosestIntersectionPointCircle(uA[j], personalObstacleList[i]);
+
                                 if (interPoint) {
                                     var dis = Math.sqrt((interPoint.x - ultraSensors[s].rx) * (interPoint.x - ultraSensors[s].rx) + (interPoint.y - ultraSensors[s].ry) * (interPoint.y - ultraSensors[s].ry));
                                     if (dis < ultraSensors[s].distance) {

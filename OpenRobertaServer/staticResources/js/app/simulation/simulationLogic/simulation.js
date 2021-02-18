@@ -322,6 +322,19 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 form: "triangle"
             };
             customObstacleList.push(newTriangleObstacle);
+        } else if (shape === "circle") {
+            let newCircleObstacle = {
+                x: 200,
+                y: 300,
+                r: 50,
+                startAngle: 50,
+                endAngle: 0,
+                isParallelToAxis: true,
+                color: "2b2b2b",
+                type: "obstacle",
+                form: "circle"
+            };
+            customObstacleList.push(newCircleObstacle);
         }
         selectedColorBlock = null;
         selectedObstacle = customObstacleList.length-1;
@@ -1054,6 +1067,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 isDownObstacle = (startX > obstacle.x && startX < obstacle.x + obstacle.w && startY > obstacle.y && startY < obstacle.y + obstacle.h);
             } else if (obstacle.form === "triangle") {
                 isDownObstacle = checkDownTriangle(startX, startY, obstacle.ax, obstacle.ay, obstacle.bx, obstacle.by, obstacle.cx, obstacle.cy)
+            } else if (obstacle.form === "circle") {
+                isDownObstacle = (startX > obstacle.x - obstacle.r && startX < obstacle.x + obstacle.r && startY > obstacle.y - obstacle.r && startY < obstacle.y + obstacle.r);
             }
             key++;
             if(isDownObstacle && !isDownColorBlockCorner) {
@@ -1088,6 +1103,11 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         return false;
     }
     exports.checkDownTriangle = checkDownTriangle;
+
+    function checkDownCircle(px, py, cx, cy, r) {
+        return (px > cx - r && px < cx + r && py > cy - r && py < cy + r);
+    }
+    exports.checkDownCircle = checkDownCircle;
 
     function calculateCorners(object) {
         const shift = 10;
@@ -1286,6 +1306,10 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             customObstacleList[selectedObstacle].by += dy;
             customObstacleList[selectedObstacle].cx += dx;
             customObstacleList[selectedObstacle].cy += dy;
+            updateObstacleLayer();
+        } else if (isDownObstacle && selectedObstacle != null && !isDownObstacleCorner && customObstacleList[selectedObstacle].form === "circle") {
+            customObstacleList[selectedObstacle].x += dx;
+            customObstacleList[selectedObstacle].y += dy;
             updateObstacleLayer();
         } else if(isDownObstacleCorner && selectedObject == selectedCornerObject && selectedObstacle != null) {
             if(customObstacleList[selectedObstacle].form === "triangle") {

@@ -71,6 +71,76 @@ define([ 'exports', 'simulation.constants' ], function(exports, CONSTANTS) {
             y : yi
         };
     };
+
+
+    exports.getClosestIntersectionPointCircle = function(line, circle) {
+        const intersections = this.getIntersectionPointsCircle(line, circle);
+
+        if (intersections.length == 1) {
+            return intersections[0]; // one intersection
+        }
+
+        if (intersections.length == 2)
+        {
+            //const p1 = this.getDistanceToLine(intersections[0], {x: line.x1, y: line.y1}, {x: line.x2, y: line.y2});
+            //const p2 = this.getDistanceToLine(intersections[1], {x: line.x1, y: line.y1}, {x: line.x2, y: line.y2});
+            const dist1 = getDistance({x: line.x1, y: line.y1}, intersections[0]);
+            const dist2 = getDistance({x: line.x1, y: line.y1}, intersections[1]);
+
+            if (dist1 < dist2) {
+                return intersections[0];
+            }
+            else {
+                return intersections[1];
+            }
+        }
+
+        return null; // no intersections at all
+    }
+
+
+    /**
+     * Finds the intersection between a circles border
+     * and a line from the origin to the otherLineEndPoint.
+     * @param  {Vector} origin            - center of the circle and start of the line
+     * @param  {number} radius            - radius of the circle
+     * @param  {Vector} otherLineEndPoint - end of the line
+     * @return {{x, y}[]}                   - point of the intersection
+     */
+     exports.getIntersectionPointsCircle = function(line, circle) {
+             var dx, dy, A, B, C, det, t;
+
+             dx = line.x2 - line.x1;
+             dy = line.y2 - line.y1;
+
+
+             A = dx * dx + dy * dy;
+             B = 2 * (dx * (line.x1 - circle.x) + dy * (line.y1 - circle.y));
+             C = (line.x1 - circle.x) * (line.x1 - circle.x) + (line.y1 - circle.y) * (line.y1 - circle.y) - circle.r * circle.r;
+
+             det = B * B - 4 * A * C;
+             if ((A <= 0.0000001) || (det < 0))
+             {
+                 return [];
+             }
+             else if (det == 0)
+             {
+                 // One solution.
+                 t = -B / (2 * A);
+                 var intersection1 = {x: line.x1 + t * dx, y: line.y1 + t * dy};
+
+                 return [intersection1];
+             }
+             else
+             {
+                 // Two solutions.
+                 t = ((-B + Math.sqrt(det)) / (2 * A));
+                 var intersection1 = {x: line.x1 + t * dx, y: line.y1 + t * dy};
+                 t = ((-B - Math.sqrt(det)) / (2 * A));
+                 var intersection2 = {x: line.x1 + t * dx, y: line.y1 + t * dy};
+                 return [intersection1, intersection2];
+             }
+         };
     /**
      * Get four lines from a rectangle.
      * 
@@ -128,6 +198,29 @@ define([ 'exports', 'simulation.constants' ], function(exports, CONSTANTS) {
             } ];
         }
 
+    };
+    /**
+     * Get distance from a line to a circle.
+     *
+     * @memberOf exports
+     * @param {circle}
+     *            circle
+     * @param {line1}
+     *            a line point
+     * @param {line2}
+     *            another line point
+     * @returns {distance} nearest distance
+     */
+    exports.getDistanceToCircle = function(point, circle) {
+        var vX = point.x - circle.x;
+        var vY = point.y - circle.y;
+        var magV = Math.sqrt(vX*vX + vY*vY);
+        var aX = circle.x + vX / magV * circle.r;
+        var aY = circle.y + vY / magV * circle.r;
+        return {
+            x: aX,
+            y: aY
+        }
     };
     /**
      * Get four lines from a triangle.
