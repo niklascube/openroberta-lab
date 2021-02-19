@@ -981,7 +981,6 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                                             ultraSensors[s].distance = dis;
                                             ultraSensors[s].cx = interPoint.x;
                                             ultraSensors[s].cy = interPoint.y;
-
                                         }
                                         if (dis < uDis[j]) {
                                             uDis[j] = dis;
@@ -1000,7 +999,6 @@ define(['simulation.simulation', 'simulation.math', 'util', 'interpreter.constan
                                         ultraSensors[s].distance = dis;
                                         ultraSensors[s].cx = interPoint.x;
                                         ultraSensors[s].cy = interPoint.y;
-
                                     }
                                     if (dis < uDis[j]) {
                                         uDis[j] = dis;

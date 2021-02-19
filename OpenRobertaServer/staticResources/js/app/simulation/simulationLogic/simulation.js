@@ -317,7 +317,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 cx: x+50,
                 cy: y+50,
                 isParallelToAxis: true,
-                color: "2b2b2b",
+                color: "#2b2b2b",
                 type: "obstacle",
                 form: "triangle"
             };
@@ -330,7 +330,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 startAngle: 50,
                 endAngle: 0,
                 isParallelToAxis: true,
-                color: "2b2b2b",
+                color: "#2b2b2b",
                 type: "obstacle",
                 form: "circle"
             };
@@ -1020,8 +1020,14 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         colorpicker.on('change', changeColorWithColorPicker);
 
         if(selectedObstacle != null) {
-            let obstacleCorners = calculateCorners(customObstacleList[selectedObstacle]);
-            for(let corner_index in obstacleCorners) {
+            var obstacleCorners = [];
+            if(customObstacleList[selectedObstacle].form != "circle") {
+                obstacleCorners = calculateCorners(customObstacleList[selectedObstacle]);
+            } else {
+                isDownObstacleCorner = checkDownCircleCorner(startX, startY,customObstacleList[selectedObstacle].x, customObstacleList[selectedObstacle].y, customObstacleList[selectedObstacle].r);
+                selectedCornerObject = customObstacleList[selectedObstacle];
+            }
+                for(let corner_index in obstacleCorners) {
                 isDownObstacleCorner = (startX > obstacleCorners[corner_index].x && startX < obstacleCorners[corner_index].x + obstacleCorners[corner_index].w && startY > obstacleCorners[corner_index].y && startY < obstacleCorners[corner_index].y + obstacleCorners[corner_index].h);
                 if(isDownObstacleCorner) {
                     selectedCorner = corner_index;
@@ -1066,9 +1072,9 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             if (obstacle.form === "rectangle") {
                 isDownObstacle = (startX > obstacle.x && startX < obstacle.x + obstacle.w && startY > obstacle.y && startY < obstacle.y + obstacle.h);
             } else if (obstacle.form === "triangle") {
-                isDownObstacle = checkDownTriangle(startX, startY, obstacle.ax, obstacle.ay, obstacle.bx, obstacle.by, obstacle.cx, obstacle.cy)
+                isDownObstacle = checkDownTriangle(startX, startY, obstacle.ax, obstacle.ay, obstacle.bx, obstacle.by, obstacle.cx, obstacle.cy);
             } else if (obstacle.form === "circle") {
-                isDownObstacle = (startX > obstacle.x - obstacle.r && startX < obstacle.x + obstacle.r && startY > obstacle.y - obstacle.r && startY < obstacle.y + obstacle.r);
+                isDownObstacle = checkDownCircle(startX, startY, obstacle.x, obstacle.y, obstacle.r);
             }
             key++;
             if(isDownObstacle && !isDownColorBlockCorner) {
@@ -1105,11 +1111,17 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
     exports.checkDownTriangle = checkDownTriangle;
 
     function checkDownCircle(px, py, cx, cy, r) {
-        return (px > cx - r && px < cx + r && py > cy - r && py < cy + r);
+            return (px - cx) * (px - cx) + (py - cy) * (py - cy) <= r * r;
+    }
+    exports.checkDownCircle = checkDownCircle;
+
+    function checkDownCircleCorner(px, py, cx, cy, r) {
+        return checkDownCircle(px, py, cx, cy, r) && !checkDownCircle(px, py, cx, cy, r-10);
     }
     exports.checkDownCircle = checkDownCircle;
 
     function calculateCorners(object) {
+        if(object.r != undefined) return [];
         const shift = 10;
         let objectCorners;
         if(object.form === "rectangle") {
@@ -1241,6 +1253,10 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 let obstacle = customObstacleList.slice()[key];
                 if (obstacle.form === "rectangle") hoverObstacle = (mouseX > obstacle.x && mouseX < obstacle.x + obstacle.w && mouseY > obstacle.y && mouseY < obstacle.y + obstacle.h);
                 else if (obstacle.form === "triangle") hoverObstacle = checkDownTriangle(mouseX, mouseY, obstacle.ax, obstacle.ay, obstacle.bx, obstacle.by, obstacle.cx, obstacle.cy);
+                else if (obstacle.form === "circle") {
+                    hoverObstacle = checkDownCircle(mouseX, mouseY, obstacle.x, obstacle.y, obstacle.r);
+                    hoverObstacleCorners = checkDownCircleCorner(mouseX, mouseY, obstacle.x, obstacle.y, obstacle.r);
+                }
                 let obstacleCorners = calculateCorners(obstacle);
                 for (let corner_index in obstacleCorners) {
                     hoverObstacleCorners = (mouseX > obstacleCorners[corner_index].x && mouseX < obstacleCorners[corner_index].x + obstacleCorners[corner_index].w && mouseY > obstacleCorners[corner_index].y && mouseY < obstacleCorners[corner_index].y + obstacleCorners[corner_index].h);
@@ -1268,9 +1284,10 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             var hoverRuler = (mouseX > ruler.x && mouseX < ruler.x + ruler.w && mouseY > ruler.y && mouseY < ruler.y + ruler.h);
             if(hoverObstacleCorners || (hoverColorBlockCorners && colorBlocksActivated)) {
                 if(hoveringCorner == 0) $("#robotLayer").css('cursor', 'nesw-resize');
-                if(hoveringCorner == 1) $("#robotLayer").css('cursor', 'nw-resize');
-                if(hoveringCorner == 2) $("#robotLayer").css('cursor', 'ne-resize');
-                if(hoveringCorner == 3) $("#robotLayer").css('cursor', 'nwse-resize');
+                else if(hoveringCorner == 1) $("#robotLayer").css('cursor', 'nw-resize');
+                else if(hoveringCorner == 2) $("#robotLayer").css('cursor', 'ne-resize');
+                else if(hoveringCorner == 3) $("#robotLayer").css('cursor', 'nwse-resize');
+                else $("#robotLayer").css('cursor', 'ne-resize');
             } else if(hoverColorBlock && !colorBlocksActivated) {
                 $("#robotLayer").css('cursor', 'not-allowed');
             } else if (hoverRobot || hoverObstacle || hoverRuler || hoverColorBlock) {
@@ -1322,6 +1339,12 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 } else if(selectedCorner == 2) {
                     customObstacleList[selectedObstacle].cx += dx;
                     customObstacleList[selectedObstacle].cy += dy;
+                }
+            } else if(customObstacleList[selectedObstacle].form === "circle") {
+                if(customObstacleList[selectedObstacle].r >= minSizeObjects) {
+                    customObstacleList[selectedObstacle].r += dx;
+                } else if(customObstacleList[selectedObstacle].r < minSizeObjects){
+                    customObstacleList[selectedObstacle].r = minSizeObjects;
                 }
             } else if(customObstacleList[selectedObstacle].form === "rectangle") {
                 if(customObstacleList[selectedObstacle].w >= minSizeObjects && customObstacleList[selectedObstacle].h >= minSizeObjects) {

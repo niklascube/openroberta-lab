@@ -54,16 +54,10 @@ define([ 'exports', 'simulation.constants' ], function(exports, CONSTANTS) {
         var yi = ((line2.y1 - line2.y2) * (line1.x1 * line1.y2 - line1.y1 * line1.x2) - (line1.y1 - line1.y2) * (line2.x1 * line2.y2 - line2.y1 * line2.x2))
                 / d;
 
-        if (xi < Math.min(line1.x1, line1.x2) - 0.01 || xi > Math.max(line1.x1, line1.x2) + 0.01) {
+        if (!this.isLineAlignedToPoint(xi, yi, line1)) {
             return null;
         }
-        if (xi < Math.min(line2.x1, line2.x2) - 0.01 || xi > Math.max(line2.x1, line2.x2) + 0.01) {
-            return null;
-        }
-        if (yi < Math.min(line1.y1, line1.y2) - 0.01 || yi > Math.max(line1.y1, line1.y2) + 0.01) {
-            return null;
-        }
-        if (yi < Math.min(line2.y1, line2.y2) - 0.01 || yi > Math.max(line2.y1, line2.y2) + 0.01) {
+        if (!this.isLineAlignedToPoint(xi, yi, line2)) {
             return null;
         }
         return {
@@ -72,7 +66,14 @@ define([ 'exports', 'simulation.constants' ], function(exports, CONSTANTS) {
         };
     };
 
-
+    /**
+     * Finds the closest intersection from the intersections of a line
+     * @memberOf exports
+     * @param  {line}
+     *              a line
+     * @return {x, y}
+     *              closest intersection point (coordinate)
+     */
     exports.getClosestIntersectionPointCircle = function(line, circle) {
         const intersections = this.getIntersectionPointsCircle(line, circle);
 
@@ -82,8 +83,6 @@ define([ 'exports', 'simulation.constants' ], function(exports, CONSTANTS) {
 
         if (intersections.length == 2)
         {
-            //const p1 = this.getDistanceToLine(intersections[0], {x: line.x1, y: line.y1}, {x: line.x2, y: line.y2});
-            //const p2 = this.getDistanceToLine(intersections[1], {x: line.x1, y: line.y1}, {x: line.x2, y: line.y2});
             const dist1 = getDistance({x: line.x1, y: line.y1}, intersections[0]);
             const dist2 = getDistance({x: line.x1, y: line.y1}, intersections[1]);
 
@@ -102,10 +101,11 @@ define([ 'exports', 'simulation.constants' ], function(exports, CONSTANTS) {
     /**
      * Finds the intersection between a circles border
      * and a line from the origin to the otherLineEndPoint.
-     * @param  {Vector} origin            - center of the circle and start of the line
-     * @param  {number} radius            - radius of the circle
-     * @param  {Vector} otherLineEndPoint - end of the line
-     * @return {{x, y}[]}                   - point of the intersection
+     * @memberOf exports
+     * @param  {line}
+     *              a line
+     * @return {{x, y}[]}
+     *              array with point(s) of the intersection
      */
      exports.getIntersectionPointsCircle = function(line, circle) {
              var dx, dy, A, B, C, det, t;
@@ -129,7 +129,10 @@ define([ 'exports', 'simulation.constants' ], function(exports, CONSTANTS) {
                  t = -B / (2 * A);
                  var intersection1 = {x: line.x1 + t * dx, y: line.y1 + t * dy};
 
-                 return [intersection1];
+                if (this.isLineAlignedToPoint(intersection1.x, intersection1.y, line))
+                    return [intersection1];
+
+                return [];
              }
              else
              {
@@ -138,9 +141,35 @@ define([ 'exports', 'simulation.constants' ], function(exports, CONSTANTS) {
                  var intersection1 = {x: line.x1 + t * dx, y: line.y1 + t * dy};
                  t = ((-B - Math.sqrt(det)) / (2 * A));
                  var intersection2 = {x: line.x1 + t * dx, y: line.y1 + t * dy};
-                 return [intersection1, intersection2];
+
+                 if (this.isLineAlignedToPoint(intersection1.x, intersection1.y, line) && this.isLineAlignedToPoint(intersection2.x, intersection2.y, line))
+                     return [intersection1, intersection2];
+
+                 return [];
              }
          };
+    /**
+     * Checks if Alignment of lines is correct to sensor
+     *
+     * @memberOf exports
+     * @param {xi}
+     *            x coordinate of point
+     * @param {yi}
+     *            y coordinate of point
+     * @param {line}
+     *            a line
+     * @returns {boolean}
+     */
+    exports.isLineAlignedToPoint = function(xi, yi, line) {
+
+        if (xi < Math.min(line.x1, line.x2) - 0.01 || xi > Math.max(line.x1, line.x2) + 0.01) {
+            return false;
+        }
+        if (yi < Math.min(line.y1, line.y2) - 0.01 || yi > Math.max(line.y1, line.y2) + 0.01) {
+            return false;
+        }
+        return true;
+    }
     /**
      * Get four lines from a rectangle.
      * 
@@ -200,16 +229,15 @@ define([ 'exports', 'simulation.constants' ], function(exports, CONSTANTS) {
 
     };
     /**
-     * Get distance from a line to a circle.
+     * Get distance from a point to a circle's border.
      *
      * @memberOf exports
+     * @param {point}
+     *            a point
      * @param {circle}
-     *            circle
-     * @param {line1}
-     *            a line point
-     * @param {line2}
-     *            another line point
-     * @returns {distance} nearest distance
+     *            a circle object
+     * @returns {distance}
+     *           distance
      */
     exports.getDistanceToCircle = function(point, circle) {
         var vX = point.x - circle.x;
