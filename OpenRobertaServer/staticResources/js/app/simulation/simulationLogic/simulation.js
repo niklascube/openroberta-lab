@@ -515,6 +515,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         userPrograms = programs;
         runRenderUntil = [];
         configurations = [];
+        positionConfigurations = [];
+        alignmentConfigurations = [];
         for (i = 0; i < programs.length; i++) {
             runRenderUntil[i] = 0;
         }
@@ -1734,7 +1736,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         $("#simRobotModal").modal("hide");
         robots = [];
         if (numRobots >= 1) {
-            var tempRobot = createRobot(reqRobot, configurations[0], 0, 0, interpreters[0].getRobotBehaviour());
+            var tempRobot = createRobot(reqRobot, configurations[0],0, 0, interpreters[0].getRobotBehaviour());
             tempRobot.savedName = userPrograms[0].savedName;
             robots[0] = tempRobot;
             if (robots[0].brick) {
