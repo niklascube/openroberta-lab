@@ -283,11 +283,20 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 robots[i].time = 0;
             }
         }
-        obstacle.x = obstacle.xStart;
-        obstacle.y = obstacle.yStart;
-        scene.drawBackground();
-        scene.drawRuler();
-        scene.drawObjects();
+
+        for (let key in customObstacleList) {
+            customObstacleList[key] = customObstacleList[key].default;
+            customObstacleList[key].default = Object.assign({}, customObstacleList[key]);
+        }
+        for (let key in colorBlockList) {
+            colorBlockList[key] = colorBlockList[key].default;
+            colorBlockList[key].default = Object.assign({}, colorBlockList[key]);
+        }
+        selectedObject = null;
+        selectedObstacle = null;
+        selectedColorBlock = null;
+        updateColorLayer();
+        updateObstacleLayer();
     }
     exports.resetPose = resetPose;
 
@@ -305,10 +314,14 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 theta: 0,
                 img: null,
                 isParallelToAxis: true,
+                xStart: 0,
+                yStart: 0,
                 color: "#2b2b2b",
                 type: "obstacle",
-                form: "rectangle"
+                form: "rectangle",
+                default: null
             };
+            newRectangleObstacle.default = Object.assign({}, newRectangleObstacle);
             customObstacleList.push(newRectangleObstacle);
         } else if (shape === "triangle") {
             let x = (Math.random() * ((ground.w-125) - 125) + 125);
@@ -322,23 +335,34 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 cx: x+50,
                 cy: y+50,
                 isParallelToAxis: true,
+                xStart: 0,
+                yStart: 0,
                 color: "#2b2b2b",
                 type: "obstacle",
-                form: "triangle"
+                form: "triangle",
+                default: null
             };
+            newTriangleObstacle.default = Object.assign({}, newTriangleObstacle);
             customObstacleList.push(newTriangleObstacle);
         } else if (shape === "circle") {
+            let x = (Math.random() * ((ground.w-125) - 125) + 125);
+            let y = (Math.random() * ((ground.h-125) - 125) + 125);
+
             let newCircleObstacle = {
-                x: 200,
-                y: 300,
+                x: x,
+                y: y,
                 r: 50,
                 startAngle: 50,
                 endAngle: 0,
                 isParallelToAxis: true,
+                xStart: 0,
+                yStart: 0,
                 color: "#2b2b2b",
                 type: "obstacle",
-                form: "circle"
+                form: "circle",
+                default: null
             };
+            newCircleObstacle.default = Object.assign({}, newCircleObstacle);
             customObstacleList.push(newCircleObstacle);
         }
         selectedColorBlock = null;
@@ -391,11 +415,15 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             wOld: 0,
             hOld: 0,
             theta: 0,
+            xStart: 0,
+            yStart: 0,
             img: null,
             color: C.COLOR_ENUM.BLACK,
             form: "rectangle",
-            type: "colorBlock"
+            type: "colorBlock",
+            default: null
         };
+        newColorBlock.default = {object: newColorBlock};
         if(color === "black") newColorBlock.color = C.COLOR_ENUM.BLACK;
         if(color === "blue") newColorBlock.color = C.COLOR_ENUM.BLUE;
         if(color === "green") newColorBlock.color = C.COLOR_ENUM.GREEN;
@@ -468,10 +496,11 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
         hOld: 0,
         isParallelToAxis: true,
         xStart: 0,
-        yStart: 0
+        yStart: 0,
         theta: 0,
         form: "rectangle",
-        type: "obstacle"
+        type: "obstacle",
+        default: null
     };
 
     customObstacleList.unshift(customObstacle);
@@ -808,8 +837,7 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
             customObstacleList.unshift(customObstacle);
             setObstacle();
         }
-        obstacle.xStart = obstacle.x;
-        obstacle.yStart = obstacle.y;
+        customObstacleList[0].default = Object.assign({}, customObstacleList[0]);
     }
 
     function setRuler() {
@@ -1353,7 +1381,8 @@ define(['exports', 'simulation.scene', 'simulation.math', 'program.controller', 
                 }
             } else if(customObstacleList[selectedObstacle].form === "circle") {
                 if(customObstacleList[selectedObstacle].r >= minSizeObjects) {
-                    customObstacleList[selectedObstacle].r += dx;
+                    if(mouseX >= customObstacleList[selectedObstacle].x) customObstacleList[selectedObstacle].r += dx;
+                    else if(mouseX < customObstacleList[selectedObstacle].x) customObstacleList[selectedObstacle].r -= dx;
                 } else if(customObstacleList[selectedObstacle].r < minSizeObjects){
                     customObstacleList[selectedObstacle].r = minSizeObjects;
                 }
